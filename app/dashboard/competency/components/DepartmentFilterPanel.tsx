@@ -57,8 +57,8 @@ export default function DepartmentFilterPanel({
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <div className="flex justify-between text-sm mb-2">
-            <Button variant="link" onClick={handleSelectAll}>모두 선택</Button>
-            <Button variant="link" onClick={handleClearAll}>모두 해제</Button>
+            <Button variant="ghost" onClick={handleSelectAll}>모두 선택</Button>
+            <Button variant="ghost" onClick={handleClearAll}>모두 해제</Button>
         </div>
         <div className="max-h-60 overflow-y-auto">
           {filteredDepartments.map((d) => (

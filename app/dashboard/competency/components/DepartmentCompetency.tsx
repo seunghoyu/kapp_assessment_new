@@ -18,14 +18,6 @@ export default function DepartmentCompetency({
   dateRange,
 }: DepartmentCompetencyProps) {
   const [view, setView] = useState<'chart' | 'table'>('chart');
-  
-  const processedDataForTable = useMemo(() => data.map(item => {
-    const { value, ...rest } = item;
-    return {
-      ...rest,
-      overallAvg: value,
-    };
-  }), [data]);
 
   const formatDate = (date: Date) => format(date, "yyyy.MM.dd");
 
@@ -45,7 +37,7 @@ export default function DepartmentCompetency({
         {view === 'chart' ? (
           <ChartView data={data} />
         ) : (
-          <TableView data={processedDataForTable} />
+          <TableView data={data} />
         )}
       </CardContent>
     </Card>

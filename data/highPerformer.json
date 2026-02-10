@@ -1,0 +1,13 @@
+﻿{
+  "teamOptions": ["전체", "개발", "마케팅", "영업", "인사", "재무"],
+  "goldenStandard": {
+    "metrics": ["지식", "적용", "성과", "생산성", "리더십", "AI 활용"],
+    "values": [88, 85, 90, 92, 80, 84]
+  },
+  "gapAnalysis": [
+    { "metric": "지식", "gapValue": -12, "note": "핵심 도메인 지식 보강 필요" },
+    { "metric": "적용", "gapValue": -15, "note": "실습 중심 교육 필요" },
+    { "metric": "리더십", "gapValue": -8, "note": "멘토링 프로그램 필요" },
+    { "metric": "AI 활용", "gapValue": -20, "note": "AI 도구 교육 도입" }
+  ]
+}

@@ -1,0 +1,6 @@
+﻿[
+  { "id": "total-users", "label": "전체 임직원", "value": 247, "unit": "명", "delta": 12, "trend": "up" },
+  { "id": "assessments-completed", "label": "진단 완료", "value": 189, "unit": "명", "delta": -3, "trend": "down" },
+  { "id": "trainings-taken", "label": "교육 수강", "value": 1234, "unit": "건", "delta": 0, "trend": "neutral" },
+  { "id": "avg-skill-score", "label": "평균 역량 점수", "value": 74, "unit": "점" }
+]

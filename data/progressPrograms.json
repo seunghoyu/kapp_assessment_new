@@ -1,0 +1,8 @@
+﻿[
+  { "id": "prog-1", "name": "문제 해결", "participants": 42, "status": "ongoing", "progress": 65, "target": 80 },
+  { "id": "prog-2", "name": "커뮤니케이션", "participants": 38, "status": "ongoing", "progress": 72, "target": 85 },
+  { "id": "prog-3", "name": "리더십", "participants": 25, "status": "completed", "progress": 100, "target": 90 },
+  { "id": "prog-4", "name": "기술 역량", "participants": 35, "status": "ongoing", "progress": 58, "target": 75 },
+  { "id": "prog-5", "name": "운영 역량", "participants": 48, "status": "completed", "progress": 100, "target": 85 },
+  { "id": "prog-6", "name": "학습 기초", "participants": 31, "status": "ongoing", "progress": 0, "target": 80 }
+]

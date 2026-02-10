@@ -1,0 +1,18 @@
+﻿{
+  "periodOptions": [
+    { "value": "2026-01", "label": "2026년 1월" },
+    { "value": "2025-12", "label": "2025년 12월" },
+    { "value": "2025-11", "label": "2025년 11월" },
+    { "value": "2025-10", "label": "2025년 10월" },
+    { "value": "2025-09", "label": "2025년 9월" },
+    { "value": "2025-08", "label": "2025년 8월" }
+  ],
+  "selectedPeriod": "2026-01",
+  "series": [
+    { "department": "개발", "value": 78 },
+    { "department": "마케팅", "value": 69 },
+    { "department": "영업", "value": 74 },
+    { "department": "인사", "value": 82 },
+    { "department": "재무", "value": 35 }
+  ]
+}

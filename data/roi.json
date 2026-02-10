@@ -1,0 +1,19 @@
+﻿{
+  "inputs": {
+    "employees": 50,
+    "costPerPerson": 120,
+    "improvementRate": 25
+  },
+  "results": {
+    "investment": 6000,
+    "return": 13500,
+    "profit": 7500,
+    "roiPercent": 125,
+    "breakdown": [
+      { "label": "생산성 향상", "value": 7200 },
+      { "label": "품질 개선", "value": 2600 },
+      { "label": "시간 절감", "value": 2100 },
+      { "label": "이직 감소", "value": 1600 }
+    ]
+  }
+}

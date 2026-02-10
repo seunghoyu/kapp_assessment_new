@@ -1,0 +1,8 @@
+﻿[
+  { "id": "ins-001", "priority": "high", "title": "문제 해결 역량 격차", "description": "개발 조직의 문제 해결 점수가 벤치마크 대비 15점 낮습니다. 즉시 교육이 필요합니다." },
+  { "id": "ins-002", "priority": "medium", "title": "영업 코칭 기회", "description": "코칭 이후 커뮤니케이션이 20% 개선되었습니다. 신규 입사자에게 확대를 권장합니다." },
+  { "id": "ins-003", "priority": "low", "title": "리더십 프로그램 성과", "description": "리더십 코호트가 목표를 8점 초과 달성했습니다. 타 부서로 확장 검토가 필요합니다." },
+  { "id": "ins-004", "priority": "high", "title": "재무 자동화 리스크", "description": "재무 부서의 자동화 역량이 낮아 프로세스 리스크가 증가하고 있습니다." },
+  { "id": "ins-005", "priority": "medium", "title": "마케팅 데이터 리터러시", "description": "마케팅 조직의 데이터 리터러시가 불균형합니다. 선택형 업스킬링이 필요합니다." },
+  { "id": "ins-006", "priority": "low", "title": "HR 코칭 추세", "description": "HR 코칭 세션이 이직률 개선과 상관관계를 보입니다." }
+]

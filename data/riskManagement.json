@@ -1,0 +1,23 @@
+﻿{
+  "filters": {
+    "riskLevels": ["critical", "high", "medium", "low"]
+  },
+  "summary": [
+    { "level": "critical", "count": 2 },
+    { "level": "high", "count": 4 },
+    { "level": "medium", "count": 6 },
+    { "level": "low", "count": 12 }
+  ],
+  "details": [
+    { "id": "risk-001", "level": "critical", "area": "데이터 보안", "description": "보안 교육 이수율이 낮음", "impact": "높음" },
+    { "id": "risk-002", "level": "critical", "area": "AI 거버넌스", "description": "사용 정책 미정", "impact": "높음" },
+    { "id": "risk-003", "level": "high", "area": "영업 예측", "description": "예측 정확도 목표 미달", "impact": "중간" },
+    { "id": "risk-004", "level": "high", "area": "재무 자동화", "description": "수동 프로세스 지속", "impact": "중간" },
+    { "id": "risk-005", "level": "high", "area": "고객 지원", "description": "응답 품질 편차", "impact": "중간" },
+    { "id": "risk-006", "level": "high", "area": "마케팅 분석", "description": "어트리뷰션 모델 공백", "impact": "중간" },
+    { "id": "risk-007", "level": "medium", "area": "개발 문서", "description": "문서가 최신이 아님", "impact": "낮음" },
+    { "id": "risk-008", "level": "medium", "area": "인사 온보딩", "description": "온보딩 일관성 부족", "impact": "낮음" },
+    { "id": "risk-009", "level": "medium", "area": "운영", "description": "승인 프로세스 병목", "impact": "낮음" },
+    { "id": "risk-010", "level": "low", "area": "디자인 QA", "description": "경미한 리뷰 지연", "impact": "낮음" }
+  ]
+}

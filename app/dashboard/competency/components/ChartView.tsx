@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect } from 'react';
 import DepartmentBarChart from './DepartmentBarChart';
-import type { ProcessedDepartmentData } from '../hooks/useDepartmentCompetency';
+import type { BarData } from '../hooks/useCompetencyFilter';
 
-export default function ChartView({ data }: { data: ProcessedDepartmentData[] }) {
+export default function ChartView({ data }: { data: BarData[] }) {
   
   useEffect(() => {
     if (!data || data.length === 0) {

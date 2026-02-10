@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CompetencyType } from "@/data/competencyRawData";
+import { CompetencyType } from '../types';
 
 // 각 역량별 스타일 정의 (바 배경색, 바 텍스트색)
 const competencyStyles: Record<CompetencyType, { bar: string; text: string; value: string; }> = {

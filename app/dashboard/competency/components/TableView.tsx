@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from 'react';
-import type { ProcessedDepartmentData } from '../hooks/useDepartmentCompetency';
+import { BarData } from '../hooks/useCompetencyFilter';
 import { competencyTypes } from '@/data/competencyRawData';
 import ScoreBarCell from './ScoreBarCell';
 import Pagination from './Pagination';
@@ -10,13 +10,13 @@ import { ArrowUpDown } from 'lucide-react';
 const ITEMS_PER_PAGE = 5;
 
 type SortConfig = {
-  key: keyof ProcessedDepartmentData | 'overallAvg';
+  key: keyof BarData;
   direction: 'asc' | 'desc';
 } | null;
 
-export default function TableView({ data }: { data: ProcessedDepartmentData[] }) {
+export default function TableView({ data }: { data: BarData[] }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'overallAvg', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'value', direction: 'desc' });
 
   const sortedData = useMemo(() => {
     let sortableData = [...data];
@@ -49,7 +49,7 @@ export default function TableView({ data }: { data: ProcessedDepartmentData[] })
     let minScore = 101;
     let maxScore = -1;
     paginatedData.forEach(row => {
-        const scores = [...competencyTypes.map(c => row[c]), row.overallAvg];
+        const scores = [...competencyTypes.map(c => row[c] ?? 0), row.value];
         scores.forEach(score => {
             if (score < minScore) minScore = score;
             if (score > maxScore) maxScore = score;
@@ -58,7 +58,7 @@ export default function TableView({ data }: { data: ProcessedDepartmentData[] })
     return { minScore, maxScore };
   }, [paginatedData]);
 
-  const requestSort = (key: keyof ProcessedDepartmentData | 'overallAvg') => {
+  const requestSort = (key: keyof BarData) => {
     if (key === 'department') {
         // Allow department sorting as well
         let direction: 'asc' | 'desc' = 'asc';
@@ -76,9 +76,9 @@ export default function TableView({ data }: { data: ProcessedDepartmentData[] })
     setCurrentPage(1);
   };
   
-  const headers: { key: keyof ProcessedDepartmentData | 'overallAvg', label: string }[] = [
+  const headers: { key: keyof BarData, label: string }[] = [
     { key: 'department', label: '부서' },
-    { key: 'overallAvg', label: '종합 평균' },
+    { key: 'value', label: '종합 평균' },
     ...competencyTypes.map(c => ({ key: c, label: c }))
   ];
 
@@ -109,17 +109,17 @@ export default function TableView({ data }: { data: ProcessedDepartmentData[] })
                 <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-800">{row.department}</td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm w-40">
                   <ScoreBarCell 
-                    score={row.overallAvg}
-                    isHighest={row.overallAvg === pageMinMax.maxScore}
-                    isLowest={row.overallAvg === pageMinMax.minScore}
+                    score={row.value}
+                    isHighest={row.value === pageMinMax.maxScore}
+                    isLowest={row.value === pageMinMax.minScore}
                   />
                 </td>
                 {competencyTypes.map(c => (
                    <td key={c} className="px-4 py-3 whitespace-nowrap text-sm w-40">
                     <ScoreBarCell 
-                      score={row[c]}
-                      isHighest={row[c] === pageMinMax.maxScore}
-                      isLowest={row[c] === pageMinMax.minScore}
+                      score={row[c] ?? 0}
+                      isHighest={(row[c] ?? 0) === pageMinMax.maxScore}
+                      isLowest={(row[c] ?? 0) === pageMinMax.minScore}
                     />
                   </td>
                 ))}

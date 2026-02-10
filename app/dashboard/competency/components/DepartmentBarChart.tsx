@@ -13,13 +13,8 @@ import {
 } from "recharts";
 import { competencyTypes, CompetencyType } from "@/data/competencyRawData";
 
+import { BarData } from "../hooks/useCompetencyFilter";
 import { CustomTooltip } from "./CustomTooltip";
-
-type BarItem = {
-  department: string;
-} & {
-  [key in CompetencyType]: number;
-};
 
 const competencyColors: Record<CompetencyType, string> = {
     "지식": "#3b82f6",
@@ -28,7 +23,7 @@ const competencyColors: Record<CompetencyType, string> = {
     "생산성": "#8b5cf6",
 };
 
-export default function DepartmentBarChart({ data }: { data: BarItem[] }) {
+export default function DepartmentBarChart({ data }: { data: BarData[] }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart

@@ -11,7 +11,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { competencyTypes, CompetencyType } from "@/data/competencyRawData";
+import { competencyTypes } from "@/data/competencyRawData";
+import { CompetencyType } from "../types";
 
 import { BarData } from "../hooks/useCompetencyFilter";
 import { CustomTooltip } from "./CustomTooltip";

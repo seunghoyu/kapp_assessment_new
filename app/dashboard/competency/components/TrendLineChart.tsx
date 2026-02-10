@@ -21,7 +21,8 @@ import {
 
 } from "recharts";
 
-import { competencyTypes, CompetencyType } from "@/data/competencyRawData";
+import { competencyTypes } from "@/data/competencyRawData";
+import { CompetencyType } from "../types";
 
 import { CustomTooltip } from "./CustomTooltip";
 

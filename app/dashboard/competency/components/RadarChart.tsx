@@ -32,15 +32,15 @@ export default function RadarChart({ data }: RadarChartProps) {
               r: {
                 min: 0,
                 max: 100,
-                stepSize: 20,
+                ticks: {
+                  stepSize: 20,
+                  backdropColor: 'transparent',
+                },
                 pointLabels: {
                   font: {
                     size: 12,
                   }
                 },
-                ticks: {
-                  backdropColor: 'transparent',
-                }
               },
             },
             plugins: {

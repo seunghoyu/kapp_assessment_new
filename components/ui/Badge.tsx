@@ -1,6 +1,6 @@
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: "blue" | "yellow" | "purple" | "gray";
+  variant?: "blue" | "yellow" | "purple" | "gray" | "destructive" | "success";
   size?: "sm" | "md";
 }
 
@@ -14,6 +14,8 @@ export default function Badge({
     yellow: "bg-yellow-100 text-yellow-700",
     purple: "bg-purple-100 text-purple-700",
     gray: "bg-gray-100 text-gray-700",
+    destructive: "bg-red-100 text-red-700",
+    success: "bg-green-100 text-green-700",
   };
 
   const sizeClasses = {

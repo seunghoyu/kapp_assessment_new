@@ -6,6 +6,7 @@ import {
   type CompetencyRecord,
 } from "@/data/competencyRawData";
 import { startOfDay, endOfDay } from "date-fns";
+import type { CompetencyType } from "../types";
 
 const DEPARTMENTS = Array.from(
   new Set(competencyRawData.map((r) => r.department))

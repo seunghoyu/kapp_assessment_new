@@ -1,4 +1,4 @@
-export type CompetencyType = "지식" | "적용" | "성과" | "생산성";
+import type { CompetencyType } from "@/app/dashboard/competency/types";
 
 export type CompetencyRecord = {
   department: string;

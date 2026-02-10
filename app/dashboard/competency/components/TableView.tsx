@@ -22,15 +22,20 @@ export default function TableView({ data }: { data: BarData[] }) {
     let sortableData = [...data];
     if (sortConfig !== null) {
       sortableData.sort((a, b) => {
-        const aVal = a[sortConfig.key];
-        const bVal = b[sortConfig.key];
+        const { key, direction } = sortConfig;
         
-        if (typeof aVal === 'number' && typeof bVal === 'number') {
-          if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-          if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-        } else if (typeof aVal === 'string' && typeof bVal === 'string') {
-          return sortConfig.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        if (key === 'department') {
+            const aVal = a.department || '';
+            const bVal = b.department || '';
+            return direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
         }
+
+        const aVal = a[key] ?? 0;
+        const bVal = b[key] ?? 0;
+
+        if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+        
         return 0;
       });
     }

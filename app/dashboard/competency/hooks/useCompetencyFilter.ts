@@ -99,21 +99,84 @@ export function useCompetencyFilter() {
   }, [filteredData, trendMode]);
 
   const summary = useMemo(() => {
-    if (barData.length === 0)
+    const skillAvg: Record<CompetencyType, number> = {
+      지식: 0,
+      적용: 0,
+      성과: 0,
+      생산성: 0,
+    };
+    const skillExtremes: Record<
+      CompetencyType,
+      { max: { dept: string; score: number }; min: { dept: string; score: number } }
+    > = {
+      지식: { max: { dept: "-", score: 0 }, min: { dept: "-", score: 0 } },
+      적용: { max: { dept: "-", score: 0 }, min: { dept: "-", score: 0 } },
+      성과: { max: { dept: "-", score: 0 }, min: { dept: "-", score: 0 } },
+      생산성: { max: { dept: "-", score: 0 }, min: { dept: "-", score: 0 } },
+    };
+
+    if (filteredData.length === 0) {
       return {
         avg: 0,
         maxDept: "-",
         minDept: "-",
+        maxDeptScore: 0,
+        minDeptScore: 0,
+        skillAvg,
+        skillExtremes,
         prevDiff: 0,
       };
-    
-    const sorted = [...barData].sort((a, b) => b.value - a.value);
-    const maxDept = sorted[0]?.department ?? "-";
-    const minDept = sorted[sorted.length - 1]?.department ?? "-";
-    const avg = Math.round(barData.reduce((acc, d) => acc + d.value, 0) / barData.length);
+    }
 
-    return { avg, maxDept, minDept, prevDiff: 0 };
-  }, [barData]);
+    const totalScore = filteredData.reduce((acc, r) => acc + r.score, 0);
+    const overallAvg = Math.round((totalScore / filteredData.length) * 10) / 10;
+
+    competencyTypes.forEach((comp) => {
+      const records = filteredData.filter((r) => r.competency === comp);
+      if (records.length > 0) {
+        const sum = records.reduce((acc, r) => acc + r.score, 0);
+        skillAvg[comp] = Math.round((sum / records.length) * 10) / 10;
+      }
+    });
+
+    let maxDept = "-";
+    let minDept = "-";
+    let maxDeptScore = 0;
+    let minDeptScore = 100;
+
+    if (barData.length > 0) {
+      const sorted = [...barData].sort((a, b) => b.value - a.value);
+      maxDept = sorted[0]?.department ?? "-";
+      minDept = sorted[sorted.length - 1]?.department ?? "-";
+      maxDeptScore = sorted[0]?.value ?? 0;
+      minDeptScore = sorted[sorted.length - 1]?.value ?? 0;
+
+      competencyTypes.forEach((comp) => {
+        const withScore = barData
+          .map((d) => ({ dept: d.department, score: d[comp] ?? 0 }))
+          .filter((x) => x.score > 0);
+        if (withScore.length > 0) {
+          const maxEntry = withScore.reduce((a, b) => (a.score >= b.score ? a : b));
+          const minEntry = withScore.reduce((a, b) => (a.score <= b.score ? a : b));
+          skillExtremes[comp] = {
+            max: { dept: maxEntry.dept, score: maxEntry.score },
+            min: { dept: minEntry.dept, score: minEntry.score },
+          };
+        }
+      });
+    }
+
+    return {
+      avg: overallAvg,
+      maxDept,
+      minDept,
+      maxDeptScore,
+      minDeptScore,
+      skillAvg,
+      skillExtremes,
+      prevDiff: 0,
+    };
+  }, [barData, filteredData]);
 
   const reset = () => {
     setSelectedDepartments(DEPARTMENTS);
@@ -136,6 +199,7 @@ export function useCompetencyFilter() {
     barData,
     trendData,
     summary,
+    filteredData,
     reset,
   };
 }

@@ -8,10 +8,12 @@ import FilterBar from "./components/FilterBar";
 import SummaryKpiRow from "./components/SummaryKpiRow";
 import DepartmentCompetency from "./components/DepartmentCompetency";
 import TrendLineChart from "./components/TrendLineChart";
+import HighPerformerSection from "./sections/HighPerformerSection";
+import ROICalculatorSection from "./sections/ROICalculatorSection";
 import Button from "@/components/ui/Button";
 import { useState } from "react";
 
-type Tab = "overview" | "gapRisk" | "strategy";
+type Tab = "overview" | "strategy";
 
 export default function CompetencyAnalysisPage() {
   const filter = useCompetencyFilter();
@@ -19,7 +21,6 @@ export default function CompetencyAnalysisPage() {
 
   const TABS: { id: Tab; label: string }[] = [
     { id: "overview", label: "현황 & 비교" },
-    { id: "gapRisk", label: "격차 & 리스크" },
     { id: "strategy", label: "전략 & 성과" },
   ];
 
@@ -47,14 +48,17 @@ export default function CompetencyAnalysisPage() {
         actions={tabActions}
       />
       <main className="flex-1 overflow-y-auto bg-[#fdfdfd] w-full">
-        <FilterBar
-          selectedDepartments={filter.selectedDepartments}
-          setSelectedDepartments={filter.setSelectedDepartments}
-          dateRange={filter.dateRange}
-          setDateRange={filter.setDateRange}
-          departments={filter.departments}
-          onReset={filter.reset}
-        />
+        {activeTab === "overview" && (
+          <FilterBar
+            selectedDepartments={filter.selectedDepartments}
+            setSelectedDepartments={filter.setSelectedDepartments}
+            dateRange={filter.dateRange}
+            setDateRange={filter.setDateRange}
+            departments={filter.departments}
+            filteredData={filter.filteredData}
+            onReset={filter.reset}
+          />
+        )}
         <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
           {activeTab === 'overview' && (
             <>
@@ -64,6 +68,10 @@ export default function CompetencyAnalysisPage() {
                   avg={filter.summary.avg}
                   maxDept={filter.summary.maxDept}
                   minDept={filter.summary.minDept}
+                  maxDeptScore={filter.summary.maxDeptScore}
+                  minDeptScore={filter.summary.minDeptScore}
+                  skillAvg={filter.summary.skillAvg}
+                  skillExtremes={filter.summary.skillExtremes}
                 />
               </section>
 
@@ -90,15 +98,11 @@ export default function CompetencyAnalysisPage() {
               </section>
             </>
           )}
-          {activeTab === 'gapRisk' && (
-            <div className="text-center py-20">
-              <p className="text-gray-500">격차 & 리스크 탭 콘텐츠 준비중입니다.</p>
-            </div>
-          )}
-          {activeTab === 'strategy' && (
-            <div className="text-center py-20">
-              <p className="text-gray-500">전략 & 성과 탭 콘텐츠 준비중입니다.</p>
-            </div>
+          {activeTab === "strategy" && (
+            <>
+              <ROICalculatorSection />
+              <HighPerformerSection />
+            </>
           )}
         </div>
       </main>

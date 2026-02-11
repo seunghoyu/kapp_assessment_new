@@ -38,6 +38,9 @@ export default function LoginPage() {
           <p className="text-sm text-gray-500 text-center">
             계정 정보를 입력해 주세요
           </p>
+          <p className="text-xs text-gray-400 text-center">
+            NEXT GEN Solution 관리자 LMS입니다.
+          </p>
         </div>
 
         {/* Login Card */}

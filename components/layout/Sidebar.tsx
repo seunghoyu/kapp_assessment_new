@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/ui/Icon";
+import Image from "next/image";
 
 interface SidebarItem {
   icon: keyof typeof import("@/components/ui/Icon").Icons;
@@ -80,11 +81,16 @@ export default function Sidebar() {
 
   return (
     <aside className={`flex flex-shrink-0 flex-col border-r border-gray-200 bg-white transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-56'}`}>
-      <div className="border-b border-gray-200 px-4 py-4 flex items-center justify-between">
+      <div className="border-b border-gray-200 h-16 px-4 flex items-center justify-between">
         {!isCollapsed && (
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-gray-900">Kapp</span>
-            <span className="text-sm text-gray-500">Assessment</span>
+          <Link href="/dashboard" className="relative w-full h-full flex items-center justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Kapp Assessment Logo"
+              fill // Use fill prop
+              className="object-contain" // Keep object-contain
+              priority
+            />
           </Link>
         )}
         <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-1 rounded-md hover:bg-gray-100 text-gray-500">

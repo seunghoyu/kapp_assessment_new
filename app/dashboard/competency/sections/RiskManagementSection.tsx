@@ -169,8 +169,9 @@ export default function RiskManagementSection() {
                                     <div
                                       key={s.skillName}
                                       className="flex items-baseline justify-between gap-1 text-sm leading-snug"
+                                      title={`${s.skillName} ${s.score}점`}
                                     >
-                                      <span className="truncate min-w-0 font-medium" title={`${s.skillName} ${s.score}점`}>
+                                      <span className="truncate min-w-0 font-medium">
                                         {s.skillName}
                                       </span>
                                       <span className="font-bold shrink-0 tabular-nums">{s.score}</span>
@@ -189,7 +190,8 @@ export default function RiskManagementSection() {
                                             key={s.skillName}
                                             type="button"
                                             onClick={() => assignTraining(deptKey, s.skillName)}
-                                            className="text-xs font-medium underline opacity-90 hover:opacity-100"
+                                            className="text-xs font-medium underline opacity-90 hover:opacity-100 truncate max-w-full text-left"
+                                            title={`${s.skillName} - 교육 배정`}
                                           >
                                             {s.skillName}
                                           </button>

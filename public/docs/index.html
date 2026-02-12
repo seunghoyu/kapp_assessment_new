@@ -23,13 +23,17 @@
       display: flex;
       min-height: 100vh;
     }
-    /* 사이드바 – Wikidocs 느낌 */
+    /* 사이드바 – 스크롤 시 고정, 목록 유지 */
     .sidebar {
       width: 260px;
       flex-shrink: 0;
+      align-self: flex-start;
+      position: sticky;
+      top: 0;
+      max-height: 100vh;
+      overflow-y: auto;
       background: #fff;
       border-right: 1px solid #e2e8f0;
-      overflow-y: auto;
       padding: 1rem 0;
     }
     .sidebar-title {
@@ -173,9 +177,11 @@
         <li><a href="#" data-file="06_implementation_status_and_guide_new.md">06 구현 현황 및 가이드</a></li>
         <li><a href="#" data-file="07_data_reference_integration_new.md">07 데이터 참조 및 연동</a></li>
         <li><a href="#" data-file="08_employee_management_and_kapp_self_assessment_new.md">08 임직원 관리 및 KAPP 자가진단</a></li>
+        <li><a href="#" data-file="09_competency_risk_integration_plan.md">09 역량·리스크 통합 진행방향</a></li>
         <li><a href="#" data-file="KAPP_DIAGNOSIS_DATA_REFERENCE.md">KAPP 진단 데이터 안내</a></li>
         <li><a href="#" data-file="KAPP_DIAGNOSIS_QUESTION_LOGIC.md">KAPP 진단 문항 구성 로직</a></li>
         <li><a href="#" data-file="MIGRATION_PLAN_ORIGIN_TO_NEW.md">마이그레이션 계획 (Origin → New)</a></li>
+        <li><a href="#" data-file="ROUTE_ENTRY_REVIEW.md">ROUTE ENTRY REVIEW</a></li>
       </ul>
     </aside>
     <main class="main">
@@ -188,7 +194,7 @@
   </div>
   <script>
     (function() {
-      var docs = [ '01_project_brief_product_new.md', '02_project_brief_frontend_new.md', '03_project_brief_backend_new.md', '04_project_brief_marketer_new.md', '05_project_brief_data_analyst_new.md', '06_implementation_status_and_guide_new.md', '07_data_reference_integration_new.md', '08_employee_management_and_kapp_self_assessment_new.md', 'KAPP_DIAGNOSIS_DATA_REFERENCE.md', 'KAPP_DIAGNOSIS_QUESTION_LOGIC.md', 'MIGRATION_PLAN_ORIGIN_TO_NEW.md' ];
+      var docs = [ '01_project_brief_product_new.md', '02_project_brief_frontend_new.md', '03_project_brief_backend_new.md', '04_project_brief_marketer_new.md', '05_project_brief_data_analyst_new.md', '06_implementation_status_and_guide_new.md', '07_data_reference_integration_new.md', '08_employee_management_and_kapp_self_assessment_new.md', '09_competency_risk_integration_plan.md', 'KAPP_DIAGNOSIS_DATA_REFERENCE.md', 'KAPP_DIAGNOSIS_QUESTION_LOGIC.md', 'MIGRATION_PLAN_ORIGIN_TO_NEW.md', 'ROUTE_ENTRY_REVIEW.md' ];
       var content = document.getElementById('content');
       var links = document.querySelectorAll('.sidebar a[data-file]');
 

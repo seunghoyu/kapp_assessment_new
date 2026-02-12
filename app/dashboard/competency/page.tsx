@@ -11,10 +11,11 @@ import TrendLineChart from "./components/TrendLineChart";
 import HighPerformerSection from "./sections/HighPerformerSection";
 import ROICalculatorSection from "./sections/ROICalculatorSection";
 import BenchmarkSection from "./sections/BenchmarkSection";
+import RiskManagementSection from "./sections/RiskManagementSection";
 import Button from "@/components/ui/Button";
 import { useState } from "react";
 
-type Tab = "overview" | "strategy";
+type Tab = "overview" | "strategy" | "risk";
 
 export default function CompetencyAnalysisPage() {
   const filter = useCompetencyFilter();
@@ -23,6 +24,7 @@ export default function CompetencyAnalysisPage() {
   const TABS: { id: Tab; label: string }[] = [
     { id: "overview", label: "현황 & 비교" },
     { id: "strategy", label: "전략 & 성과" },
+    { id: "risk", label: "리스크 관리" },
   ];
 
   const tabActions = (
@@ -111,6 +113,9 @@ export default function CompetencyAnalysisPage() {
                 <BenchmarkSection />
               </section>
             </>
+          )}
+          {activeTab === "risk" && (
+            <RiskManagementSection />
           )}
         </div>
       </main>

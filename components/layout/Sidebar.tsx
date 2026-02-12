@@ -33,7 +33,6 @@ const mainSections: SidebarGroup = {
     { icon: "users", label: "직원 관리", href: "/dashboard/employees" },
     { icon: "analytics", label: "분석/리포트", href: "/dashboard/analytics" },
     { icon: "programs", label: "교육 프로그램", href: "/dashboard/programs" },
-    { icon: "insights", label: "AI 인사이트", href: "/dashboard/insights" },
   ],
 };
 
@@ -80,7 +79,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className={`flex flex-shrink-0 flex-col border-r border-gray-200 bg-white transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-56'}`}>
+    <aside className={`flex flex-shrink-0 flex-col border-r border-gray-200 bg-white transition-all duration-300 sticky top-0 self-start h-screen ${isCollapsed ? 'w-16' : 'w-56'}`}>
       <div className="border-b border-gray-200 h-16 px-4 flex items-center justify-between">
         {!isCollapsed && (
           <Link href="/dashboard" className="relative w-full h-full flex items-center justify-center">

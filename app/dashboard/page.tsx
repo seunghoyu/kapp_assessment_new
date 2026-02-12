@@ -7,7 +7,6 @@ import Badge from "@/components/ui/Badge";
 import Icon from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
 import Toast, { type ToastType } from "@/components/ui/Toast";
-import ProgressSection from "./sections/ProgressSection";
 import EmployeeSection from "./sections/EmployeeSection";
 import strategyMapper from "@/data/strategyMapper.json";
 
@@ -222,11 +221,6 @@ export default function DashboardPage() {
                 )}
               </CardContent>
             </Card>
-          </section>
-
-          {/* 역량 개발 진행 현황 (origin: progress-section) */}
-          <section className="mb-12">
-            <ProgressSection />
           </section>
 
           {/* 개요 카드: 진행현황 / 이번 달 요약 */}

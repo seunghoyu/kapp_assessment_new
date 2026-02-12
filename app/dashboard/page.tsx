@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Header from "@/components/layout/Header";
 import Card, { CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import Icon from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
-import BenchmarkSection from "./competency/sections/BenchmarkSection";
+import Toast, { type ToastType } from "@/components/ui/Toast";
+import ProgressSection from "./sections/ProgressSection";
+import EmployeeSection from "./sections/EmployeeSection";
 import strategyMapper from "@/data/strategyMapper.json";
 
 // origin(admin-advanced.js)과 동일: 추천 인력 후보 5명
@@ -36,6 +38,10 @@ const ROADMAP_PHASES = [
 export default function DashboardPage() {
   const [draft, setDraft] = useState("");
   const [submittedKeyword, setSubmittedKeyword] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+  const onNotify = useCallback((message: string, type: ToastType = "info") => {
+    setToast({ message, type });
+  }, []);
 
   const placeholder = strategyMapper.inputPlaceholder ?? "예: AI 전환, 신규 해외 시장 진출, 디지털 마케팅 강화";
 
@@ -67,7 +73,7 @@ export default function DashboardPage() {
       <main className="flex-1 overflow-y-auto bg-[#fdfdfd] w-full">
         <div className="w-full p-4 sm:p-6 lg:p-8">
           {/* 조직 전략-스킬 자동 매핑 (origin과 동일 구조) */}
-          <div className="mb-6">
+          <section className="mb-12">
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
@@ -216,9 +222,15 @@ export default function DashboardPage() {
                 )}
               </CardContent>
             </Card>
-          </div>
+          </section>
 
-          {/* 개요 카드 4개: 진행현황 / 이번 달 요약 / 주요 성과 / 다음 액션 */}
+          {/* 역량 개발 진행 현황 (origin: progress-section) */}
+          <section className="mb-12">
+            <ProgressSection />
+          </section>
+
+          {/* 개요 카드: 진행현황 / 이번 달 요약 */}
+          <section className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* 진행현황 */}
             <Card hover>
@@ -353,11 +365,19 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
-          <div className="mt-6">
-            <BenchmarkSection />
-          </div>
+          </section>
+
+          {/* 임직원 역량 현황 (origin: employee-section) */}
+          <section>
+            <EmployeeSection onNotify={onNotify} />
+          </section>
         </div>
       </main>
+      <Toast
+        message={toast?.message ?? null}
+        type={toast?.type ?? "info"}
+        onDismiss={() => setToast(null)}
+      />
     </>
   );
 }

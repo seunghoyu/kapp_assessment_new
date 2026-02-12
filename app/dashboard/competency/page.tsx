@@ -10,6 +10,7 @@ import DepartmentCompetency from "./components/DepartmentCompetency";
 import TrendLineChart from "./components/TrendLineChart";
 import HighPerformerSection from "./sections/HighPerformerSection";
 import ROICalculatorSection from "./sections/ROICalculatorSection";
+import BenchmarkSection from "./sections/BenchmarkSection";
 import Button from "@/components/ui/Button";
 import { useState } from "react";
 
@@ -59,10 +60,10 @@ export default function CompetencyAnalysisPage() {
             onReset={filter.reset}
           />
         )}
-        <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
+        <div className="w-full p-4 sm:p-6 lg:p-8">
           {activeTab === 'overview' && (
             <>
-              <section>
+              <section className="mb-12">
                 <h2 className="sr-only">요약 KPI</h2>
                 <SummaryKpiRow
                   avg={filter.summary.avg}
@@ -75,7 +76,7 @@ export default function CompetencyAnalysisPage() {
                 />
               </section>
 
-              <section>
+              <section className="mb-12">
                 <DepartmentCompetency 
                   data={filter.barData} 
                   dateRange={filter.dateRange}
@@ -100,8 +101,15 @@ export default function CompetencyAnalysisPage() {
           )}
           {activeTab === "strategy" && (
             <>
-              <ROICalculatorSection />
-              <HighPerformerSection />
+              <section className="mb-12">
+                <ROICalculatorSection />
+              </section>
+              <section className="mb-12">
+                <HighPerformerSection />
+              </section>
+              <section>
+                <BenchmarkSection />
+              </section>
             </>
           )}
         </div>

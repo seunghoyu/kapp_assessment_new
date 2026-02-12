@@ -92,7 +92,7 @@ export default function HighPerformerSection() {
           <div className="flex items-center gap-2">
             <Icon name="insights" size={20} className="text-blue-600" />
             <CardTitle className="text-gray-900 text-base font-semibold">
-              상위 성과자 vs 팀 역량 비교
+              팀별 상위 성과자와 팀 역량 비교
             </CardTitle>
           </div>
           <p className="text-gray-500 text-sm mt-1">

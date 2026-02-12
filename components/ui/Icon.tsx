@@ -24,6 +24,9 @@ import {
   Download,
   Filter,
   MoreVertical,
+  ListTodo,
+  UserPlus,
+  Eye,
 } from "lucide-react";
 
 export const Icons = {
@@ -51,6 +54,9 @@ export const Icons = {
   download: Download,
   filter: Filter,
   more: MoreVertical,
+  tasks: ListTodo,
+  userPlus: UserPlus,
+  eye: Eye,
 };
 
 interface IconProps {

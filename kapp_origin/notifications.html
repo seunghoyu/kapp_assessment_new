@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알림 & 설정 - 해커스 캠퍼스 Business NEXT GEN Solution</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>해커스 캠퍼스 Business</h2>
+                <span class="nav-subtitle">NEXT GEN Solution</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">홈</a>
+                <a href="assessment-kapp.html" class="nav-link">🎯 KAPP 진단</a>
+                <a href="dashboard-kapp.html" class="nav-link">마이 대시보드</a>
+                <a href="education.html" class="nav-link">교육 큐레이션</a>
+                <a href="my-growth.html" class="nav-link">🌱 나의 성장</a>
+                <a href="admin.html" class="nav-link">관리자</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="notifications-header">
+        <div class="container">
+            <div class="header-content">
+                <h1><i class="fas fa-bell"></i> 알림 & 설정</h1>
+                <p>학습 알림을 받고 진도를 추적하세요</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="notifications-content">
+        <div class="container">
+
+            <!-- 1. Notification Settings -->
+            <section class="feature-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-bell-slash"></i> 알림 설정</h2>
+                    <p class="section-desc">푸시 알림과 이메일로 학습을 놓치지 마세요</p>
+                </div>
+
+                <!-- Push Notification Request -->
+                <div class="notification-request" id="pushNotificationRequest">
+                    <div class="request-icon">🔔</div>
+                    <div class="request-content">
+                        <h3>푸시 알림을 켜시겠어요?</h3>
+                        <p>매일 아침 9시에 오늘의 팁을 받아보세요. 연속 학습 기록을 유지하는 데 도움이 됩니다!</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="requestPushPermission()">
+                        <i class="fas fa-bell"></i> 알림 켜기
+                    </button>
+                </div>
+
+                <!-- Notification Settings Grid -->
+                <div class="settings-grid">
+                    <!-- Daily Tips -->
+                    <div class="setting-card">
+                        <div class="setting-icon">⚡</div>
+                        <div class="setting-info">
+                            <h4>오늘의 1% 효율 팁</h4>
+                            <p>매일 아침 9시에 업무 효율 팁을 받습니다</p>
+                        </div>
+                        <div class="setting-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="dailyTips" checked onchange="updateNotificationSettings('dailyTips')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Streak Alert -->
+                    <div class="setting-card">
+                        <div class="setting-icon">🔥</div>
+                        <div class="setting-info">
+                            <h4>연속 학습 알림</h4>
+                            <p>연속 기록이 끊어질 위험이 있을 때 알림을 보냅니다</p>
+                        </div>
+                        <div class="setting-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="streakAlert" checked onchange="updateNotificationSettings('streakAlert')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Learning Path -->
+                    <div class="setting-card">
+                        <div class="setting-icon">📚</div>
+                        <div class="setting-info">
+                            <h4>학습 경로 추천</h4>
+                            <p>새로운 맞춤 강의가 추천되면 알림을 보냅니다</p>
+                        </div>
+                        <div class="setting-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="learningPath" checked onchange="updateNotificationSettings('learningPath')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Achievement -->
+                    <div class="setting-card">
+                        <div class="setting-icon">🏆</div>
+                        <div class="setting-info">
+                            <h4>업적 달성</h4>
+                            <p>새로운 뱃지를 획득하거나 목표를 달성하면 알림을 보냅니다</p>
+                        </div>
+                        <div class="setting-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="achievement" checked onchange="updateNotificationSettings('achievement')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Email Digest -->
+                    <div class="setting-card">
+                        <div class="setting-icon">📧</div>
+                        <div class="setting-info">
+                            <h4>주간 요약 이메일</h4>
+                            <p>매주 월요일 오전에 지난주 학습 요약을 이메일로 받습니다</p>
+                        </div>
+                        <div class="setting-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="emailDigest" checked onchange="updateNotificationSettings('emailDigest')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- AI Mentor -->
+                    <div class="setting-card">
+                        <div class="setting-icon">🤖</div>
+                        <div class="setting-info">
+                            <h4>AI 멘토 메시지</h4>
+                            <p>AI가 분석한 인사이트와 조언을 받습니다</p>
+                        </div>
+                        <div class="setting-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="aiMentor" checked onchange="updateNotificationSettings('aiMentor')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Settings -->
+                <div class="email-settings">
+                    <h3><i class="fas fa-envelope"></i> 이메일 주소</h3>
+                    <div class="email-input-group">
+                        <input type="email" id="emailAddress" placeholder="your@email.com" 
+                               value="" class="email-input" />
+                        <button class="btn btn-secondary" onclick="updateEmail()">
+                            <i class="fas fa-save"></i> 저장
+                        </button>
+                    </div>
+                    <p class="email-note">알림을 받을 이메일 주소를 입력하세요</p>
+                </div>
+
+                <!-- Notification Schedule -->
+                <div class="schedule-settings">
+                    <h3><i class="fas fa-clock"></i> 알림 시간 설정</h3>
+                    <div class="schedule-grid">
+                        <div class="schedule-item">
+                            <label>오늘의 팁</label>
+                            <select class="time-select" id="dailyTipTime" onchange="updateSchedule('dailyTip')">
+                                <option value="07:00">오전 7시</option>
+                                <option value="08:00">오전 8시</option>
+                                <option value="09:00" selected>오전 9시</option>
+                                <option value="10:00">오전 10시</option>
+                                <option value="11:00">오전 11시</option>
+                            </select>
+                        </div>
+                        <div class="schedule-item">
+                            <label>주간 리포트</label>
+                            <select class="time-select" id="weeklyReportDay" onchange="updateSchedule('weeklyReport')">
+                                <option value="monday" selected>월요일 오전</option>
+                                <option value="tuesday">화요일 오전</option>
+                                <option value="wednesday">수요일 오전</option>
+                                <option value="thursday">목요일 오전</option>
+                                <option value="friday">금요일 오전</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Learning Progress Tracker -->
+            <section class="feature-section">
+                <div class="section-header">
+                    <div class="header-left">
+                        <h2><i class="fas fa-chart-line"></i> 학습 진도 추적</h2>
+                        <p class="section-desc">일일/주간/월간 학습 현황을 한눈에</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-ghost" onclick="changeReportPeriod('daily')">
+                            <i class="fas fa-calendar-day"></i> 일간
+                        </button>
+                        <button class="btn btn-ghost active" onclick="changeReportPeriod('weekly')">
+                            <i class="fas fa-calendar-week"></i> 주간
+                        </button>
+                        <button class="btn btn-ghost" onclick="changeReportPeriod('monthly')">
+                            <i class="fas fa-calendar-alt"></i> 월간
+                        </button>
+                        <button class="btn btn-primary" onclick="downloadReport()">
+                            <i class="fas fa-download"></i> 리포트 다운로드
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Overview -->
+                <div class="progress-overview">
+                    <div class="overview-card">
+                        <div class="card-icon" style="background: rgba(102, 126, 234, 0.1); color: #667eea;">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>연속 학습</h3>
+                            <p class="stat-value"><span id="currentStreak">7</span>일</p>
+                            <p class="stat-change positive">최고 기록: <span id="maxStreak">14</span>일</p>
+                        </div>
+                    </div>
+
+                    <div class="overview-card">
+                        <div class="card-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>완료한 팁</h3>
+                            <p class="stat-value"><span id="completedTips">23</span>개</p>
+                            <p class="stat-change positive">이번 주: <span id="weeklyTips">7</span>개</p>
+                        </div>
+                    </div>
+
+                    <div class="overview-card">
+                        <div class="card-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>학습 시간</h3>
+                            <p class="stat-value"><span id="totalTime">145</span>분</p>
+                            <p class="stat-change positive">일평균: <span id="avgTime">21</span>분</p>
+                        </div>
+                    </div>
+
+                    <div class="overview-card">
+                        <div class="card-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>획득 뱃지</h3>
+                            <p class="stat-value"><span id="totalBadges">5</span>개</p>
+                            <p class="stat-change">전체: 12개</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Chart -->
+                <div class="progress-chart-section">
+                    <h3>주간 학습 활동</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="weeklyActivityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Category Progress -->
+                <div class="category-progress">
+                    <h3>카테고리별 진도</h3>
+                    <div class="category-list">
+                        <div class="category-item">
+                            <div class="category-header">
+                                <span class="category-name">⚡ 생산성</span>
+                                <span class="category-percentage">70%</span>
+                            </div>
+                            <div class="category-bar">
+                                <div class="category-fill" style="width: 70%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                            </div>
+                            <p class="category-detail">7/10 팁 완료</p>
+                        </div>
+
+                        <div class="category-item">
+                            <div class="category-header">
+                                <span class="category-name">💬 커뮤니케이션</span>
+                                <span class="category-percentage">50%</span>
+                            </div>
+                            <div class="category-bar">
+                                <div class="category-fill" style="width: 50%; background: linear-gradient(135deg, #10b981 0%, #059669 100%);"></div>
+                            </div>
+                            <p class="category-detail">3/6 팁 완료</p>
+                        </div>
+
+                        <div class="category-item">
+                            <div class="category-header">
+                                <span class="category-name">🤖 AI 활용</span>
+                                <span class="category-percentage">40%</span>
+                            </div>
+                            <div class="category-bar">
+                                <div class="category-fill" style="width: 40%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);"></div>
+                            </div>
+                            <p class="category-detail">2/5 팁 완료</p>
+                        </div>
+
+                        <div class="category-item">
+                            <div class="category-header">
+                                <span class="category-name">📊 엑셀</span>
+                                <span class="category-percentage">60%</span>
+                            </div>
+                            <div class="category-bar">
+                                <div class="category-fill" style="width: 60%; background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);"></div>
+                            </div>
+                            <p class="category-detail">3/5 팁 완료</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Insights -->
+                <div class="learning-insights">
+                    <h3><i class="fas fa-lightbulb"></i> AI 학습 인사이트</h3>
+                    <div class="insights-grid">
+                        <div class="insight-card success">
+                            <div class="insight-icon">📈</div>
+                            <div class="insight-content">
+                                <h4>꾸준한 성장!</h4>
+                                <p>지난주 대비 학습 시간이 35% 증가했습니다. 이 페이스를 유지하면 한 달 안에 모든 카테고리를 완료할 수 있어요!</p>
+                            </div>
+                        </div>
+
+                        <div class="insight-card warning">
+                            <div class="insight-icon">⚠️</div>
+                            <div class="insight-content">
+                                <h4>AI 활용 팁 추천</h4>
+                                <p>AI 활용 카테고리가 40%로 다른 영역보다 낮습니다. ChatGPT 활용 팁을 더 학습해보세요!</p>
+                            </div>
+                        </div>
+
+                        <div class="insight-card info">
+                            <div class="insight-icon">🎯</div>
+                            <div class="insight-content">
+                                <h4>다음 마일스톤</h4>
+                                <p>30일 연속 학습 뱃지까지 23일 남았습니다. 매일 팁을 완료하면 획득 가능합니다!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Advanced AI Mentor -->
+            <section class="feature-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-microphone"></i> 고급 AI 멘토링</h2>
+                    <p class="section-desc">음성 대화와 비디오 아바타로 실감나는 코칭</p>
+                </div>
+
+                <!-- Feature Toggle -->
+                <div class="mentor-mode-selector">
+                    <button class="mode-btn active" onclick="selectMentorMode('text')" id="modeText">
+                        <i class="fas fa-comment"></i> 텍스트
+                    </button>
+                    <button class="mode-btn" onclick="selectMentorMode('voice')" id="modeVoice">
+                        <i class="fas fa-microphone"></i> 음성
+                    </button>
+                    <button class="mode-btn" onclick="selectMentorMode('video')" id="modeVideo">
+                        <i class="fas fa-video"></i> 비디오
+                    </button>
+                </div>
+
+                <!-- Text Mode (default) -->
+                <div class="mentor-interface" id="mentorText" style="display: block;">
+                    <div class="text-mentor-info">
+                        <p>기본 텍스트 채팅 모드입니다. "나의 성장" 페이지에서 AI 멘토와 대화하세요.</p>
+                        <a href="my-growth.html#ai-mentor" class="btn btn-primary">
+                            <i class="fas fa-comments"></i> AI 멘토링 시작
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Voice Mode -->
+                <div class="mentor-interface" id="mentorVoice" style="display: none;">
+                    <div class="voice-mentor-container">
+                        <div class="voice-avatar">
+                            <div class="avatar-circle" id="voiceAvatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="voice-indicator" id="voiceIndicator">
+                                <div class="wave"></div>
+                                <div class="wave"></div>
+                                <div class="wave"></div>
+                            </div>
+                        </div>
+                        <div class="voice-controls">
+                            <button class="btn-voice" id="voiceBtn" onclick="toggleVoice()">
+                                <i class="fas fa-microphone"></i>
+                                <span>눌러서 말하기</span>
+                            </button>
+                            <p class="voice-status" id="voiceStatus">준비됨</p>
+                        </div>
+                        <div class="voice-transcript" id="voiceTranscript">
+                            <p class="transcript-placeholder">마이크 버튼을 누르고 질문해보세요</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Mode -->
+                <div class="mentor-interface" id="mentorVideo" style="display: none;">
+                    <div class="video-mentor-container">
+                        <div class="video-screen">
+                            <video id="mentorVideo" width="100%" height="400" poster="https://via.placeholder.com/800x400/667eea/ffffff?text=AI+Mentor" controls>
+                                <source src="#" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-overlay" id="videoOverlay">
+                                <div class="mentor-avatar-large">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <h3>AI 멘토 비디오</h3>
+                                <p>곧 제공될 예정입니다</p>
+                            </div>
+                        </div>
+                        <div class="video-controls">
+                            <button class="btn btn-primary" onclick="startVideoSession()">
+                                <i class="fas fa-play"></i> 세션 시작
+                            </button>
+                            <button class="btn btn-secondary" onclick="selectMentorQuestion('career')">
+                                <i class="fas fa-briefcase"></i> 커리어 질문
+                            </button>
+                            <button class="btn btn-secondary" onclick="selectMentorQuestion('skill')">
+                                <i class="fas fa-graduation-cap"></i> 스킬 질문
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice/Video Features Info -->
+                <div class="advanced-features-info">
+                    <h3>🎙️ 음성/비디오 멘토링 기능</h3>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <i class="fas fa-microphone-alt"></i>
+                            <h4>자연어 인식</h4>
+                            <p>복잡한 질문도 자연스럽게 이해합니다</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-language"></i>
+                            <h4>다국어 지원</h4>
+                            <p>한국어, 영어, 일본어 등 20개 언어</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-user-tie"></i>
+                            <h4>실감나는 아바타</h4>
+                            <p>표정과 제스처로 공감하는 AI</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-brain"></i>
+                            <h4>컨텍스트 이해</h4>
+                            <p>이전 대화를 기억하고 이어갑니다</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/notifications.js"></script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAPP 역량 진단 - 해커스 캠퍼스 Business NEXT GEN Solution</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/assessment.css">
+    <link rel="stylesheet" href="css/kapp-assessment.css">
+    <link rel="stylesheet" href="css/kapp-questions-enhanced.css">
+    <link rel="stylesheet" href="css/ai-workflow.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>해커스 캠퍼스 Business</h2>
+                <span class="nav-subtitle">NEXT GEN Solution</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">홈</a>
+                <a href="assessment-kapp.html" class="nav-link active">KAPP 진단</a>
+                <a href="dashboard-kapp.html" class="nav-link">마이 대시보드</a>
+                <a href="education.html" class="nav-link">교육 큐레이션</a>
+                <a href="my-growth.html" class="nav-link">🌱 나의 성장</a>
+                <a href="admin.html" class="nav-link">관리자</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Assessment Header -->
+    <section class="assessment-header">
+        <div class="container">
+            <h1><i class="fas fa-brain"></i> KAPP 지능형 역량 진단</h1>
+            <p>Knowledge · Application · Performance · Productivity 기반 적응형 진단</p>
+            <div class="kapp-badges">
+                <span class="kapp-badge"><i class="fas fa-book"></i> 지식(K)</span>
+                <span class="kapp-badge"><i class="fas fa-cogs"></i> 적용(A)</span>
+                <span class="kapp-badge"><i class="fas fa-chart-line"></i> 성과(P)</span>
+                <span class="kapp-badge"><i class="fas fa-bolt"></i> 생산성(P)</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assessment Container -->
+    <div class="assessment-container">
+        <div class="container">
+            <!-- Progress Bar -->
+            <div class="progress-section">
+                <div class="progress-info">
+                    <span class="progress-text">진행률: <span id="progressPercent">0</span>%</span>
+                    <span class="progress-text">단계: <span id="currentStep">정보 입력</span></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Step 1: Enhanced User Info -->
+            <div id="userInfoScreen" class="assessment-screen active">
+                <div class="start-card">
+                    <div class="start-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h2>맞춤형 역량 진단을 위한 정보 입력</h2>
+                    <p>귀하의 상황에 최적화된 진단 문항을 제공하기 위해 다음 정보를 입력해주세요</p>
+                    
+                    <form id="userInfoForm" class="user-form-kapp">
+                        <!-- Basic Info -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-user"></i> 기본 정보</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>이름 *</label>
+                                    <input type="text" id="userName" required placeholder="홍길동">
+                                </div>
+                                <div class="form-group">
+                                    <label>이메일</label>
+                                    <input type="email" id="userEmail" placeholder="example@company.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Industry & Job -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-industry"></i> 산업 및 직무</h3>
+                            <div class="form-group">
+                                <label>산업군 *</label>
+                                <select id="userIndustry" required>
+                                    <option value="">선택해주세요</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>세부 직무 *</label>
+                                <select id="userJob" required>
+                                    <option value="">먼저 산업군을 선택해주세요</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Position & Experience -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-briefcase"></i> 경력 정보</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>직급 *</label>
+                                    <select id="userPosition" required>
+                                        <option value="">선택해주세요</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>연차 *</label>
+                                    <select id="userExperience" required>
+                                        <option value="">선택해주세요</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Company Info -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-building"></i> 조직 정보</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>회사명 (선택)</label>
+                                    <input type="text" id="userCompany" placeholder="회사명을 입력하세요">
+                                </div>
+                                <div class="form-group">
+                                    <label>기업 규모 *</label>
+                                    <select id="userCompanySize" required>
+                                        <option value="">선택해주세요</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Diagnostic Goals -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-target"></i> 진단 목표 (선택)</h3>
+                            <div class="form-group">
+                                <label>진단을 통해 달성하고자 하는 목표가 있다면 선택해주세요</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="goal" value="승진"> 승진 준비
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="goal" value="이직"> 이직/전직 준비
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="goal" value="스킬업"> 직무 스킬 향상
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="goal" value="커리어전환"> 커리어 전환
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-notice">
+                            <i class="fas fa-info-circle"></i>
+                            <p>입력하신 정보는 맞춤형 진단에만 활용되며, 암호화되어 안전하게 보호됩니다.</p>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg btn-full">
+                            <i class="fas fa-arrow-right"></i> 진단 시작하기
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Step 2: KAPP Assessment -->
+            <div id="kappAssessmentScreen" class="assessment-screen">
+                <div class="kapp-assessment-card">
+                    <!-- Current Category Badge -->
+                    <div class="category-indicator">
+                        <span class="category-icon" id="categoryIcon"></span>
+                        <div class="category-info">
+                            <h4 id="categoryTitle"></h4>
+                            <p id="categoryDescription"></p>
+                        </div>
+                    </div>
+
+                    <!-- Question Content -->
+                    <div class="question-content">
+                        <div class="question-meta">
+                            <span class="question-number">질문 <span id="currentQuestionNum">1</span></span>
+                            <span class="difficulty-badge" id="difficultyBadge">난이도: 중</span>
+                        </div>
+                        
+                        <h2 id="questionText" class="question-title"></h2>
+                        <div id="questionScenario" class="question-scenario"></div>
+                        
+                        <div id="answerOptions" class="answer-options-kapp"></div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="question-navigation">
+                        <button id="prevBtn" class="btn btn-secondary" style="display: none;">
+                            <i class="fas fa-arrow-left"></i> 이전
+                        </button>
+                        <div class="nav-info">
+                            <span id="adaptiveInfo" class="adaptive-info"></span>
+                        </div>
+                        <button id="nextBtn" class="btn btn-primary" disabled>
+                            다음 <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: E-tray Simulation (Application Test) -->
+            <div id="etrayScreen" class="assessment-screen">
+                <div class="etray-container">
+                    <div class="etray-header">
+                        <h2><i class="fas fa-inbox"></i> 디지털 인바스켓 시뮬레이션</h2>
+                        <p>실제 업무 환경에서의 우선순위 결정 및 문제 해결 능력을 측정합니다</p>
+                        <p style="font-size: 14px; color: #666; margin-top: 8px;">
+                            💡 <strong>팁:</strong> 이메일을 처리하다가 언제든지 "완료" 버튼을 눌러 다음 단계로 진행할 수 있습니다.
+                        </p>
+                        <div class="timer" id="etrayTimer">
+                            <i class="fas fa-clock"></i> 
+                            <span id="timeRemaining">10:00</span>
+                            <small style="margin-left: 10px; font-size: 12px; opacity: 0.8;">(최대 10분)</small>
+                        </div>
+                    </div>
+                    
+                    <div class="etray-workspace">
+                        <div class="etray-sidebar">
+                            <h3>수신함 <span class="unread-count" id="unreadCount">5</span></h3>
+                            <div id="emailList" class="email-list"></div>
+                        </div>
+                        
+                        <div class="etray-main">
+                            <div id="emailContent" class="email-content-area">
+                                <div class="empty-state">
+                                    <i class="fas fa-envelope-open"></i>
+                                    <p>왼쪽에서 이메일을 선택하세요</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="etrayComplete" class="btn btn-primary btn-lg" onclick="completeEtraySimulation()">
+                        <i class="fas fa-check-circle"></i> 완료하고 다음 단계로 (언제든지 가능)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: AI Workflow Simulation -->
+            <div id="aiWorkflowScreen" class="assessment-screen">
+                <div class="result-card">
+                    <div class="workflow-header">
+                        <i class="fas fa-robot"></i>
+                        <h2>🤖 AI 워크플로우 시뮬레이션</h2>
+                        <p class="workflow-subtitle">AI 도구를 활용한 업무 가속도 측정</p>
+                    </div>
+                    
+                    <div id="aiWorkflowContent" class="workflow-content">
+                        <!-- AI workflow scenario will be loaded here -->
+                    </div>
+                    
+                    <button id="aiWorkflowComplete" class="btn btn-primary">
+                        <i class="fas fa-check"></i> 워크플로우 제출하기
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 5: Analysis & Results -->
+            <div id="analysisScreen" class="assessment-screen">
+                <div class="result-card">
+                    <div class="result-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h2>AI 분석 중...</h2>
+                    <p>귀하의 KAPP 역량을 정밀하게 분석하고 있습니다</p>
+                    
+                    <div class="analysis-progress">
+                        <div class="analysis-step active">
+                            <i class="fas fa-brain"></i>
+                            <span>지식 수준 분석</span>
+                        </div>
+                        <div class="analysis-step">
+                            <i class="fas fa-cogs"></i>
+                            <span>적용 능력 평가</span>
+                        </div>
+                        <div class="analysis-step">
+                            <i class="fas fa-chart-line"></i>
+                            <span>성과 지표 산출</span>
+                        </div>
+                        <div class="analysis-step">
+                            <i class="fas fa-bolt"></i>
+                            <span>생산성 측정</span>
+                        </div>
+                    </div>
+
+                    <div class="loading-animation">
+                        <div class="loading-spinner"></div>
+                        <p class="loading-text">잠시만 기다려주세요...</p>
+                        <button onclick="completeAssessment()" class="btn btn-secondary" style="margin-top: 20px; opacity: 0.7;">
+                            <i class="fas fa-forward"></i> 대시보드로 바로 가기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/kapp-data.js"></script>
+    <script src="js/kapp-application.js"></script>
+    <script src="js/kapp-performance.js"></script>
+    <script src="js/kapp-productivity.js"></script>
+    <script src="js/kapp-ai-workflow.js"></script>
+    <script src="js/kapp-etray-industry.js"></script>
+    <script src="js/kapp-questions-enhanced.js"></script>
+    <script src="js/kapp-renderers.js"></script>
+    <script src="js/kapp-assessment.js"></script>
+    
+    <!-- 모든 문항 파일 로드 후 통합 -->
+    <script>
+        if (typeof window.mergeKappQuestions === 'function') {
+            window.mergeKappQuestions();
+        } else {
+            console.error('❌ mergeKappQuestions 함수를 찾을 수 없습니다!');
+        }
+    </script>
+
+</body>
+</html>

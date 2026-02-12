@@ -8,7 +8,7 @@ import Icon from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
 import Toast, { type ToastType } from "@/components/ui/Toast";
 import EmployeeSection from "./sections/EmployeeSection";
-import strategyMapper from "@/data/strategyMapper.json";
+import strategyMapper from "@/data/dashboard/strategyMapper.json";
 
 // origin(admin-advanced.js)과 동일: 추천 인력 후보 5명
 const MOCK_CANDIDATES = [

@@ -4,7 +4,7 @@ import {
   competencyRawData,
   competencyTypes,
   type CompetencyRecord,
-} from "@/data/competencyRawData";
+} from "@/data/competency/competencyRawData";
 import { startOfDay, endOfDay } from "date-fns";
 import type { CompetencyType } from "../types";
 

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 대시보드 - 해커스 캠퍼스 Business NEXT GEN Solution</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/admin-advanced.css">
+    <link rel="stylesheet" href="css/admin-high-performer.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>해커스 캠퍼스 Business</h2>
+                <span class="nav-subtitle">NEXT GEN Solution</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">홈</a>
+                <a href="assessment-kapp.html" class="nav-link">🎯 KAPP 진단</a>
+                <a href="dashboard.html" class="nav-link">마이 대시보드</a>
+                <a href="education.html" class="nav-link">교육 큐레이션</a>
+                <a href="my-growth.html" class="nav-link">🌱 나의 성장</a>
+                <a href="admin.html" class="nav-link active">관리자</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Header -->
+    <section class="admin-header">
+        <div class="container">
+            <div class="header-left">
+                <h1><i class="fas fa-chart-pie"></i> 관리자 대시보드</h1>
+                <p>조직 전체의 역량 현황과 교육 성과를 한눈에 확인하세요</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-secondary"><i class="fas fa-download"></i> 리포트 다운로드</button>
+                <button class="btn btn-primary"><i class="fas fa-cog"></i> 설정</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Content -->
+    <div class="admin-content">
+        <div class="container">
+            <!-- Overview Stats -->
+            <div class="overview-stats">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(0, 102, 255, 0.1); color: #0066FF;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>전체 임직원</h3>
+                        <p class="stat-value">247<span class="stat-unit">명</span></p>
+                        <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 12% 증가</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(0, 201, 167, 0.1); color: #00C9A7;">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>진단 완료</h3>
+                        <p class="stat-value">189<span class="stat-unit">명</span></p>
+                        <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 76% 완료율</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(246, 173, 85, 0.1); color: #F6AD55;">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>교육 이수</h3>
+                        <p class="stat-value">1,234<span class="stat-unit">건</span></p>
+                        <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 28% 증가</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(72, 187, 120, 0.1); color: #48BB78;">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>평균 역량 점수</h3>
+                        <p class="stat-value">74<span class="stat-unit">점</span></p>
+                        <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 8.5점 향상</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-bar"></i> 부서별 역량 현황</h3>
+                        <select class="chart-select" id="departmentPeriodSelect" onchange="updateDepartmentChart()">
+                            <option value="2026-01">2026년 1월</option>
+                            <option value="2025-12">2025년 12월</option>
+                            <option value="2025-11">2025년 11월</option>
+                            <option value="2025-10">2025년 10월</option>
+                            <option value="2025-09">2025년 9월</option>
+                            <option value="2025-08">2025년 8월</option>
+                        </select>
+                    </div>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="departmentChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie"></i> 역량 분포</h3>
+                        <button class="btn-icon"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="skillDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Tracking -->
+            <div class="progress-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tasks"></i> 역량 개발 진행 현황</h2>
+                    <div class="header-filters">
+                        <button class="filter-btn active" onclick="filterProgress('all')">전체</button>
+                        <button class="filter-btn" onclick="filterProgress('ongoing')">진행중</button>
+                        <button class="filter-btn" onclick="filterProgress('completed')">완료</button>
+                    </div>
+                </div>
+                <div class="progress-cards" id="progressCardsContainer">
+                    <div class="progress-card" data-status="ongoing">
+                        <div class="progress-header">
+                            <div>
+                                <h4>문제 해결 역량</h4>
+                                <p>42명 참여 중</p>
+                            </div>
+                            <span class="progress-badge ongoing">진행중</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 65%;"></div>
+                        </div>
+                        <div class="progress-footer">
+                            <span>평균 65점</span>
+                            <span>목표: 80점</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-card" data-status="ongoing">
+                        <div class="progress-header">
+                            <div>
+                                <h4>의사소통 역량</h4>
+                                <p>38명 참여 중</p>
+                            </div>
+                            <span class="progress-badge ongoing">진행중</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 72%;"></div>
+                        </div>
+                        <div class="progress-footer">
+                            <span>평균 72점</span>
+                            <span>목표: 85점</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-card" data-status="completed">
+                        <div class="progress-header">
+                            <div>
+                                <h4>리더십 역량</h4>
+                                <p>25명 완료</p>
+                            </div>
+                            <span class="progress-badge completed">완료</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill completed" style="width: 100%;"></div>
+                        </div>
+                        <div class="progress-footer">
+                            <span>평균 88점</span>
+                            <span>목표 달성! 🎉</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-card" data-status="ongoing">
+                        <div class="progress-header">
+                            <div>
+                                <h4>기술 역량</h4>
+                                <p>35명 참여 중</p>
+                            </div>
+                            <span class="progress-badge ongoing">진행중</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 58%;"></div>
+                        </div>
+                        <div class="progress-footer">
+                            <span>평균 58점</span>
+                            <span>목표: 75점</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-card" data-status="completed">
+                        <div class="progress-header">
+                            <div>
+                                <h4>협업 역량</h4>
+                                <p>48명 완료</p>
+                            </div>
+                            <span class="progress-badge completed">완료</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill completed" style="width: 100%;"></div>
+                        </div>
+                        <div class="progress-footer">
+                            <span>평균 85점</span>
+                            <span>목표 달성! 🎉</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-card" data-status="ongoing">
+                        <div class="progress-header">
+                            <div>
+                                <h4>학습 역량</h4>
+                                <p>31명 참여 중</p>
+                            </div>
+                            <span class="progress-badge ongoing">진행중</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 68%;"></div>
+                        </div>
+                        <div class="progress-footer">
+                            <span>평균 68점</span>
+                            <span>목표: 80점</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee Table -->
+            <div class="employee-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> 임직원 역량 현황</h2>
+                    <div class="table-actions">
+                        <input type="text" placeholder="검색..." class="search-input">
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-user-plus"></i> 임직원 추가</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="employee-table">
+                        <thead>
+                            <tr>
+                                <th>이름</th>
+                                <th>부서</th>
+                                <th>직급</th>
+                                <th>종합 점수</th>
+                                <th>강점 역량</th>
+                                <th>개선 필요</th>
+                                <th>교육 현황</th>
+                                <th>액션</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody">
+                            <!-- Data will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Insights Section -->
+            <div class="insights-section">
+                <h2><i class="fas fa-lightbulb"></i> AI 인사이트</h2>
+                <div class="insights-grid">
+                    <div class="insight-card priority-high">
+                        <div class="insight-icon"><i class="fas fa-exclamation-circle"></i></div>
+                        <div class="insight-content">
+                            <h4>긴급 조치 필요</h4>
+                            <p>개발팀의 의사소통 역량이 평균 대비 15% 낮습니다. 즉시 교육 프로그램 배정을 권장합니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="insight-card priority-medium">
+                        <div class="insight-icon"><i class="fas fa-info-circle"></i></div>
+                        <div class="insight-content">
+                            <h4>개선 기회</h4>
+                            <p>마케팅팀의 학습 역량이 지난 분기 대비 20% 향상되었습니다. 우수 사례로 공유 가능합니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="insight-card priority-low">
+                        <div class="insight-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="insight-content">
+                            <h4>목표 달성</h4>
+                            <p>영업팀의 협업 역량이 목표치를 달성했습니다. 다음 단계 교육을 계획하세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. Skill Gap Heatmap -->
+            <div class="advanced-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-fire"></i> 스킬 갭 히트맵</h2>
+                    <p class="section-desc">조직도 기반 컬러 시각화로 위험 스킬 즉시 파악</p>
+                </div>
+                <div class="heatmap-controls">
+                    <div class="control-group">
+                        <label>부서 선택</label>
+                        <select id="heatmapDeptSelect" class="form-select">
+                            <option value="all">전체 부서</option>
+                            <option value="dev">개발팀</option>
+                            <option value="marketing">마케팅팀</option>
+                            <option value="sales">영업팀</option>
+                            <option value="hr">인사팀</option>
+                            <option value="finance">재무팀</option>
+                            <option value="cs">고객지원팀</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>스킬 카테고리</label>
+                        <select id="heatmapSkillSelect" class="form-select">
+                            <option value="all">전체 스킬</option>
+                            <option value="technical">기술 스킬</option>
+                            <option value="soft">소프트 스킬</option>
+                            <option value="business">비즈니스 스킬</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="refreshHeatmap()">
+                        <i class="fas fa-sync-alt"></i> 새로고침
+                    </button>
+                </div>
+                <div class="heatmap-container" id="skillGapHeatmap">
+                    <!-- Heatmap will be rendered here -->
+                </div>
+                <div class="heatmap-legend">
+                    <span class="legend-item"><span class="color-box" style="background: #ef4444;"></span> 긴급 (0-40)</span>
+                    <span class="legend-item"><span class="color-box" style="background: #f59e0b;"></span> 주의 (41-60)</span>
+                    <span class="legend-item"><span class="color-box" style="background: #eab308;"></span> 보통 (61-75)</span>
+                    <span class="legend-item"><span class="color-box" style="background: #84cc16;"></span> 양호 (76-85)</span>
+                    <span class="legend-item"><span class="color-box" style="background: #22c55e;"></span> 우수 (86-100)</span>
+                </div>
+            </div>
+
+            <!-- 2. Industry Benchmarking Radar -->
+            <div class="advanced-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-radar"></i> 업계 벤치마킹 레이더</h2>
+                    <p class="section-desc">동종 업계 상위 10% 기업과 비교 분석</p>
+                </div>
+                <div class="benchmark-controls">
+                    <div class="control-group">
+                        <label>비교 대상 부서</label>
+                        <select id="benchmarkDeptSelect" class="form-select">
+                            <option value="marketing">마케팅팀</option>
+                            <option value="dev">개발팀</option>
+                            <option value="sales">영업팀</option>
+                            <option value="hr">인사팀</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>비교 업계</label>
+                        <select id="benchmarkIndustrySelect" class="form-select">
+                            <option value="it">IT/소프트웨어</option>
+                            <option value="finance">금융</option>
+                            <option value="retail">리테일</option>
+                            <option value="manufacturing">제조업</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="updateBenchmark()">
+                        <i class="fas fa-chart-line"></i> 비교 분석
+                    </button>
+                </div>
+                <div class="benchmark-content">
+                    <div class="benchmark-chart">
+                        <div style="position: relative; height: 450px; width: 100%;">
+                            <canvas id="industryRadarChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="benchmark-insights">
+                        <h3>벤치마킹 인사이트</h3>
+                        <div id="benchmarkInsights">
+                            <!-- Insights will be generated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Strategy-to-Skill Mapper -->
+            <div class="advanced-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-project-diagram"></i> 조직 전략-스킬 자동 매핑</h2>
+                    <p class="section-desc">전략 키워드 입력 → AI가 필요 인력 & 교육 추천</p>
+                </div>
+                <div class="strategy-input-section">
+                    <div class="input-group">
+                        <label for="strategyInput">2026년 조직 전략 키워드</label>
+                        <input type="text" id="strategyInput" class="form-input" 
+                               placeholder="예: AI 전환, 신규 해외 시장 진출, 디지털 마케팅 강화" />
+                    </div>
+                    <button class="btn btn-primary btn-lg" onclick="analyzeStrategy()">
+                        <i class="fas fa-magic"></i> AI 분석 시작
+                    </button>
+                </div>
+                <div class="strategy-results" id="strategyResults" style="display: none;">
+                    <div class="result-section">
+                        <h3><i class="fas fa-users-cog"></i> 추천 인력 배치</h3>
+                        <div id="recommendedPeople"></div>
+                    </div>
+                    <div class="result-section">
+                        <h3><i class="fas fa-graduation-cap"></i> 필수 교육 프로그램</h3>
+                        <div id="recommendedTraining"></div>
+                    </div>
+                    <div class="result-section">
+                        <h3><i class="fas fa-calendar-alt"></i> 실행 로드맵</h3>
+                        <div id="executionRoadmap"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Budget ROI Calculator -->
+            <div class="advanced-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calculator"></i> 교육비 ROI 자동 계산기</h2>
+                    <p class="section-desc">스킬 갭 교육 투자의 예상 수익 금액 환산</p>
+                </div>
+                <div class="roi-calculator">
+                    <div class="roi-inputs">
+                        <div class="input-group">
+                            <label>교육 대상 인원</label>
+                            <input type="number" id="roiEmployees" class="form-input" value="50" min="1" />
+                        </div>
+                        <div class="input-group">
+                            <label>1인당 교육 비용 (만원)</label>
+                            <input type="number" id="roiCostPerPerson" class="form-input" value="120" min="1" />
+                        </div>
+                        <div class="input-group">
+                            <label>예상 스킬 향상 (%)</label>
+                            <input type="number" id="roiSkillImprovement" class="form-input" value="25" min="1" max="100" />
+                        </div>
+                        <button class="btn btn-primary btn-lg" onclick="calculateROI()">
+                            <i class="fas fa-calculator"></i> ROI 계산하기
+                        </button>
+                    </div>
+                    <div class="roi-results" id="roiResults" style="display: none;">
+                        <div class="roi-summary">
+                            <div class="roi-card investment">
+                                <h4>총 교육 투자</h4>
+                                <p class="roi-value" id="roiInvestment">0원</p>
+                            </div>
+                            <div class="roi-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="roi-card return">
+                                <h4>예상 수익 (1년)</h4>
+                                <p class="roi-value" id="roiReturn">0원</p>
+                            </div>
+                            <div class="roi-arrow">
+                                <i class="fas fa-equals"></i>
+                            </div>
+                            <div class="roi-card profit">
+                                <h4>순이익 (ROI)</h4>
+                                <p class="roi-value highlight" id="roiProfit">0원</p>
+                                <p class="roi-percentage" id="roiPercentage">0%</p>
+                            </div>
+                        </div>
+                        <div class="roi-breakdown">
+                            <h3>상세 수익 분석</h3>
+                            <div id="roiBreakdown"></div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="downloadROIReport()">
+                            <i class="fas fa-file-pdf"></i> 경영진 보고서 다운로드
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. High-Performer DNA Cloning -->
+            <div class="advanced-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-clone"></i> 고성과자 복제 모델링 (High-Performer DNA Cloning)</h2>
+                    <p class="section-desc">사내 상위 10% 성과자들의 K-A-P-P 패턴을 분석하여 조직 전체 역량 상향 평준화</p>
+                </div>
+                <div class="clone-controls">
+                    <div class="control-group">
+                        <label>비교 대상 팀</label>
+                        <select id="cloneTeamSelect" class="form-select">
+                            <option value="all">전체 조직</option>
+                            <option value="dev">개발팀</option>
+                            <option value="marketing">마케팅팀</option>
+                            <option value="sales">영업팀</option>
+                            <option value="hr">인사팀</option>
+                            <option value="finance">재무팀</option>
+                            <option value="cs">고객지원팀</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="analyzeHighPerformers()">
+                        <i class="fas fa-chart-bar"></i> 고성과자 분석
+                    </button>
+                </div>
+                <div class="clone-content">
+                    <div class="golden-standard-box">
+                        <h3>🏆 Golden Standard (상위 10% 성과자)</h3>
+                        <div id="goldenStandardChart" style="position: relative; height: 300px;"></div>
+                    </div>
+                    <div class="gap-analysis-box">
+                        <h3>📊 갭 분석 (Gap Analysis)</h3>
+                        <div id="gapAnalysisContent">
+                            <!-- Gap analysis will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Skill Risk Management -->
+            <div class="advanced-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> 조직 건강도 및 스킬 리스크 관리</h2>
+                    <p class="section-desc">부서별 스킬 분포 분석 및 역량 공백 구역 조기 경고 시스템</p>
+                </div>
+                <div class="risk-controls">
+                    <div class="control-group">
+                        <label>리스크 레벨 필터</label>
+                        <select id="riskLevelFilter" class="form-select" onchange="filterRiskLevel()">
+                            <option value="all">전체 보기</option>
+                            <option value="critical">긴급 (Critical)</option>
+                            <option value="high">높음 (High)</option>
+                            <option value="medium">보통 (Medium)</option>
+                            <option value="low">낮음 (Low)</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="refreshRiskAnalysis()">
+                        <i class="fas fa-sync-alt"></i> 리스크 재분석
+                    </button>
+                </div>
+                <div class="risk-dashboard">
+                    <div class="risk-summary">
+                        <div class="risk-card critical">
+                            <div class="risk-icon">🔴</div>
+                            <div class="risk-info">
+                                <h4>긴급</h4>
+                                <p class="risk-count" id="criticalRiskCount">0</p>
+                            </div>
+                        </div>
+                        <div class="risk-card high">
+                            <div class="risk-icon">🟠</div>
+                            <div class="risk-info">
+                                <h4>높음</h4>
+                                <p class="risk-count" id="highRiskCount">0</p>
+                            </div>
+                        </div>
+                        <div class="risk-card medium">
+                            <div class="risk-icon">🟡</div>
+                            <div class="risk-info">
+                                <h4>보통</h4>
+                                <p class="risk-count" id="mediumRiskCount">0</p>
+                            </div>
+                        </div>
+                        <div class="risk-card low">
+                            <div class="risk-icon">🟢</div>
+                            <div class="risk-info">
+                                <h4>낮음</h4>
+                                <p class="risk-count" id="lowRiskCount">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="risk-details" id="riskDetailsContainer">
+                        <!-- Risk details will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/admin-advanced.js"></script>
+    <script src="js/admin-high-performer.js"></script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAPP 진단 테스트 페이지</title>
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a202c;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #0066ff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0052cc;
+        }
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        .info-box {
+            background: #f0f9ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success-box {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .log {
+            background: #1a202c;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        .log-entry {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 KAPP 진단 테스트 페이지</h1>
+        
+        <div class="info-box">
+            <strong>📌 목적:</strong> KAPP 진단 결과가 마이 대시보드에 제대로 표시되는지 테스트합니다.
+        </div>
+        
+        <h2>1. localStorage 상태 확인</h2>
+        <button class="btn btn-primary" onclick="checkLocalStorage()">📊 현재 저장된 데이터 확인</button>
+        <button class="btn btn-danger" onclick="clearLocalStorage()">🗑️ 모든 데이터 삭제</button>
+        
+        <h2>2. 테스트 데이터 생성</h2>
+        <button class="btn btn-success" onclick="saveTestData()">✅ 테스트 KAPP 결과 저장</button>
+        <button class="btn btn-secondary" onclick="goToDashboard()">➡️ 마이 대시보드로 이동</button>
+        
+        <h2>3. 실시간 로그</h2>
+        <div class="log" id="log"></div>
+        
+        <div class="warning-box" style="margin-top: 30px;">
+            <strong>⚠️ 주의:</strong> 이 페이지는 디버깅용입니다. 실제 사용자에게는 보이지 않습니다.
+        </div>
+    </div>
+    
+    <script>
+        const logContainer = document.getElementById('log');
+        
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : '📝';
+            entry.textContent = `[${timestamp}] ${icon} ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+        
+        function checkLocalStorage() {
+            log('localStorage 확인 시작...');
+            
+            const kappResult = localStorage.getItem('kapp_assessment_result');
+            const assessmentResult = localStorage.getItem('assessment_result');
+            
+            if (kappResult) {
+                log('kapp_assessment_result: 존재 (' + kappResult.length + ' bytes)', 'success');
+                try {
+                    const data = JSON.parse(kappResult);
+                    log('  - 이름: ' + (data.userData?.name || '없음'));
+                    log('  - 산업: ' + (data.userData?.industry || '없음'));
+                    log('  - Knowledge: ' + (data.scores?.knowledge || '없음'));
+                    log('  - Application: ' + (data.scores?.application || '없음'));
+                    log('  - Performance: ' + (data.scores?.performance || '없음'));
+                    log('  - Productivity: ' + (data.scores?.productivity || '없음'));
+                    log('  - 전체 점수: ' + (data.overallScore || '없음'));
+                } catch (e) {
+                    log('  - 파싱 실패: ' + e.message, 'error');
+                }
+            } else {
+                log('kapp_assessment_result: 없음', 'warning');
+            }
+            
+            if (assessmentResult) {
+                log('assessment_result: 존재 (' + assessmentResult.length + ' bytes)', 'success');
+            } else {
+                log('assessment_result: 없음', 'warning');
+            }
+            
+            log('확인 완료!', 'success');
+        }
+        
+        function clearLocalStorage() {
+            if (confirm('정말로 모든 저장된 데이터를 삭제하시겠습니까?')) {
+                localStorage.removeItem('kapp_assessment_result');
+                localStorage.removeItem('assessment_result');
+                log('모든 데이터 삭제 완료', 'success');
+            }
+        }
+        
+        function saveTestData() {
+            log('테스트 데이터 생성 중...');
+            
+            const testResults = {
+                userData: {
+                    name: '테스트 사용자',
+                    industry: 'IT',
+                    job: '개발자(Backend)',
+                    position: '대리',
+                    experience: '3-5년'
+                },
+                scores: {
+                    knowledge: 85,
+                    application: 78,
+                    performance: 82,
+                    productivity: 90
+                },
+                overallScore: 84,
+                knowledgeLevel: 4,
+                answers: [],
+                questionHistory: [],
+                etrayActions: [],
+                etrayDuration: 300,
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                const resultsJSON = JSON.stringify(testResults);
+                localStorage.setItem('kapp_assessment_result', resultsJSON);
+                localStorage.setItem('assessment_result', resultsJSON);
+                
+                log('테스트 데이터 저장 완료! (' + resultsJSON.length + ' bytes)', 'success');
+                log('  - 이름: ' + testResults.userData.name);
+                log('  - 산업: ' + testResults.userData.industry);
+                log('  - Knowledge: ' + testResults.scores.knowledge);
+                log('  - Application: ' + testResults.scores.application);
+                log('  - Performance: ' + testResults.scores.performance);
+                log('  - Productivity: ' + testResults.scores.productivity);
+                log('  - 전체 점수: ' + testResults.overallScore);
+                
+                // 저장 검증
+                const saved = localStorage.getItem('kapp_assessment_result');
+                if (saved) {
+                    log('저장 검증 완료 ✅', 'success');
+                } else {
+                    log('저장 검증 실패 ❌', 'error');
+                }
+            } catch (error) {
+                log('저장 실패: ' + error.message, 'error');
+            }
+        }
+        
+        function goToDashboard() {
+            log('마이 대시보드로 이동 중...', 'success');
+            setTimeout(() => {
+                window.location.href = 'dashboard-kapp.html';
+            }, 500);
+        }
+        
+        // 페이지 로드 시 자동 확인
+        window.addEventListener('DOMContentLoaded', () => {
+            log('KAPP 테스트 페이지 로드 완료', 'success');
+            log('localStorage 자동 확인 중...');
+            checkLocalStorage();
+        });
+    </script>
+</body>
+</html>

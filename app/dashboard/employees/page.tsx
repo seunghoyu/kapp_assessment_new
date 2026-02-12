@@ -14,7 +14,7 @@ import Icon from "@/components/ui/Icon";
 import {
   employeesData,
   type EmployeeRow,
-} from "@/data/employeesData";
+} from "@/data/employees/employeesData";
 
 const trainingStatusLabel: Record<string, string> = {
   in_progress: "진행중",

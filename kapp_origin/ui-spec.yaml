@@ -1,0 +1,658 @@
+﻿app:
+  name: "Business NEXT GEN Solution"
+  description: "AI-based skill assessment, personalized learning, growth tracking, and admin analytics."
+
+layout:
+  global:
+    structure:
+      - navbar
+      - main
+      - footer_optional
+    navbar:
+      elements:
+        - brand_logo
+        - brand_title
+        - brand_subtitle
+        - nav_links
+    footer:
+      elements:
+        - brand_block
+        - links_block
+        - contact_block
+        - copyright
+
+pages:
+  - id: home
+    file: index.html
+    layout: [navbar, main, footer]
+    sections:
+      - id: hero
+        components:
+          - type: Hero
+            purpose: "Primary product intro and CTA"
+            fields: [title, subtitle, primary_cta, secondary_cta, hero_stats]
+      - id: stats_highlight
+        components:
+          - type: StatHighlightRow
+            purpose: "Quick proof points"
+            fields: [stat_items]
+      - id: why_us
+        components:
+          - type: FeatureCardGrid
+            purpose: "Key differentiators"
+            fields: [feature_cards]
+      - id: features
+        components:
+          - type: FeatureCardGrid
+            purpose: "Product capabilities overview"
+            fields: [feature_cards, badges]
+      - id: how_it_works
+        components:
+          - type: Stepper
+            purpose: "4-step process explanation"
+            fields: [steps, directional_arrows]
+      - id: comparison
+        components:
+          - type: ComparisonCards
+            purpose: "Compare traditional vs product solution"
+            fields: [negative_list, positive_list]
+      - id: cta_primary
+        components:
+          - type: CTA
+            purpose: "Drive assessment start"
+            fields: [title, subtitle, primary_cta]
+      - id: cta_secondary
+        components:
+          - type: CTA
+            purpose: "Free trial + contact"
+            fields: [title, subtitle, primary_cta, secondary_cta, benefit_list, trust_note]
+
+  - id: assessment_basic
+    file: assessment.html
+    layout: [navbar, main]
+    sections:
+      - id: upgrade_banner
+        components:
+          - type: AnnouncementBanner
+            purpose: "Promote new KAPP assessment"
+            fields: [title, description, cta]
+      - id: assessment_header
+        components:
+          - type: PageHeader
+            purpose: "Assessment intro"
+            fields: [title, subtitle]
+      - id: assessment_flow
+        components:
+          - type: ProgressBar
+            purpose: "Show progress and current question count"
+            fields: [percent, current_question, total_questions]
+          - type: Wizard
+            purpose: "Multi-step assessment"
+            fields:
+              - start_screen_form
+              - question_screen
+              - result_screen
+      - id: start_screen_form
+        components:
+          - type: Form
+            purpose: "Collect user info"
+            fields: [name, job_select, experience_select, company_optional, submit_button]
+      - id: question_screen
+        components:
+          - type: QuestionCard
+            purpose: "Single question with options"
+            fields: [category, question_text, description, answer_options, prev_button, next_button]
+      - id: result_screen
+        components:
+          - type: ResultCard
+            purpose: "Show completion and summary"
+            fields: [loading_indicator, summary_cards, action_buttons]
+
+  - id: assessment_kapp
+    file: assessment-kapp.html
+    layout: [navbar, main]
+    sections:
+      - id: assessment_header
+        components:
+          - type: PageHeader
+            purpose: "KAPP assessment intro"
+            fields: [title, subtitle, kapp_badges]
+      - id: assessment_flow
+        components:
+          - type: ProgressBar
+            purpose: "Show step and percent"
+            fields: [percent, current_step]
+          - type: Wizard
+            purpose: "Multi-step KAPP flow"
+            fields:
+              - user_info_screen
+              - kapp_questions_screen
+              - etray_simulation_screen
+              - ai_workflow_screen
+              - analysis_screen
+      - id: user_info_screen
+        components:
+          - type: Form
+            purpose: "Collect detailed profile"
+            fields:
+              - name
+              - email_optional
+              - industry_select
+              - job_select
+              - position_select
+              - experience_select
+              - company_optional
+              - company_size_select
+              - goals_checkboxes
+              - submit_button
+      - id: kapp_questions_screen
+        components:
+          - type: QuestionCard
+            purpose: "Adaptive question delivery"
+            fields:
+              - category_badge
+              - difficulty_badge
+              - question_text
+              - scenario_block
+              - answer_options
+              - prev_button
+              - next_button
+              - adaptive_info
+      - id: etray_simulation_screen
+        components:
+          - type: EtraySimulation
+            purpose: "Inbox-based task simulation"
+            fields:
+              - timer
+              - email_list
+              - email_detail_view
+              - unread_count
+              - complete_button
+      - id: ai_workflow_screen
+        components:
+          - type: ScenarioCard
+            purpose: "AI workflow simulation"
+            fields: [scenario_content, complete_button]
+      - id: analysis_screen
+        components:
+          - type: LoadingCard
+            purpose: "AI analysis progress"
+            fields: [stepper, spinner, skip_to_dashboard_button]
+
+  - id: dashboard_basic
+    file: dashboard.html
+    layout: [navbar, main]
+    sections:
+      - id: dashboard_header
+        components:
+          - type: PageHeader
+            purpose: "User summary and actions"
+            fields: [greeting, user_info, action_button]
+      - id: no_data_state
+        components:
+          - type: EmptyStateCard
+            purpose: "Prompt user to start assessment"
+            fields: [icon, title, description, cta]
+      - id: dashboard_overview
+        components:
+          - type: StatCardGrid
+            purpose: "High-level metrics"
+            fields: [overall_score, top_skill, weak_skill, recommended_courses]
+      - id: charts
+        components:
+          - type: ChartCard
+            purpose: "Skill analysis"
+            fields: [chart]
+            chart:
+              type: RadarChart
+          - type: ChartCard
+            purpose: "Skill scores by category"
+            fields: [chart, chart_type_selector]
+            chart:
+              type: BarChart_or_LineChart
+      - id: skills_detail
+        components:
+          - type: SkillList
+            purpose: "Detailed skill breakdown"
+            fields: [skill_items]
+      - id: recommendations
+        components:
+          - type: RecommendationCards
+            purpose: "Courses, tips, and goals"
+            fields: [priority_courses, development_tips, learning_goals]
+      - id: history
+        components:
+          - type: Timeline
+            purpose: "Assessment history"
+            fields: [timeline_items, download_button]
+
+  - id: dashboard_kapp
+    file: dashboard-kapp.html
+    layout: [navbar, main]
+    sections:
+      - id: dashboard_header
+        components:
+          - type: PageHeader
+            purpose: "KAPP results header"
+            fields: [greeting, actions]
+      - id: dna_section
+        components:
+          - type: ProfileCard
+            purpose: "Work DNA summary"
+            fields: [dna_type, dna_code, description, trait_tags, share_buttons]
+      - id: kapp_scores
+        components:
+          - type: StatCardGrid
+            purpose: "KAPP dimension scores"
+            fields: [knowledge, application, performance, productivity]
+          - type: Chart
+            purpose: "KAPP dimension comparison"
+            type: RadarChart
+      - id: market_position
+        components:
+          - type: MetricCards
+            purpose: "Market position and competitiveness"
+            fields: [current_position, competitiveness_metrics, demand_level, growth_timeline]
+          - type: Chart
+            purpose: "Benchmark radar"
+            type: RadarChart
+          - type: ActionList
+            purpose: "Recommended actions"
+            fields: [action_items]
+          - type: CTA
+            purpose: "Start growth plan"
+            fields: [primary_cta]
+      - id: career_path
+        components:
+          - type: Timeline
+            purpose: "Career path simulation"
+            fields: [timeline_items]
+          - type: LearningPath
+            purpose: "Recommended learning path"
+            fields: [path_items]
+          - type: CTA
+            purpose: "Explore courses"
+            fields: [primary_cta]
+      - id: market_benchmark
+        components:
+          - type: Chart
+            purpose: "Benchmark comparison"
+            type: BarChart_or_LineChart
+          - type: StatRow
+            purpose: "Benchmark stats"
+            fields: [position_avg, my_score, percentile]
+      - id: skill_growth_trend
+        components:
+          - type: Chart
+            purpose: "Skill trend over time"
+            type: LineChart_or_AreaChart
+      - id: ai_insights
+        components:
+          - type: InsightCardGrid
+            purpose: "AI insights"
+            fields: [insight_cards]
+      - id: idp
+        components:
+          - type: PlanBuilder
+            purpose: "Personalized development plan"
+            fields: [plan_items]
+      - id: gamification
+        components:
+          - type: StatCardGrid
+            purpose: "Points, badges, level, rank"
+            fields: [points, badges, level_ups, rank]
+          - type: BadgeGrid
+            purpose: "Badge collection"
+            fields: [badge_items]
+          - type: Leaderboard
+            purpose: "Top learners list"
+            fields: [leaderboard_items]
+
+  - id: education
+    file: education.html
+    layout: [navbar, main]
+    sections:
+      - id: education_header
+        components:
+          - type: PageHeader
+            purpose: "Learning recommendations intro"
+            fields: [title, subtitle]
+      - id: filters
+        components:
+          - type: FilterPanel
+            purpose: "Filter courses"
+            fields: [industry, category, level, duration, reset_button]
+      - id: recommended_courses
+        components:
+          - type: CourseGrid
+            purpose: "Personalized recommendations"
+            fields: [course_cards, reason_text]
+      - id: all_courses
+        components:
+          - type: CourseGrid
+            purpose: "All courses with view toggle"
+            fields: [course_cards, view_toggle]
+      - id: learning_path
+        components:
+          - type: LearningPath
+            purpose: "Step-by-step learning roadmap"
+            fields: [path_items]
+      - id: course_modal
+        components:
+          - type: Modal
+            purpose: "Course details and enrollment"
+            fields:
+              - title
+              - category_badges
+              - meta_info
+              - description
+              - curriculum_list
+              - outcomes_list
+              - close_button
+              - enroll_button
+
+  - id: my_growth
+    file: my-growth.html
+    layout: [navbar, main]
+    sections:
+      - id: growth_header
+        components:
+          - type: PageHeader
+            purpose: "Growth program intro"
+            fields: [title, subtitle]
+      - id: daily_micro_challenge
+        components:
+          - type: DailyTipCard
+            purpose: "Daily micro-challenge"
+            fields: [category, duration, title, content, complete_button, save_button]
+          - type: StatCardGrid
+            purpose: "Streak and completion metrics"
+            fields: [streak_days, completed_tips, weekly_progress]
+          - type: HistoryList
+            purpose: "Tip history"
+            fields: [history_items]
+          - type: ActionButton
+            purpose: "Refresh tip"
+            fields: [refresh_button]
+      - id: ai_career_mentoring
+        components:
+          - type: SelectableCardGrid
+            purpose: "Career goal selection"
+            fields: [goal_cards]
+          - type: ChatWidget
+            purpose: "AI mentor chat"
+            fields: [message_list, input, send_button, close_button]
+          - type: GapAnalysisGrid
+            purpose: "Current vs target skill gaps"
+            fields: [gap_items]
+      - id: skill_badge
+        components:
+          - type: CertificatePreview
+            purpose: "Verifiable badge preview"
+            fields: [recipient, scores, overall_score, issue_date, cert_id, qr_placeholder]
+          - type: ActionButtonGroup
+            purpose: "Download/share/copy link"
+            fields: [download, share, copy_link]
+          - type: InfoGrid
+            purpose: "Verification info"
+            fields: [info_items]
+          - type: BadgeGrid
+            purpose: "Badge collection"
+            fields: [badge_items]
+
+  - id: notifications
+    file: notifications.html
+    layout: [navbar, main]
+    sections:
+      - id: notifications_header
+        components:
+          - type: PageHeader
+            purpose: "Notifications and settings intro"
+            fields: [title, subtitle]
+      - id: notification_settings
+        components:
+          - type: RequestCard
+            purpose: "Push notification permission"
+            fields: [title, description, action_button]
+          - type: SettingsGrid
+            purpose: "Notification toggles"
+            fields: [toggle_items]
+          - type: EmailSettings
+            purpose: "Email address update"
+            fields: [email_input, save_button, help_text]
+          - type: ScheduleSettings
+            purpose: "Notification schedule"
+            fields: [daily_time_select, weekly_day_select]
+      - id: learning_progress_tracker
+        components:
+          - type: PeriodSelector
+            purpose: "Switch report period"
+            fields: [daily, weekly, monthly, download_button]
+          - type: StatCardGrid
+            purpose: "Progress overview"
+            fields: [current_streak, completed_tips, total_time, total_badges]
+          - type: Chart
+            purpose: "Weekly activity"
+            type: BarChart_or_LineChart
+          - type: ProgressList
+            purpose: "Category progress"
+            fields: [category_items]
+          - type: InsightCardGrid
+            purpose: "Learning insights"
+            fields: [insight_cards]
+      - id: advanced_ai_mentor
+        components:
+          - type: TabSelector
+            purpose: "Switch mentor modes"
+            fields: [text, voice, video]
+          - type: TextMentorCard
+            purpose: "Link to text mentor"
+            fields: [description, cta]
+          - type: VoiceMentorPanel
+            purpose: "Voice mentor interaction"
+            fields: [voice_button, status, transcript_area]
+          - type: VideoMentorPanel
+            purpose: "Video mentor session"
+            fields: [video_player, overlay, action_buttons]
+          - type: FeatureGrid
+            purpose: "Advanced mentor capabilities"
+            fields: [feature_items]
+
+  - id: admin_dashboard
+    file: admin.html
+    layout: [navbar, main]
+    sections:
+      - id: admin_header
+        components:
+          - type: PageHeader
+            purpose: "Admin overview"
+            fields: [title, subtitle, actions]
+      - id: overview_stats
+        components:
+          - type: StatCardGrid
+            purpose: "Organization KPIs"
+            fields: [total_users, assessments_completed, trainings_taken, avg_score]
+      - id: charts
+        components:
+          - type: ChartCard
+            purpose: "Department performance"
+            fields: [period_select, chart]
+            chart:
+              type: BarChart_or_LineChart
+          - type: ChartCard
+            purpose: "Skill distribution"
+            fields: [refresh_button, chart]
+            chart:
+              type: PieChart_or_DoughnutChart
+      - id: progress_tracking
+        components:
+          - type: FilterTabs
+            purpose: "Filter progress cards"
+            fields: [all, ongoing, completed]
+          - type: ProgressCardGrid
+            purpose: "Program progress"
+            fields: [progress_cards]
+      - id: employee_table
+        components:
+          - type: DataTable
+            purpose: "Employee skill status"
+            fields: [search_input, add_user_button, table_rows, row_actions]
+      - id: ai_insights
+        components:
+          - type: InsightCardGrid
+            purpose: "Admin-level insights"
+            fields: [insight_cards]
+      - id: skill_gap_heatmap
+        components:
+          - type: FilterPanel
+            purpose: "Heatmap filters"
+            fields: [department_select, skill_category_select, refresh_button]
+          - type: Heatmap
+            purpose: "Skill gap visualization"
+            fields: [grid, legend]
+      - id: industry_benchmark
+        components:
+          - type: FilterPanel
+            purpose: "Benchmark filters"
+            fields: [department_select, industry_select, analyze_button]
+          - type: Chart
+            purpose: "Benchmark radar"
+            type: RadarChart
+          - type: InsightList
+            purpose: "Benchmark insights"
+            fields: [insight_items]
+      - id: strategy_skill_mapper
+        components:
+          - type: InputPanel
+            purpose: "Strategy input and analysis"
+            fields: [strategy_input, analyze_button]
+          - type: ResultPanels
+            purpose: "AI-generated recommendations"
+            fields: [recommended_people, recommended_training, execution_roadmap]
+      - id: roi_calculator
+        components:
+          - type: Form
+            purpose: "ROI calculation"
+            fields: [employee_count, cost_per_person, skill_improvement, calculate_button]
+          - type: ResultPanels
+            purpose: "ROI summary and breakdown"
+            fields: [investment, return, profit, percentage, breakdown_list, download_report]
+      - id: high_performer_cloning
+        components:
+          - type: FilterPanel
+            purpose: "Team selector"
+            fields: [team_select, analyze_button]
+          - type: Chart
+            purpose: "Golden standard profile"
+            type: RadarChart_or_CustomProfileChart
+          - type: GapAnalysisPanel
+            purpose: "Gap analysis"
+            fields: [gap_items]
+      - id: skill_risk_management
+        components:
+          - type: FilterPanel
+            purpose: "Risk filters and refresh"
+            fields: [risk_level_select, refresh_button]
+          - type: RiskSummaryCards
+            purpose: "Risk counts"
+            fields: [critical, high, medium, low]
+          - type: RiskDetailList
+            purpose: "Risk detail items"
+            fields: [risk_items]
+
+  - id: test_data_util
+    file: test-kapp-data.html
+    layout: [main]
+    sections:
+      - id: tools
+        components:
+          - type: UtilityPanel
+            purpose: "Local test data actions"
+            fields: [check_storage_button, clear_storage_button, seed_test_data_button, go_to_dashboard_button]
+          - type: LogPanel
+            purpose: "Action log"
+            fields: [log_entries]
+
+components:
+  - name: Navbar
+    purpose: "Primary navigation"
+    fields: [brand, nav_links, active_link_state]
+  - name: PageHeader
+    purpose: "Sectioned page intro"
+    fields: [title, subtitle, actions_optional]
+  - name: StatCard
+    purpose: "Highlight numeric metric"
+    fields: [icon, label, value, delta_optional]
+  - name: ProgressBar
+    purpose: "Visual progress"
+    fields: [percent, label]
+  - name: Wizard
+    purpose: "Multi-step flow"
+    fields: [steps, active_step]
+  - name: Form
+    purpose: "User input"
+    fields: [text_inputs, selects, checkboxes, submit_button]
+  - name: QuestionCard
+    purpose: "Question and answers"
+    fields: [category, question, description_optional, options, navigation_buttons]
+  - name: Chart
+    purpose: "Data visualization"
+    fields: [type, title_optional, controls_optional]
+  - name: CourseCard
+    purpose: "Learning content item"
+    fields: [title, category, level, duration, rating, actions]
+  - name: Modal
+    purpose: "Detail overlay"
+    fields: [title, content, close_button, primary_action]
+  - name: DataTable
+    purpose: "Tabular data"
+    fields: [columns, rows, row_actions, search]
+  - name: Heatmap
+    purpose: "Skill gap matrix"
+    fields: [grid, legend, filters]
+  - name: Leaderboard
+    purpose: "Ranked list"
+    fields: [rank_items]
+  - name: ChatWidget
+    purpose: "AI chat"
+    fields: [message_list, input, send_button, close_button]
+  - name: BadgeGrid
+    purpose: "Badge collection"
+    fields: [badge_items]
+  - name: Timeline
+    purpose: "Chronological steps"
+    fields: [items]
+  - name: FilterPanel
+    purpose: "Data filtering controls"
+    fields: [selects, toggles, buttons]
+
+interactions:
+  - type: navigation
+    actions: [nav_link_click, cta_click, page_jump]
+  - type: form_submit
+    actions: [start_assessment, next_step, calculate_roi, update_email]
+  - type: wizard_navigation
+    actions: [next, prev, step_change]
+  - type: selection
+    actions: [select_goal_card, select_tab, select_filter, select_view_mode, select_chart_type]
+  - type: chart_actions
+    actions: [refresh_chart, switch_chart_type]
+  - type: modal
+    actions: [open_course_modal, close_modal]
+  - type: settings_toggle
+    actions: [toggle_notification, schedule_change]
+  - type: data_actions
+    actions: [search_table, download_report, download_badge, share_link]
+  - type: simulation
+    actions: [select_email, complete_etray, complete_ai_workflow]
+  - type: chat
+    actions: [send_message, close_chat]
+
+states:
+  - loading: "Data fetching, analysis in progress, chart loading"
+  - empty: "No assessment data, empty lists, empty inbox selection"
+  - error: "Failed data load or analysis"
+  - disabled: "Next button disabled until answer selected"
+  - active: "Current wizard step, active tab, active view mode"
+  - selected: "Selected filters, selected goal, selected row"
+  - hidden: "Conditional sections (chat, gap analysis, results)"

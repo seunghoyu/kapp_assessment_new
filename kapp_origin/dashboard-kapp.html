@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAPP 진단 결과 - 해커스 캠퍼스 Business NEXT GEN Solution</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/dashboard-kapp.css">
+    <link rel="stylesheet" href="css/market-position.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>해커스 캠퍼스 Business</h2>
+                <span class="nav-subtitle">NEXT GEN Solution</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">홈</a>
+                <a href="assessment-kapp.html" class="nav-link">🎯 KAPP 진단</a>
+                <a href="dashboard-kapp.html" class="nav-link active">KAPP 대시보드</a>
+                <a href="education.html" class="nav-link">교육 큐레이션</a>
+                <a href="my-growth.html" class="nav-link">🌱 나의 성장</a>
+                <a href="admin.html" class="nav-link">관리자</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Header -->
+    <section class="dashboard-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="user-greeting">
+                    <h1>🎉 <span id="userName">OOO</span>님의 KAPP 진단 결과</h1>
+                    <p>당신의 역량을 4차원으로 분석하여 성장 전략을 제시합니다</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="window.print()">
+                        <i class="fas fa-download"></i> 리포트 다운로드
+                    </button>
+                    <button class="btn btn-primary" onclick="window.location.href='assessment-kapp.html'">
+                        <i class="fas fa-redo"></i> 재진단하기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard-container">
+        <div class="container">
+            
+            <!-- 1. My Work DNA Section -->
+            <section class="dashboard-section dna-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-dna"></i> 나의 업무 DNA (My Work DNA)</h2>
+                    <p>당신만의 고유한 업무 스타일을 발견하세요</p>
+                </div>
+                
+                <div class="dna-card">
+                    <div class="dna-badge">
+                        <div class="dna-icon" id="dnaIcon">🎯</div>
+                        <h3 id="dnaType">정교한 데이터 조련사</h3>
+                        <div class="dna-code">#<span id="dnaCode">ANALYST_PRECISION</span></div>
+                    </div>
+                    
+                    <div class="dna-description">
+                        <h4>당신의 특징</h4>
+                        <p id="dnaDescription">
+                            데이터를 정밀하게 분석하고 논리적으로 접근하는 스타일입니다. 
+                            복잡한 문제를 체계적으로 해결하며, 객관적인 근거를 바탕으로 의사결정을 합니다.
+                        </p>
+                        
+                        <div class="dna-traits">
+                            <span class="trait-tag">분석적</span>
+                            <span class="trait-tag">논리적</span>
+                            <span class="trait-tag">체계적</span>
+                            <span class="trait-tag">정밀함</span>
+                        </div>
+                    </div>
+                    
+                    <div class="dna-share">
+                        <button class="btn btn-primary" onclick="shareDNA()">
+                            <i class="fab fa-linkedin"></i> LinkedIn 공유
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadDNABadge()">
+                            <i class="fas fa-download"></i> 배지 다운로드
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. KAPP Scores Overview -->
+            <section class="dashboard-section scores-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-line"></i> KAPP 4차원 역량 점수</h2>
+                    <p>당신의 현재 역량 수준을 확인하세요</p>
+                </div>
+                
+                <div class="scores-grid">
+                    <div class="score-card knowledge">
+                        <div class="score-icon">📚</div>
+                        <h3>Knowledge</h3>
+                        <div class="score-value" id="knowledgeScore">85</div>
+                        <div class="score-level">Lv.4 - 전문가</div>
+                        <div class="score-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-card application">
+                        <div class="score-icon">⚙️</div>
+                        <h3>Application</h3>
+                        <div class="score-value" id="applicationScore">78</div>
+                        <div class="score-level">Lv.3 - 숙련자</div>
+                        <div class="score-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-card performance">
+                        <div class="score-icon">📊</div>
+                        <h3>Performance</h3>
+                        <div class="score-value" id="performanceScore">82</div>
+                        <div class="score-level">Lv.4 - 전문가</div>
+                        <div class="score-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 82%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-card productivity">
+                        <div class="score-icon">⚡</div>
+                        <h3>Productivity</h3>
+                        <div class="score-value" id="productivityScore">90</div>
+                        <div class="score-level">Lv.5 - 마스터</div>
+                        <div class="score-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 90%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Radar Chart -->
+                <div class="chart-container">
+                    <canvas id="kappRadarChart"></canvas>
+                </div>
+            </section>
+
+            <!-- 3. Market Position Analysis -->
+            <section class="dashboard-section market-position-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> 시장 포지션 분석</h2>
+                    <p>업계 대비 나의 위치와 성장 기회를 파악하세요</p>
+                </div>
+                
+                <div class="market-position-grid">
+                    <!-- 현재 포지션 -->
+                    <div class="position-card current-position">
+                        <div class="card-header">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <h3>현재 포지션</h3>
+                        </div>
+                        <div class="position-level" id="currentPositionLevel">중급 (Mid-Level)</div>
+                        <div class="position-percentile">
+                            업계 상위 <span class="highlight" id="currentPercentile">35%</span>
+                        </div>
+                        <div class="position-score">
+                            <div class="score-label">종합 역량 점수</div>
+                            <div class="score-value" id="currentMarketScore">72점</div>
+                            <div class="score-bar">
+                                <div class="score-fill" id="currentScoreFill" style="width: 72%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 경쟁력 분석 -->
+                    <div class="position-card competitiveness">
+                        <div class="card-header">
+                            <i class="fas fa-trophy"></i>
+                            <h3>경쟁력 분석</h3>
+                        </div>
+                        <div class="competitive-metrics">
+                            <div class="metric-item">
+                                <span class="metric-icon good">✅</span>
+                                <span class="metric-label">강점 스킬</span>
+                                <span class="metric-value" id="strengthCount">5개</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-icon warning">⚠️</span>
+                                <span class="metric-label">개선 필요</span>
+                                <span class="metric-value" id="improvementCount">3개</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-icon neutral">📊</span>
+                                <span class="metric-label">평균 수준</span>
+                                <span class="metric-value" id="averageCount">2개</span>
+                            </div>
+                        </div>
+                        <div class="market-demand">
+                            <h4>🔥 시장 수요도</h4>
+                            <div class="demand-level high" id="demandLevel">
+                                <span class="demand-text">높음</span>
+                                <span class="demand-badge">채용 공고 1,247건</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 성장 기회 -->
+                    <div class="position-card growth-opportunity">
+                        <div class="card-header">
+                            <i class="fas fa-rocket"></i>
+                            <h3>성장 기회</h3>
+                        </div>
+                        <div class="opportunity-timeline">
+                            <div class="opportunity-item">
+                                <span class="time">6개월</span>
+                                <span class="goal">상위 25%</span>
+                                <span class="probability">85% 달성 가능</span>
+                            </div>
+                            <div class="opportunity-item highlight">
+                                <span class="time">1년</span>
+                                <span class="goal">상위 15%</span>
+                                <span class="probability">72% 달성 가능</span>
+                            </div>
+                            <div class="opportunity-item">
+                                <span class="time">2년</span>
+                                <span class="goal">상위 10%</span>
+                                <span class="probability">58% 달성 가능</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 산업군 벤치마크 레이더 차트 -->
+                <div class="market-radar-section">
+                    <h4>📊 산업군 벤치마크 (상위 10% vs 나)</h4>
+                    <p class="chart-description">업계 최상위권과의 역량 비교를 통해 개선 포인트를 파악하세요</p>
+                    <div class="chart-container">
+                        <canvas id="marketRadarChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 추천 액션 -->
+                <div class="market-action-plan">
+                    <h4>🎯 상위권 진입을 위한 추천 액션</h4>
+                    <div class="action-list" id="marketActionList">
+                        <!-- Actions will be dynamically loaded -->
+                    </div>
+                </div>
+                
+                <div class="market-cta">
+                    <button class="btn btn-primary btn-lg" onclick="startMarketGrowthPlan()">
+                        <i class="fas fa-chart-line"></i> 맞춤 성장 플랜 시작하기
+                    </button>
+                </div>
+            </section>
+
+            <!-- 4. Career Path Simulator -->
+            <section class="dashboard-section career-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-route"></i> 커리어 경로 시뮬레이터</h2>
+                    <p>3~5년 후 당신의 미래를 예측합니다</p>
+                </div>
+                
+                <div class="career-timeline" id="careerTimeline">
+                    <!-- Career path will be dynamically loaded based on industry -->
+                </div>
+                
+                <div class="career-recommendation">
+                    <h4>🎯 목표 달성을 위한 추천 학습 경로</h4>
+                    <div class="learning-path-enhanced" id="learningPathEnhanced">
+                        <!-- Learning path will be dynamically loaded -->
+                    </div>
+                </div>
+                
+                <div class="career-cta">
+                    <button class="btn btn-primary btn-lg" onclick="exploreCourses()">
+                        <i class="fas fa-graduation-cap"></i> 추천 강의 둘러보기
+                    </button>
+                </div>
+            </section>
+
+            <!-- 5. Market Benchmark -->
+            <section class="dashboard-section benchmark-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> 시장 벤치마킹</h2>
+                    <p>동일 업계 대비 나의 위치를 확인하세요</p>
+                </div>
+                
+                <div class="benchmark-chart">
+                    <canvas id="benchmarkChart"></canvas>
+                </div>
+                
+                <div class="benchmark-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">동일 직급 평균</div>
+                        <div class="stat-value" id="positionAvgScore">73점</div>
+                    </div>
+                    <div class="stat-item highlight">
+                        <div class="stat-label">나의 점수</div>
+                        <div class="stat-value" id="myAvgScore">84점</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">상위 백분율</div>
+                        <div class="stat-value" id="percentileRank">상위 28%</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5.5. Skill Growth Trend -->
+            <section class="dashboard-section growth-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-area"></i> 스킬 성장 추이</h2>
+                    <p>최근 6개월간 당신의 역량 변화를 확인하세요</p>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="growthTrendChart"></canvas>
+                </div>
+            </section>
+
+            <!-- 6. AI 분석 인사이트 -->
+            <section class="dashboard-section insights-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-brain"></i> AI 분석 인사이트</h2>
+                    <p>당신의 역량 데이터를 분석하여 맞춤형 조언을 제공합니다</p>
+                </div>
+                
+                <div id="aiInsights" class="insights-grid">
+                    <!-- AI Insights will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- 7. AI 생성형 개인 개발 계획 (IDP) -->
+            <section class="dashboard-section idp-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-robot"></i> 🚀 AI 생성 개인 개발 계획 (Hyper-Bridge IDP)</h2>
+                    <p>진단된 스킬 갭을 메우는 맞춤형 성장 로드맵</p>
+                </div>
+                
+                <div class="idp-container" id="idpContainer">
+                    <!-- IDP will be dynamically generated -->
+                </div>
+            </section>
+
+            <!-- 8. 게이미피케이션 & 성장 트래킹 -->
+            <section class="dashboard-section gamification-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-trophy"></i> 🏆 성장 트래킹 & 배지 컬렉션</h2>
+                    <p>스킬 레벨업과 함께 받는 디지털 배지 및 포인트</p>
+                </div>
+                
+                <div class="gamification-container">
+                    <!-- Growth Stats -->
+                    <div class="growth-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">⭐</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="totalPoints">0</div>
+                                <div class="stat-label">총 포인트</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🏅</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="totalBadges">0</div>
+                                <div class="stat-label">획득 배지</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="levelUpCount">0</div>
+                                <div class="stat-label">레벨업 횟수</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="userRank">-</div>
+                                <div class="stat-label">사내 랭킹</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Badge Collection -->
+                    <div class="badge-collection">
+                        <h4>🎖️ 획득한 배지</h4>
+                        <div class="badge-grid" id="badgeGrid">
+                            <!-- Badges will be dynamically loaded -->
+                        </div>
+                    </div>
+                    
+                    <!-- Leaderboard -->
+                    <div class="leaderboard">
+                        <h4>🏆 사내 스킬 리더보드</h4>
+                        <div class="leaderboard-list" id="leaderboardList">
+                            <!-- Leaderboard will be dynamically loaded -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/idp-generator.js"></script>
+    <script src="js/gamification.js"></script>
+    <script src="js/career-path-by-industry.js"></script>
+    <script src="js/dashboard-kapp.js"></script>
+</body>
+</html>

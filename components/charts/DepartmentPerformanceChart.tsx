@@ -1,7 +1,7 @@
 "use client";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { departmentPerformanceData } from "@/data/departmentPerformance";
+import { departmentPerformanceData } from "@/data/dashboard/departmentPerformance";
 
 export default function DepartmentPerformanceChart() {
   const data = departmentPerformanceData.series;

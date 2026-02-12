@@ -7,7 +7,7 @@ import DepartmentFilterPanel from "./DepartmentFilterPanel";
 import Icon from "@/components/ui/Icon";
 import { format } from "date-fns";
 import * as XLSX from "xlsx";
-import type { CompetencyRecord } from "@/data/competencyRawData";
+import type { CompetencyRecord } from "@/data/competency/competencyRawData";
 
 interface FilterBarProps {
   selectedDepartments: string[];

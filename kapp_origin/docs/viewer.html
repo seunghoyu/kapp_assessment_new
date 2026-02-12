@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문서 뷰어</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      background: #f8f9fa;
+    }
+    .toolbar {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .toolbar a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+    .toolbar a:hover { text-decoration: underline; }
+    #content {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    #content h1 { font-size: 1.75rem; border-bottom: 2px solid #eee; padding-bottom: .5rem; margin-top: 0; }
+    #content h2 { font-size: 1.35rem; margin-top: 1.5rem; }
+    #content h3 { font-size: 1.15rem; margin-top: 1.25rem; }
+    #content h4 { font-size: 1.05rem; margin-top: 1rem; }
+    #content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+    #content th, #content td {
+      border: 1px solid #ddd;
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+    }
+    #content th { background: #f1f3f5; font-weight: 600; }
+    #content tr:nth-child(even) { background: #f9f9f9; }
+    #content pre {
+      background: #f4f4f4;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    #content code {
+      background: #f0f0f0;
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    #content pre code { background: none; padding: 0; }
+    #content ul, #content ol { margin: 0.5rem 0; padding-left: 1.5rem; }
+    #content blockquote {
+      border-left: 4px solid #ddd;
+      margin: 1rem 0;
+      padding-left: 1rem;
+      color: #555;
+    }
+    #content hr { border: none; border-top: 1px solid #eee; margin: 1.5rem 0; }
+    .loading { color: #666; }
+    .error { color: #c00; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <a href="index.html">← 문서 목록</a>
+    <span id="filename" style="color:#666;"></span>
+  </div>
+  <div id="content">
+    <p class="loading">문서를 불러오는 중…</p>
+  </div>
+  <script>
+    (function() {
+      var params = new URLSearchParams(location.search);
+      var file = params.get('file') || '';
+      if (!file) {
+        document.getElementById('content').innerHTML = '<p class="error">?file=파일명.md 형식으로 주소를 입력하세요. 예: viewer.html?file=01_project_brief_product.md</p>';
+        return;
+      }
+      document.getElementById('filename').textContent = file;
+
+      fetch(file)
+        .then(function(res) {
+          if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+          return res.text();
+        })
+        .then(function(md) {
+          marked.setOptions({ gfm: true, breaks: true });
+          var html = marked.parse(md);
+          document.getElementById('content').innerHTML = html;
+        })
+        .catch(function(err) {
+          document.getElementById('content').innerHTML = '<p class="error">파일을 불러올 수 없습니다. 로컬 서버로 열었는지 확인하세요. (npx serve . 또는 Live Server)</p><pre>' + err.message + '</pre>';
+        });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "description": "KAPP 진단 완료 후 저장되는 결과 구조 샘플 (origin: kapp-assessment.js calculateKAPPResults, localStorage kapp_assessment_result)",
+  "userData": {
+    "name": "김해커",
+    "email": "kim@company.com",
+    "industry": "IT",
+    "job": "개발자(Backend)",
+    "position": "대리",
+    "experience": "3-4년",
+    "company": "해커스 캠퍼스",
+    "companySize": "중소기업",
+    "goals": ["스킬업", "승진"],
+    "timestamp": "2025-02-11T12:00:00.000Z"
+  },
+  "scores": {
+    "knowledge": 85,
+    "application": 78,
+    "performance": 82,
+    "productivity": 90
+  },
+  "overallScore": 84,
+  "knowledgeLevel": 4,
+  "answers": {},
+  "questionHistory": [],
+  "etrayActions": [],
+  "etrayDuration": 180000,
+  "timestamp": "2025-02-11T12:30:00.000Z"
+}

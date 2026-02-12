@@ -1,5 +1,5 @@
 
-import { Insight } from '@/data/transformBenchmark';
+import { Insight } from '@/data/benchmark/transformBenchmark';
 import InsightCard from './InsightCard';
 
 interface InsightListProps {

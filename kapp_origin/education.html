@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교육 큐레이션 - 해커스 캠퍼스 Business NEXT GEN Solution</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/education.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>해커스 캠퍼스 Business</h2>
+                <span class="nav-subtitle">NEXT GEN Solution</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">홈</a>
+                <a href="assessment-kapp.html" class="nav-link">🎯 KAPP 진단</a>
+                <a href="dashboard.html" class="nav-link">마이 대시보드</a>
+                <a href="education.html" class="nav-link active">교육 큐레이션</a>
+                <a href="my-growth.html" class="nav-link">🌱 나의 성장</a>
+                <a href="admin.html" class="nav-link">관리자</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Education Header -->
+    <section class="education-header">
+        <div class="container">
+            <h1><i class="fas fa-graduation-cap"></i> AI 맞춤형 교육 큐레이션</h1>
+            <p>진단 결과 기반으로 최적화된 학습 경로를 제시합니다</p>
+        </div>
+    </section>
+
+    <!-- Education Content -->
+    <div class="education-content">
+        <div class="container">
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-header">
+                    <h3><i class="fas fa-filter"></i> 필터</h3>
+                    <button id="resetFilter" class="btn-text">초기화</button>
+                </div>
+                <div class="filter-options">
+                    <div class="filter-group">
+                        <label>산업군</label>
+                        <select id="industryFilter" class="filter-select">
+                            <option value="">전체</option>
+                            <option value="IT">IT</option>
+                            <option value="금융">금융</option>
+                            <option value="의료">의료</option>
+                            <option value="마케팅/광고">마케팅/광고</option>
+                            <option value="교육">교육</option>
+                            <option value="제조">제조</option>
+                            <option value="유통/리테일">유통/리테일</option>
+                            <option value="호텔/관광">호텔/관광</option>
+                            <option value="법률/회계">법률/회계</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>역량 분야</label>
+                        <select id="categoryFilter" class="filter-select">
+                            <option value="">전체</option>
+                            <option value="디지털/IT">디지털/IT</option>
+                            <option value="비즈니스/경영">비즈니스/경영</option>
+                            <option value="마케팅/영업">마케팅/영업</option>
+                            <option value="리더십/HR">리더십/HR</option>
+                            <option value="커뮤니케이션">커뮤니케이션</option>
+                            <option value="자기계발">자기계발</option>
+                            <option value="직무 전문">직무 전문</option>
+                            <option value="어학">어학</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>난이도</label>
+                        <select id="levelFilter" class="filter-select">
+                            <option value="">전체</option>
+                            <option value="입문">입문</option>
+                            <option value="초급">초급</option>
+                            <option value="중급">중급</option>
+                            <option value="고급">고급</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>학습 기간</label>
+                        <select id="durationFilter" class="filter-select">
+                            <option value="">전체</option>
+                            <option value="1주 이내">1주 이내</option>
+                            <option value="1-4주">1-4주</option>
+                            <option value="1-3개월">1-3개월</option>
+                            <option value="3개월 이상">3개월 이상</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommended Section -->
+            <div class="recommended-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-star"></i> 맞춤 추천 교육</h2>
+                    <p id="recommendationReason">진단 결과를 기반으로 추천합니다</p>
+                </div>
+                <div id="recommendedCourses" class="courses-grid"></div>
+            </div>
+
+            <!-- All Courses Section -->
+            <div class="all-courses-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-book"></i> 전체 교육 과정</h2>
+                    <div class="view-controls">
+                        <button class="view-btn active" data-view="grid">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="allCourses" class="courses-grid"></div>
+            </div>
+
+            <!-- Learning Path Section -->
+            <div class="learning-path-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-route"></i> 추천 학습 경로</h2>
+                    <p>체계적인 역량 개발을 위한 단계별 학습 로드맵</p>
+                </div>
+                <div id="learningPath" class="learning-path"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Detail Modal -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="course-detail-header">
+                    <div class="course-badge-group">
+                        <span class="course-badge" id="modalCategory"></span>
+                        <span class="course-badge" id="modalLevel"></span>
+                    </div>
+                    <div class="course-meta">
+                        <span><i class="fas fa-clock"></i> <span id="modalDuration"></span></span>
+                        <span><i class="fas fa-users"></i> <span id="modalStudents"></span>명 수강</span>
+                        <span><i class="fas fa-star"></i> <span id="modalRating"></span></span>
+                    </div>
+                </div>
+                <div class="course-description">
+                    <h3>과정 소개</h3>
+                    <p id="modalDescription"></p>
+                </div>
+                <div class="course-curriculum">
+                    <h3>커리큘럼</h3>
+                    <ul id="modalCurriculum"></ul>
+                </div>
+                <div class="course-outcomes">
+                    <h3>학습 목표</h3>
+                    <ul id="modalOutcomes"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">닫기</button>
+                <button class="btn btn-primary">수강 신청하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/education-data-comprehensive.js"></script>
+    <script src="js/education.js"></script>
+</body>
+</html>

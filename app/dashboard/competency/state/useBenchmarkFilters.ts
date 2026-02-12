@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { loadBenchmarkData } from '@/data/loadBenchmarkData';
+import { loadBenchmarkData } from '@/data/benchmark/loadBenchmarkData';
 
 const { departments, benchmarks } = loadBenchmarkData();
 

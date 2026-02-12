@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { BarData } from '../hooks/useCompetencyFilter';
-import { competencyTypes } from '@/data/competencyRawData';
+import { competencyTypes } from '@/data/competency/competencyRawData';
 import ScoreBarCell from './ScoreBarCell';
 import Pagination from './Pagination';
 import { ArrowUpDown } from 'lucide-react';

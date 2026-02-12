@@ -4,7 +4,7 @@
 import { useMemo } from 'react';
 import Card, { CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useBenchmarkFilters } from '../state/useBenchmarkFilters';
-import { transformBenchmark } from '@/data/transformBenchmark';
+import { transformBenchmark } from '@/data/benchmark/transformBenchmark';
 import BenchmarkFilters from '../components/BenchmarkFilters';
 import InsightList from '../components/InsightList';
 import RadarChart from '../components/RadarChart';

@@ -1,7 +1,7 @@
 "use client";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { DepartmentSkillValue } from "@/data/departmentSkillPerformance";
+import { DepartmentSkillValue } from "@/data/dashboard/departmentSkillPerformance";
 
 interface DepartmentSkillChartProps {
   data: DepartmentSkillValue[];

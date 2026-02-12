@@ -6,7 +6,7 @@ import Badge from "@/components/ui/Badge";
 import Icon from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
-import { employeesData, type Employee } from "@/data/employees";
+import { employeesData, type Employee } from "@/data/employees/employees";
 
 interface EmployeeSectionProps {
   onNotify?: (message: string, type?: "info" | "success") => void;

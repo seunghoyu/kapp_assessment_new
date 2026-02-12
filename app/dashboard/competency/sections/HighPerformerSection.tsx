@@ -13,7 +13,7 @@ import {
   getTeamLabel,
   kappLabels,
   type TeamKey,
-} from "@/data/highPerformerData";
+} from "@/data/competency/highPerformerData";
 
 export default function HighPerformerSection() {
   const [selectedTeam, setSelectedTeam] = useState<TeamKey>("all");

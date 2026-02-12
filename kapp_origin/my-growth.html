@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 성장 - 해커스 캠퍼스 Business NEXT GEN Solution</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/my-growth.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>해커스 캠퍼스 Business</h2>
+                <span class="nav-subtitle">NEXT GEN Solution</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">홈</a>
+                <a href="assessment-kapp.html" class="nav-link">🎯 KAPP 진단</a>
+                <a href="dashboard-kapp.html" class="nav-link">마이 대시보드</a>
+                <a href="education.html" class="nav-link">교육 큐레이션</a>
+                <a href="my-growth.html" class="nav-link active">나의 성장</a>
+                <a href="admin.html" class="nav-link">관리자</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="growth-header">
+        <div class="container">
+            <div class="header-content">
+                <h1><i class="fas fa-seedling"></i> 나의 성장 여정</h1>
+                <p>매일 1%씩 성장하는 나를 응원합니다</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="growth-content">
+        <div class="container">
+            
+            <!-- 1. Daily Micro-Challenge -->
+            <section class="feature-section">
+                <div class="section-header">
+                    <div class="header-left">
+                        <h2><i class="fas fa-bolt"></i> 오늘의 1% 효율 챌린지</h2>
+                        <p class="section-desc">매일 1분, 실무에 바로 적용 가능한 팁</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="getTodayTip()">
+                        <i class="fas fa-sync-alt"></i> 새 팁 받기
+                    </button>
+                </div>
+
+                <div class="daily-tip-card" id="dailyTipCard">
+                    <div class="tip-header">
+                        <span class="tip-category" id="tipCategory">생산성</span>
+                        <span class="tip-duration"><i class="fas fa-clock"></i> 1분</span>
+                    </div>
+                    <h3 class="tip-title" id="tipTitle">오늘의 팁을 불러오는 중...</h3>
+                    <p class="tip-content" id="tipContent">잠시만 기다려주세요.</p>
+                    <div class="tip-action">
+                        <button class="btn btn-primary" onclick="completeTip()">
+                            <i class="fas fa-check"></i> 적용 완료
+                        </button>
+                        <button class="btn btn-ghost" onclick="saveTipForLater()">
+                            <i class="fas fa-bookmark"></i> 나중에 보기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Streak Counter -->
+                <div class="streak-section">
+                    <div class="streak-card">
+                        <div class="streak-icon">🔥</div>
+                        <div class="streak-info">
+                            <h3>연속 학습 기록</h3>
+                            <p class="streak-count"><span id="streakDays">0</span>일</p>
+                        </div>
+                    </div>
+                    <div class="streak-card">
+                        <div class="streak-icon">✅</div>
+                        <div class="streak-info">
+                            <h3>완료한 팁</h3>
+                            <p class="streak-count"><span id="completedTips">0</span>개</p>
+                        </div>
+                    </div>
+                    <div class="streak-card">
+                        <div class="streak-icon">🎯</div>
+                        <div class="streak-info">
+                            <h3>이번 주 목표</h3>
+                            <p class="streak-count"><span id="weeklyProgress">0</span>/7</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tip History -->
+                <div class="tip-history">
+                    <h3><i class="fas fa-history"></i> 지난 팁 다시보기</h3>
+                    <div class="tip-history-list" id="tipHistoryList">
+                        <!-- History items will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. AI Career Mentoring -->
+            <section class="feature-section">
+                <div class="section-header">
+                    <div class="header-left">
+                        <h2><i class="fas fa-robot"></i> AI 커리어 멘토링</h2>
+                        <p class="section-desc">다음 커리어 목표를 위한 1:1 코칭</p>
+                    </div>
+                </div>
+
+                <!-- Career Goal Selection -->
+                <div class="career-goal-section">
+                    <h3>선망하는 다음 커리어를 선택하세요</h3>
+                    <div class="career-goal-grid">
+                        <!-- IT -->
+                        <div class="career-goal-card" onclick="selectCareerGoal('tech-lead')">
+                            <div class="goal-icon">💻</div>
+                            <h4>테크 리드</h4>
+                            <p>기술 아키텍처</p>
+                            <span class="goal-industry">IT</span>
+                        </div>
+                        <div class="career-goal-card" onclick="selectCareerGoal('data-scientist')">
+                            <div class="goal-icon">📊</div>
+                            <h4>데이터 사이언티스트</h4>
+                            <p>데이터 분석 & AI</p>
+                            <span class="goal-industry">IT</span>
+                        </div>
+                        
+                        <!-- 금융 -->
+                        <div class="career-goal-card" onclick="selectCareerGoal('financial-analyst')">
+                            <div class="goal-icon">💰</div>
+                            <h4>금융 애널리스트</h4>
+                            <p>재무 분석 & 리스크</p>
+                            <span class="goal-industry">금융</span>
+                        </div>
+                        
+                        <!-- 의료 -->
+                        <div class="career-goal-card" onclick="selectCareerGoal('healthcare-manager')">
+                            <div class="goal-icon">🏥</div>
+                            <h4>의료 데이터 관리자</h4>
+                            <p>EMR & 의료 분석</p>
+                            <span class="goal-industry">의료</span>
+                        </div>
+                        
+                        <!-- 마케팅/광고 -->
+                        <div class="career-goal-card" onclick="selectCareerGoal('marketing-lead')">
+                            <div class="goal-icon">👔</div>
+                            <h4>마케팅 팀장</h4>
+                            <p>전략 수립 & 팀 리딩</p>
+                            <span class="goal-industry">마케팅/광고</span>
+                        </div>
+                        
+                        <!-- 교육 -->
+                        <div class="career-goal-card" onclick="selectCareerGoal('education-director')">
+                            <div class="goal-icon">📚</div>
+                            <h4>교육 콘텐츠 디렉터</h4>
+                            <p>커리큘럼 & 콘텐츠</p>
+                            <span class="goal-industry">교육</span>
+                        </div>
+                        
+                        <!-- 제조 -->
+                        <div class="career-goal-card" onclick="selectCareerGoal('production-manager')">
+                            <div class="goal-icon">🏭</div>
+                            <h4>생산 관리자</h4>
+                            <p>프로세스 & 품질</p>
+                            <span class="goal-industry">제조</span>
+                        </div>
+                        
+                        <!-- 유통/리테일 -->
+                        <div class="career-goal-card" onclick="selectCareerGoal('retail-manager')">
+                            <div class="goal-icon">🛒</div>
+                            <h4>리테일 매니저</h4>
+                            <p>고객 경험 & 운영</p>
+                            <span class="goal-industry">유통/리테일</span>
+                        </div>
+                        
+                        <!-- 호텔/관광 -->
+                        <div class="career-goal-card" onclick="selectCareerGoal('hospitality-manager')">
+                            <div class="goal-icon">🏨</div>
+                            <h4>호텔 수익 관리자</h4>
+                            <p>수익 최적화 & 운영</p>
+                            <span class="goal-industry">호텔/관광</span>
+                        </div>
+                        
+                        <!-- 기타 -->
+                        <div class="career-goal-card" onclick="selectCareerGoal('product-manager')">
+                            <div class="goal-icon">🚀</div>
+                            <h4>프로덕트 매니저</h4>
+                            <p>제품 기획 & 실행</p>
+                            <span class="goal-industry">기타</span>
+                        </div>
+                        <div class="career-goal-card" onclick="selectCareerGoal('business-dev')">
+                            <div class="goal-icon">💼</div>
+                            <h4>신사업 기획자</h4>
+                            <p>사업 기회 발굴</p>
+                            <span class="goal-industry">기타</span>
+                        </div>
+                        
+                        <!-- 직접 입력 -->
+                        <div class="career-goal-card" onclick="selectCareerGoal('custom')">
+                            <div class="goal-icon">✏️</div>
+                            <h4>직접 입력</h4>
+                            <p>원하는 직무 입력</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Chat Interface -->
+                <div class="ai-mentor-chat" id="aiMentorChat" style="display: none;">
+                    <div class="chat-header">
+                        <div class="mentor-info">
+                            <div class="mentor-avatar">🤖</div>
+                            <div>
+                                <h4>AI 커리어 멘토</h4>
+                                <p class="status-online">온라인</p>
+                            </div>
+                        </div>
+                        <button class="btn-close" onclick="closeAIChat()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Messages will be loaded here -->
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chatInput" placeholder="질문을 입력하세요..." 
+                               onkeypress="handleChatKeyPress(event)" />
+                        <button class="btn btn-primary" onclick="sendChatMessage()">
+                            <i class="fas fa-paper-plane"></i> 전송
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Career Gap Analysis -->
+                <div class="career-gap-section" id="careerGapSection" style="display: none;">
+                    <h3>현재 vs 목표 역량 갭 분석</h3>
+                    <div class="gap-analysis-grid" id="gapAnalysisGrid">
+                        <!-- Gap analysis will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Verifiable Skill Badge -->
+            <section class="feature-section">
+                <div class="section-header">
+                    <div class="header-left">
+                        <h2><i class="fas fa-certificate"></i> 역량 인증서</h2>
+                        <p class="section-desc">공식 인증으로 나의 역량을 증명하세요</p>
+                    </div>
+                </div>
+
+                <!-- Badge Preview -->
+                <div class="badge-preview-section">
+                    <div class="badge-preview" id="badgePreview">
+                        <div class="badge-header">
+                            <div class="badge-logo">
+                                <h3>해커스 캠퍼스</h3>
+                                <p>Business NEXT GEN</p>
+                            </div>
+                            <div class="badge-qr">
+                                <div class="qr-placeholder">
+                                    <i class="fas fa-qrcode"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="badge-content">
+                            <h2 class="certificate-title">역량 진단 인증서</h2>
+                            <p class="certificate-subtitle">KAPP 4차원 역량 평가</p>
+                            
+                            <div class="certificate-recipient">
+                                <h3 id="badgeName">홍길동</h3>
+                                <p id="badgePosition">개발팀 | 시니어</p>
+                            </div>
+
+                            <div class="badge-scores">
+                                <div class="score-item">
+                                    <span class="score-label">Knowledge</span>
+                                    <span class="score-value" id="badgeKnowledge">85</span>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-label">Application</span>
+                                    <span class="score-value" id="badgeApplication">78</span>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-label">Performance</span>
+                                    <span class="score-value" id="badgePerformance">82</span>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-label">Productivity</span>
+                                    <span class="score-value" id="badgeProductivity">90</span>
+                                </div>
+                            </div>
+
+                            <div class="badge-overall">
+                                <h3>종합 점수</h3>
+                                <p class="overall-score" id="badgeOverall">84</p>
+                                <p class="overall-grade" id="badgeGrade">우수</p>
+                            </div>
+
+                            <div class="certificate-footer">
+                                <p class="issue-date">발급일: <span id="badgeIssueDate">2026.01.31</span></p>
+                                <p class="certificate-id">인증번호: <span id="badgeCertId">KAPP-2026-001234</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="badge-actions">
+                        <button class="btn btn-primary btn-lg" onclick="downloadBadge()">
+                            <i class="fas fa-download"></i> 인증서 다운로드 (PDF)
+                        </button>
+                        <button class="btn btn-secondary btn-lg" onclick="shareToLinkedIn()">
+                            <i class="fab fa-linkedin"></i> LinkedIn에 공유
+                        </button>
+                        <button class="btn btn-ghost btn-lg" onclick="copyBadgeLink()">
+                            <i class="fas fa-link"></i> 링크 복사
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Verification Info -->
+                <div class="verification-info">
+                    <h3><i class="fas fa-shield-alt"></i> 인증서 신뢰성</h3>
+                    <div class="verification-grid">
+                        <div class="verification-item">
+                            <div class="verify-icon">🔐</div>
+                            <h4>블록체인 인증</h4>
+                            <p>변조 불가능한 분산 원장에 기록</p>
+                        </div>
+                        <div class="verification-item">
+                            <div class="verify-icon">✅</div>
+                            <h4>QR 코드 검증</h4>
+                            <p>언제든지 진위 여부 확인 가능</p>
+                        </div>
+                        <div class="verification-item">
+                            <div class="verify-icon">🌐</div>
+                            <h4>공개 프로필</h4>
+                            <p>웹에서 누구나 열람 가능</p>
+                        </div>
+                        <div class="verification-item">
+                            <div class="verify-icon">🏆</div>
+                            <h4>업계 인정</h4>
+                            <p>500+ 기업 공식 인증</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badge Collection -->
+                <div class="badge-collection">
+                    <h3><i class="fas fa-trophy"></i> 나의 뱃지 컬렉션</h3>
+                    <div class="badge-collection-grid" id="badgeCollectionGrid">
+                        <!-- Badges will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/education-data-comprehensive.js"></script>
+    <script src="js/my-growth.js"></script>
+</body>
+</html>

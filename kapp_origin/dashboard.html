@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이 대시보드 - 해커스 캠퍼스 Business NEXT GEN Solution</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>해커스 캠퍼스 Business</h2>
+                <span class="nav-subtitle">NEXT GEN Solution</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">홈</a>
+                <a href="assessment-kapp.html" class="nav-link">🎯 KAPP 진단</a>
+                <a href="dashboard.html" class="nav-link active">마이 대시보드</a>
+                <a href="education.html" class="nav-link">교육 큐레이션</a>
+                <a href="admin.html" class="nav-link">관리자</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Header -->
+    <section class="dashboard-header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1 id="userName">환영합니다!</h1>
+                    <p id="userInfo">역량 진단을 통해 맞춤형 인사이트를 확인하세요</p>
+                </div>
+                <div class="header-actions">
+                    <a href="assessment.html" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> 재진단하기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+        <div class="container">
+            <!-- No Data State -->
+            <div id="noDataState" class="no-data-state">
+                <div class="no-data-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h2>아직 진단 결과가 없습니다</h2>
+                    <p>역량 진단을 완료하시면 맞춤형 대시보드가 표시됩니다</p>
+                    <a href="assessment.html" class="btn btn-primary btn-lg">
+                        <i class="fas fa-brain"></i> 역량 진단 시작하기
+                    </a>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div id="dashboardGrid" class="dashboard-grid" style="display: none;">
+                <!-- Overview Cards -->
+                <div class="overview-section">
+                    <h2 class="section-title-dash">역량 개요</h2>
+                    <div class="overview-cards">
+                        <div class="overview-card">
+                            <div class="card-icon primary">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>종합 점수</h3>
+                                <p class="card-value" id="overallScore">-</p>
+                                <span class="card-label">평균 대비 +15%</span>
+                            </div>
+                        </div>
+
+                        <div class="overview-card">
+                            <div class="card-icon success">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>최고 역량</h3>
+                                <p class="card-value-text" id="topSkill">-</p>
+                                <span class="card-label">강점 영역</span>
+                            </div>
+                        </div>
+
+                        <div class="overview-card">
+                            <div class="card-icon warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>개선 필요</h3>
+                                <p class="card-value-text" id="weakSkill">-</p>
+                                <span class="card-label">집중 개발 영역</span>
+                            </div>
+                        </div>
+
+                        <div class="overview-card">
+                            <div class="card-icon info">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>추천 교육</h3>
+                                <p class="card-value" id="recommendedCourses">3개</p>
+                                <span class="card-label">맞춤 콘텐츠</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-radar"></i> 역량 분석</h3>
+                            <div class="card-actions">
+                                <button class="btn-icon" title="새로고침">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="height: 400px;">
+                            <canvas id="radarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-bar"></i> 역량별 점수</h3>
+                            <div class="card-actions">
+                                <select id="chartTypeSelect" class="chart-select">
+                                    <option value="bar">막대 그래프</option>
+                                    <option value="line">선 그래프</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="height: 400px;">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills Detail Section -->
+                <div class="skills-section">
+                    <h2 class="section-title-dash">상세 역량 분석</h2>
+                    <div id="skillsList" class="skills-list"></div>
+                </div>
+
+                <!-- Recommendations Section -->
+                <div class="recommendations-section">
+                    <h2 class="section-title-dash">맞춤 추천</h2>
+                    <div class="recommendations-grid">
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h3>우선 학습 과목</h3>
+                            <ul id="priorityCourses">
+                                <li>진단 결과를 기반으로 추천됩니다</li>
+                            </ul>
+                            <a href="education.html" class="btn btn-primary">
+                                교육 보기 <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <h3>개발 조언</h3>
+                            <ul id="developmentTips">
+                                <li>진단 결과를 기반으로 제공됩니다</li>
+                            </ul>
+                        </div>
+
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-target"></i>
+                            </div>
+                            <h3>학습 목표</h3>
+                            <ul id="learningGoals">
+                                <li>진단 결과를 기반으로 설정됩니다</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Section -->
+                <div class="history-section">
+                    <div class="card-header">
+                        <h2 class="section-title-dash">진단 이력</h2>
+                        <button class="btn btn-secondary btn-sm">
+                            <i class="fas fa-download"></i> 리포트 다운로드
+                        </button>
+                    </div>
+                    <div class="history-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <h4>최초 역량 진단</h4>
+                                    <span class="timeline-date" id="assessmentDate">-</span>
+                                </div>
+                                <p>종합 점수: <strong id="historyScore">-</strong></p>
+                                <div class="timeline-tags">
+                                    <span class="tag tag-primary">기초 진단</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

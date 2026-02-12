@@ -1,0 +1,559 @@
+/* KAPP Assessment Styles */
+
+.kapp-badges {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.kapp-badge {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Enhanced User Form */
+.user-form-kapp {
+    text-align: left;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-section {
+    background: var(--light-color);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.form-section h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-section h3 i {
+    color: var(--primary-color);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.checkbox-label:hover {
+    border-color: var(--primary-color);
+    background: rgba(0, 102, 255, 0.05);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"]:checked + span {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.info-notice {
+    background: rgba(0, 102, 255, 0.1);
+    border-left: 4px solid var(--primary-color);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.info-notice i {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+
+.info-notice p {
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* KAPP Assessment Card */
+.kapp-assessment-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+}
+
+.category-indicator {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--gradient-primary);
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.category-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.category-info h4 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.category-info p {
+    opacity: 0.95;
+    font-size: 0.95rem;
+}
+
+/* Question Content */
+.question-content {
+    margin-bottom: 2rem;
+}
+
+.question-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.question-number {
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.difficulty-badge {
+    padding: 0.3rem 0.8rem;
+    background: rgba(246, 173, 85, 0.1);
+    color: var(--warning-color);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.difficulty-badge.easy {
+    background: rgba(72, 187, 120, 0.1);
+    color: var(--success-color);
+}
+
+.difficulty-badge.hard {
+    background: rgba(255, 107, 107, 0.1);
+    color: var(--accent-color);
+}
+
+.question-scenario {
+    background: var(--light-color);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+    margin: 1.5rem 0;
+    white-space: pre-line;
+    line-height: 1.8;
+    color: var(--text-color);
+}
+
+.answer-options-kapp {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.answer-option-kapp {
+    background: var(--light-color);
+    border: 2px solid var(--border-color);
+    padding: 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.answer-option-kapp:hover {
+    border-color: var(--primary-color);
+    background: rgba(0, 102, 255, 0.05);
+    transform: translateX(5px);
+}
+
+.answer-option-kapp.selected {
+    border-color: var(--primary-color);
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.answer-option-kapp .option-label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    display: block;
+}
+
+.answer-option-kapp .option-text {
+    line-height: 1.6;
+}
+
+.nav-info {
+    text-align: center;
+    flex: 1;
+}
+
+.adaptive-info {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* E-tray Simulation */
+.etray-container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.etray-header {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.etray-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 1rem;
+}
+
+.etray-workspace {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: 500px;
+}
+
+.etray-sidebar {
+    background: var(--light-color);
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem;
+}
+
+.etray-sidebar h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.unread-count {
+    background: var(--accent-color);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.email-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.email-item {
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.email-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.email-item.unread {
+    font-weight: 700;
+}
+
+.email-item.selected {
+    border-color: var(--primary-color);
+    background: rgba(0, 102, 255, 0.05);
+}
+
+.email-sender {
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 0.3rem;
+}
+
+.email-subject {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-bottom: 0.3rem;
+}
+
+.email-time {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.email-priority {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.3rem;
+}
+
+.priority-high {
+    background: rgba(255, 107, 107, 0.1);
+    color: var(--accent-color);
+}
+
+.priority-medium {
+    background: rgba(246, 173, 85, 0.1);
+    color: var(--warning-color);
+}
+
+.priority-low {
+    background: rgba(72, 187, 120, 0.1);
+    color: var(--success-color);
+}
+
+.etray-main {
+    padding: 2rem;
+}
+
+.email-content-area {
+    background: var(--light-color);
+    padding: 2rem;
+    border-radius: 12px;
+    min-height: 400px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: var(--text-light);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.email-header {
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.email-from {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.email-subject-full {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.email-meta {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.email-body {
+    line-height: 1.8;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    white-space: pre-line;
+}
+
+.email-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.email-action-btn {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid var(--border-color);
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.email-action-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: white;
+}
+
+#etrayComplete {
+    margin: 2rem;
+    width: calc(100% - 4rem);
+    position: relative;
+    animation: pulseButton 2s infinite;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    font-size: 1.1rem;
+    padding: 1.2rem 2rem;
+}
+
+#etrayComplete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+@keyframes pulseButton {
+    0%, 100% {
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 25px rgba(102, 126, 234, 0.6);
+    }
+}
+
+/* Analysis Screen */
+.analysis-progress {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+}
+
+.analysis-step {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: var(--light-color);
+    border-radius: 12px;
+    transition: all 0.5s;
+    opacity: 0.3;
+}
+
+.analysis-step.active {
+    opacity: 1;
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.analysis-step i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.analysis-step span {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .checkbox-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .etray-workspace {
+        grid-template-columns: 1fr;
+    }
+    
+    .etray-sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .kapp-assessment-card {
+        padding: 2rem;
+    }
+    
+    .category-indicator {
+        flex-direction: column;
+        text-align: center;
+    }
+}

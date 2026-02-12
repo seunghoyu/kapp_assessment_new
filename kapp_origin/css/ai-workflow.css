@@ -1,0 +1,185 @@
+/* AI Workflow Simulation Styles */
+
+#aiWorkflowScreen {
+    padding: 2rem;
+}
+
+.workflow-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.workflow-header i {
+    font-size: 4rem;
+    color: #8b5cf6;
+    margin-bottom: 1rem;
+}
+
+.workflow-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+}
+
+.workflow-subtitle {
+    font-size: 1.1rem;
+    color: #718096;
+}
+
+.workflow-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.workflow-scenario h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.workflow-task {
+    background: #f7fafc;
+    border-left: 4px solid #8b5cf6;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.workflow-task pre {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2d3748;
+}
+
+.workflow-timer {
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    display: inline-block;
+    margin: 0 auto 2rem;
+    display: block;
+    width: fit-content;
+}
+
+.workflow-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.workflow-option {
+    position: relative;
+}
+
+.workflow-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.workflow-option label {
+    display: block;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.workflow-option label:hover {
+    border-color: #8b5cf6;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+.workflow-option input[type="radio"]:checked + label {
+    border-color: #8b5cf6;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
+}
+
+.workflow-option label strong {
+    display: block;
+    font-size: 1.1rem;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.workflow-steps {
+    background: #f7fafc;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.workflow-step {
+    font-size: 0.9rem;
+    color: #4a5568;
+    margin: 0.5rem 0;
+    padding-left: 0.5rem;
+}
+
+.workflow-metrics {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.metric {
+    display: inline-block;
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+#aiWorkflowComplete {
+    display: block;
+    margin: 2rem auto 0;
+    padding: 1rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#aiWorkflowComplete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+#aiWorkflowComplete:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .workflow-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .workflow-option label {
+        padding: 1rem;
+    }
+    
+    .workflow-metrics {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

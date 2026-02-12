@@ -1,0 +1,51 @@
+/** 직원 관리 raw 데이터 - data/employees/ (직원 관리 페이지용) */
+
+export type TrainingStatus = "in_progress" | "not_started" | "completed";
+
+export interface EmployeeRow {
+  id: string;
+  name: string;
+  department: string;
+  role: string;
+  overallScore: number;
+  strength: string;
+  weakness: string;
+  trainingStatus: TrainingStatus;
+}
+
+export const employeesData = {
+  tableMeta: {
+    columns: [
+      "이름",
+      "부서",
+      "직무",
+      "종합 점수",
+      "강점 역량",
+      "개선 필요",
+      "교육 현황",
+      "액션",
+    ],
+  },
+  rows: [
+    { id: "e-001", name: "김알렉스", department: "개발", role: "백엔드 엔지니어", overallScore: 84, strength: "문제 해결", weakness: "프레젠테이션", trainingStatus: "in_progress" as TrainingStatus },
+    { id: "e-002", name: "박미나", department: "마케팅", role: "그로스 리드", overallScore: 76, strength: "캠페인 전략", weakness: "데이터 분석", trainingStatus: "not_started" as TrainingStatus },
+    { id: "e-003", name: "이재", department: "영업", role: "어카운트 매니저", overallScore: 71, strength: "고객 관계", weakness: "협상", trainingStatus: "completed" as TrainingStatus },
+    { id: "e-004", name: "최사라", department: "인사", role: "HRBP", overallScore: 88, strength: "코칭", weakness: "", trainingStatus: "in_progress" as TrainingStatus },
+    { id: "e-005", name: "한대니엘", department: "재무", role: "애널리스트", overallScore: 69, strength: "리포팅", weakness: "협업", trainingStatus: "not_started" as TrainingStatus },
+    { id: "e-006", name: "서유나", department: "개발", role: "프론트엔드 엔지니어", overallScore: 91, strength: "UI 아키텍처", weakness: "", trainingStatus: "completed" as TrainingStatus },
+    { id: "e-007", name: "정크리스", department: "영업", role: "세일즈 운영", overallScore: 63, strength: "파이프라인 관리", weakness: "스토리텔링", trainingStatus: "in_progress" as TrainingStatus },
+    { id: "e-008", name: "임하나", department: "마케팅", role: "콘텐츠 전략", overallScore: 79, strength: "메시징", weakness: "분석", trainingStatus: "not_started" as TrainingStatus },
+    { id: "e-009", name: "유민호", department: "개발", role: "데브옵스", overallScore: 85, strength: "안정성", weakness: "이해관계자 공유", trainingStatus: "completed" as TrainingStatus },
+    { id: "e-010", name: "박소연", department: "인사", role: "리크루터", overallScore: 74, strength: "소싱", weakness: "오퍼 협상", trainingStatus: "in_progress" as TrainingStatus },
+    { id: "e-011", name: "권이든", department: "재무", role: "FP&A", overallScore: 81, strength: "예측", weakness: "정렬", trainingStatus: "not_started" as TrainingStatus },
+    { id: "e-012", name: "강지수", department: "개발", role: "QA", overallScore: 67, strength: "테스트 기획", weakness: "자동화", trainingStatus: "in_progress" as TrainingStatus },
+    { id: "e-013", name: "오나라", department: "마케팅", role: "퍼포먼스 마케터", overallScore: 73, strength: "최적화", weakness: "", trainingStatus: "completed" as TrainingStatus },
+    { id: "e-014", name: "신피터", department: "영업", role: "BD", overallScore: 78, strength: "개척", weakness: "제안서 작성", trainingStatus: "not_started" as TrainingStatus },
+    { id: "e-015", name: "김그레이스", department: "인사", role: "L&D", overallScore: 92, strength: "프로그램 설계", weakness: "분석", trainingStatus: "completed" as TrainingStatus },
+    { id: "e-016", name: "박레오", department: "개발", role: "데이터 엔지니어", overallScore: 58, strength: "파이프라인", weakness: "비즈니스 이해", trainingStatus: "in_progress" as TrainingStatus },
+    { id: "e-017", name: "문아이리스", department: "재무", role: "컨트롤러", overallScore: 86, strength: "컴플라이언스", weakness: "프로세스 자동화", trainingStatus: "completed" as TrainingStatus },
+    { id: "e-018", name: "이톰", department: "영업", role: "AE", overallScore: 66, strength: "데모 진행", weakness: "파이프라인 정확도", trainingStatus: "not_started" as TrainingStatus },
+    { id: "e-019", name: "조리나", department: "마케팅", role: "브랜드 매니저", overallScore: 80, strength: "브랜드 전략", weakness: "예산 관리", trainingStatus: "in_progress" as TrainingStatus },
+    { id: "e-020", name: "박케빈", department: "개발", role: "프로덕트 엔지니어", overallScore: 77, strength: "제품 사고", weakness: "문서화", trainingStatus: "completed" as TrainingStatus },
+  ],
+};

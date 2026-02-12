@@ -16,3 +16,8 @@ body {
   color: var(--foreground);
   font-family: var(--font-noto-sans-kr), "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+
+/* Next.js Dev Tools 버튼 비표시 (개발 시 주입되는 버튼 제거) */
+[data-nextjs-dev-tools-button] {
+  display: none !important;
+}

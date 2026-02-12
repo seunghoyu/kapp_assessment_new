@@ -1,0 +1,213 @@
+﻿page:
+  id: admin_dashboard
+  file: admin.html
+  purpose: "Organization admin analytics and management dashboard"
+
+layout:
+  structure:
+    - navbar
+    - header
+    - main
+
+sections:
+  - id: admin_header
+    role: "Page intro and global actions"
+    components:
+      - type: PageHeader
+        purpose: "Introduce admin dashboard and primary actions"
+        fields: [title, subtitle, action_buttons]
+
+  - id: overview_stats
+    role: "High-level KPIs summary"
+    components:
+      - type: StatCardGrid
+        purpose: "Show organization metrics"
+        fields: [stat_cards]
+      - type: StatCard
+        purpose: "Single KPI"
+        fields: [icon, label, value, delta]
+
+  - id: charts_row
+    role: "Department and distribution analytics"
+    components:
+      - type: ChartCard
+        purpose: "Department performance by period"
+        fields: [title, period_select, chart]
+        chart:
+          type: BarChart_or_LineChart
+      - type: ChartCard
+        purpose: "Skill distribution overview"
+        fields: [title, refresh_button, chart]
+        chart:
+          type: PieChart_or_DoughnutChart
+
+  - id: progress_tracking
+    role: "Program progress monitoring"
+    components:
+      - type: FilterTabs
+        purpose: "Filter progress cards by status"
+        fields: [all, ongoing, completed]
+      - type: ProgressCardGrid
+        purpose: "Show training program progress"
+        fields: [progress_cards]
+      - type: ProgressCard
+        purpose: "Single program progress snapshot"
+        fields: [program_name, participants, status_badge, progress_value, goal_value]
+
+  - id: employee_table
+    role: "Employee skill status list"
+    components:
+      - type: DataTable
+        purpose: "Display employee performance by skill"
+        fields:
+          - search_input
+          - add_employee_button
+          - columns
+          - rows
+          - row_actions
+
+  - id: ai_insights
+    role: "AI-generated organization insights"
+    components:
+      - type: InsightCardGrid
+        purpose: "Highlight key findings"
+        fields: [insight_cards]
+      - type: InsightCard
+        purpose: "Single insight"
+        fields: [priority_level, title, description, icon]
+
+  - id: skill_gap_heatmap
+    role: "Skill gap visualization"
+    components:
+      - type: FilterPanel
+        purpose: "Control heatmap scope"
+        fields: [department_select, skill_category_select, refresh_button]
+      - type: Heatmap
+        purpose: "Matrix of skill gaps"
+        fields: [grid, legend]
+
+  - id: industry_benchmark
+    role: "Benchmark against industry leaders"
+    components:
+      - type: FilterPanel
+        purpose: "Select benchmark parameters"
+        fields: [department_select, industry_select, analyze_button]
+      - type: Chart
+        purpose: "Benchmark comparison"
+        type: RadarChart
+      - type: InsightList
+        purpose: "Benchmark insights"
+        fields: [insight_items]
+
+  - id: strategy_skill_mapper
+    role: "Map strategy to people and training"
+    components:
+      - type: InputPanel
+        purpose: "Provide strategy input"
+        fields: [strategy_input, analyze_button]
+      - type: ResultPanels
+        purpose: "Show AI-recommended actions"
+        fields: [recommended_people, recommended_training, execution_roadmap]
+
+  - id: roi_calculator
+    role: "Training ROI estimation"
+    components:
+      - type: Form
+        purpose: "Collect ROI inputs"
+        fields: [employee_count, cost_per_person, skill_improvement, calculate_button]
+      - type: ResultPanels
+        purpose: "ROI outputs"
+        fields: [investment, return, profit, percentage, breakdown_list, download_report_button]
+
+  - id: high_performer_cloning
+    role: "Analyze top performer DNA"
+    components:
+      - type: FilterPanel
+        purpose: "Select comparison scope"
+        fields: [team_select, analyze_button]
+      - type: Chart
+        purpose: "Golden standard profile"
+        type: RadarChart_or_CustomProfileChart
+      - type: GapAnalysisPanel
+        purpose: "Compare gaps vs standard"
+        fields: [gap_items]
+
+  - id: skill_risk_management
+    role: "Skill risk detection and monitoring"
+    components:
+      - type: FilterPanel
+        purpose: "Filter by risk level"
+        fields: [risk_level_select, refresh_button]
+      - type: RiskSummaryCards
+        purpose: "Risk counts by severity"
+        fields: [critical, high, medium, low]
+      - type: RiskDetailList
+        purpose: "List risk items"
+        fields: [risk_items]
+
+components:
+  - name: Navbar
+    purpose: "Primary navigation"
+    fields: [brand, nav_links, active_link_state]
+  - name: PageHeader
+    purpose: "Section header with actions"
+    fields: [title, subtitle, action_buttons]
+  - name: StatCard
+    purpose: "Display key metric"
+    fields: [icon, label, value, delta]
+  - name: ChartCard
+    purpose: "Chart with header and controls"
+    fields: [title, controls, chart]
+  - name: ProgressCard
+    purpose: "Program progress summary"
+    fields: [label, status, progress_value, goal_value]
+  - name: DataTable
+    purpose: "Tabular dataset"
+    fields: [columns, rows, row_actions, search]
+  - name: InsightCard
+    purpose: "Actionable insight"
+    fields: [priority, title, description]
+  - name: FilterPanel
+    purpose: "Filtering controls"
+    fields: [selects, buttons]
+  - name: Heatmap
+    purpose: "Matrix visualization"
+    fields: [grid, legend]
+  - name: InputPanel
+    purpose: "Text input + primary action"
+    fields: [input, action_button]
+  - name: ResultPanels
+    purpose: "Generated recommendations/results"
+    fields: [sections]
+  - name: RiskSummaryCards
+    purpose: "Risk counts"
+    fields: [severity, count]
+
+interactions:
+  - type: navigation
+    actions: [nav_link_click]
+  - type: admin_actions
+    actions: [download_report_click, open_settings_click]
+  - type: filters
+    actions: [select_period, select_department, select_industry, select_skill_category, select_risk_level]
+  - type: progress_filter
+    actions: [filter_all, filter_ongoing, filter_completed]
+  - type: chart_actions
+    actions: [refresh_chart, analyze_benchmark]
+  - type: roi
+    actions: [calculate_roi, download_roi_report]
+  - type: strategy_mapper
+    actions: [submit_strategy, view_recommendations]
+  - type: high_performer
+    actions: [analyze_high_performers]
+  - type: table
+    actions: [search_employee, add_employee, row_action]
+
+states:
+  - loading: "Charts and generated sections while fetching or computing"
+  - empty: "Tables, lists, and generated sections with no data"
+  - error: "Failed analytics or data retrieval"
+  - disabled: "Actions unavailable until inputs selected"
+  - selected: "Active filters or tabs"
+  - active: "Current filter/tab or focused control"
+  - hidden: "Result panels before analysis"

@@ -1,6 +1,6 @@
 
 import Badge from '@/components/ui/Badge';
-import { Insight } from '@/data/transformBenchmark';
+import { Insight } from '@/data/benchmark/transformBenchmark';
 
 interface InsightCardProps {
   insight: Insight;

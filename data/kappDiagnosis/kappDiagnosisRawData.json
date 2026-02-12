@@ -1,0 +1,100 @@
+{
+  "$schema": "KAPP 진단 1회분 Raw 데이터 (정규화 구조). 진단 중 선택·제출되는 모든 결과를 한 파일로 표현.",
+  "version": "1.0",
+  "userInput": {
+    "basicInfo": {
+      "name": "홍길동",
+      "email": "example@company.com"
+    },
+    "industryAndJob": {
+      "industry": "IT",
+      "job": "개발자(Backend)"
+    },
+    "careerInfo": {
+      "position": "대리",
+      "experienceYears": "3-4년"
+    },
+    "organizationInfo": {
+      "company": "해커스 캠퍼스",
+      "companySize": "중소기업"
+    },
+    "diagnosticGoals": ["승진", "스킬업"],
+    "submittedAt": "2025-02-11T10:00:00.000Z"
+  },
+  "stages": {
+    "knowledge": {
+      "description": "난이도·지식레벨에 따라 출제된 문항 및 사용자 답. 적응형이므로 문항·순서는 사용자별 상이.",
+      "difficultySequence": ["medium", "medium", "hard", "medium"],
+      "levelHistory": [3, 3.5, 4, 4],
+      "answers": {
+        "it_k_m_1": 1,
+        "it_k_m_2": 0,
+        "it_k_h_1": 2,
+        "it_k_m_3": 1
+      },
+      "questionIds": ["it_k_m_1", "it_k_m_2", "it_k_h_1", "it_k_m_3"],
+      "score": 85,
+      "finalLevel": 4
+    },
+    "application": {
+      "description": "적용(시나리오) 문항. 산업·직무 필터로 선정된 문항 ID와 선택 답.",
+      "questionIds": ["sc_it_1", "sc_it_2", "sc_it_3"],
+      "answers": {
+        "sc_it_1": 0,
+        "sc_it_2": 1,
+        "sc_it_3": 2
+      },
+      "score": 78
+    },
+    "performance": {
+      "description": "성과(KPI) 문항. 산업·직무 필터 적용.",
+      "questionIds": ["perf_it_1", "perf_it_2", "perf_it_3"],
+      "answers": {
+        "perf_it_1": 1,
+        "perf_it_2": 0,
+        "perf_it_3": 1
+      },
+      "score": 82
+    },
+    "etray": {
+      "description": "디지털 인바스켓 시뮬레이션. 산업별 이메일 세트 노출 후, 사용자 액션(열기/답장/전달/보관)과 소요시간만 저장. 점수는 서버/클라이언트에서 액션·우선순위·시간으로 계산.",
+      "industry": "IT",
+      "emailIds": ["it_e1", "it_e2", "it_e3", "it_e4", "it_e5"],
+      "actions": [
+        { "emailId": "it_e1", "action": "open", "timestamp": 1707640200000 },
+        { "emailId": "it_e1", "action": "reply", "timestamp": 1707640215000 },
+        { "emailId": "it_e2", "action": "open", "timestamp": 1707640250000 },
+        { "emailId": "it_e2", "action": "reply", "timestamp": 1707640260000 },
+        { "emailId": "it_e3", "action": "open", "timestamp": 1707640280000 },
+        { "emailId": "it_e3", "action": "archive", "timestamp": 1707640285000 }
+      ],
+      "durationMs": 300000,
+      "score": 90
+    },
+    "aiWorkflow": {
+      "description": "AI 워크플로우 시뮬레이션. 산업별 1개 시나리오 노출, 사용자가 여러 옵션 중 하나 선택. 선택한 옵션 스냅샷과 정답 여부 저장.",
+      "workflowId": "aiwf_it_1",
+      "industry": "IT",
+      "selectedOptionIndex": 1,
+      "isCorrect": true,
+      "optionSnapshot": {
+        "choice": "AI 요약 + 템플릿 적용",
+        "timeReduction": "40%",
+        "qualityScore": 88,
+        "automationLevel": "중"
+      },
+      "score": 90
+    }
+  },
+  "result": {
+    "scores": {
+      "knowledge": 85,
+      "application": 78,
+      "performance": 82,
+      "productivity": 90
+    },
+    "overallScore": 84,
+    "knowledgeLevel": 4,
+    "completedAt": "2025-02-11T10:35:00.000Z"
+  }
+}

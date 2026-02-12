@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
-import { departmentSkillPerformanceData } from "@/data/departmentSkillPerformance";
-import { DepartmentSkillValue } from "@/data/departmentSkillPerformance";
+import { departmentSkillPerformanceData, type DepartmentSkillValue } from "@/data/dashboard/departmentSkillPerformance";
 
 export function useDepartmentSkillFilter() {
   // 사용 가능한 연도 추출

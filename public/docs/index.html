@@ -23,7 +23,7 @@
       display: flex;
       min-height: 100vh;
     }
-    /* 사이드바 – 스크롤 시 고정, 목록 유지 */
+    /* 사이드바 – 전체 배경 흰색, 스크롤 시 고정 */
     .sidebar {
       width: 260px;
       flex-shrink: 0;
@@ -36,6 +36,7 @@
       border-right: 1px solid #e2e8f0;
       padding: 1rem 0;
     }
+    .sidebar * { box-sizing: border-box; }
     .sidebar-title {
       padding: 0 1rem 0.75rem;
       font-size: 0.8rem;
@@ -43,9 +44,30 @@
       color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      background: #fff;
     }
-    .sidebar ul { list-style: none; padding: 0; margin: 0; }
-    .sidebar li { margin: 0; }
+    .sidebar ul { list-style: none; padding: 0; margin: 0; background: #fff; }
+    .sidebar li { margin: 0; background: #fff; }
+    .sidebar-group { background: #fff; }
+    .sidebar-group-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      color: #475569;
+      background: #fff;
+      border: none;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+    }
+    .sidebar-group-btn:hover { background: #f8fafc; color: #0f172a; }
+    .sidebar-group-list { overflow: hidden; }
+    .sidebar-group:not(.open) .sidebar-group-list { display: none; }
+    .sidebar-group.open .sidebar-group-btn { font-weight: 500; }
     .sidebar a {
       display: block;
       padding: 0.5rem 1rem;
@@ -53,6 +75,10 @@
       color: #475569;
       text-decoration: none;
       border-left: 3px solid transparent;
+      background: #fff;
+    }
+    .sidebar a {
+      background: #fff;
     }
     .sidebar a:hover {
       background: #f8fafc;
@@ -146,6 +172,13 @@
     #content hr { border: none; border-top: 1px solid #e2e8f0; margin: 1.5rem 0; }
     #content strong { font-weight: 600; }
     .loading { color: #64748b; }
+    .doc-meta {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin: 0 0 1rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
     .error { color: #b91c1c; }
     .welcome {
       color: #64748b;
@@ -169,19 +202,27 @@
     <aside class="sidebar">
       <div class="sidebar-title">문서 목록</div>
       <ul>
-        <li><a href="#" data-file="01_project_brief_product_new.md">01 프로젝트 브리프 (제품·기획)</a></li>
-        <li><a href="#" data-file="02_project_brief_frontend_new.md">02 프로젝트 브리프 (프론트엔드)</a></li>
-        <li><a href="#" data-file="03_project_brief_backend_new.md">03 프로젝트 브리프 (백엔드)</a></li>
-        <li><a href="#" data-file="04_project_brief_marketer_new.md">04 프로젝트 브리프 (마케터)</a></li>
-        <li><a href="#" data-file="05_project_brief_data_analyst_new.md">05 프로젝트 브리프 (데이터 분석가)</a></li>
-        <li><a href="#" data-file="06_implementation_status_and_guide_new.md">06 구현 현황 및 가이드</a></li>
-        <li><a href="#" data-file="07_data_reference_integration_new.md">07 데이터 참조 및 연동</a></li>
-        <li><a href="#" data-file="08_employee_management_and_kapp_self_assessment_new.md">08 임직원 관리 및 KAPP 자가진단</a></li>
-        <li><a href="#" data-file="09_competency_risk_integration_plan.md">09 역량·리스크 통합 진행방향</a></li>
-        <li><a href="#" data-file="KAPP_DIAGNOSIS_DATA_REFERENCE.md">KAPP 진단 데이터 안내</a></li>
-        <li><a href="#" data-file="KAPP_DIAGNOSIS_QUESTION_LOGIC.md">KAPP 진단 문항 구성 로직</a></li>
-        <li><a href="#" data-file="MIGRATION_PLAN_ORIGIN_TO_NEW.md">마이그레이션 계획 (Origin → New)</a></li>
-        <li><a href="#" data-file="ROUTE_ENTRY_REVIEW.md">ROUTE ENTRY REVIEW</a></li>
+        <li><a href="#" data-file="11_development_deployment_history.md">⭐ 개발·배포 업데이트 히스토리</a></li>
+        <li class="sidebar-group">
+          <button type="button" class="sidebar-group-btn" aria-expanded="false">관리자 LMS ▾</button>
+          <ul class="sidebar-group-list">
+          <li><a href="#" data-file="01_project_brief_product_new.md">01 프로젝트 브리프 (제품·기획)</a></li>
+                    <li><a href="#" data-file="02_project_brief_frontend_new.md">02 프로젝트 브리프 (프론트엔드)</a></li>
+                    <li><a href="#" data-file="03_project_brief_backend_new.md">03 프로젝트 브리프 (백엔드)</a></li>
+                    <li><a href="#" data-file="04_project_brief_marketer_new.md">04 프로젝트 브리프 (마케터)</a></li>
+                    <li><a href="#" data-file="05_project_brief_data_analyst_new.md">05 프로젝트 브리프 (데이터 분석가)</a></li>
+                    <li><a href="#" data-file="06_implementation_status_and_guide_new.md">06 구현 현황 및 가이드</a></li>
+                    <li><a href="#" data-file="07_data_reference_integration_new.md">07 데이터 참조 및 연동</a></li>
+                    <li><a href="#" data-file="08_employee_management_and_kapp_self_assessment_new.md">08 임직원 관리 및 KAPP 자가진단</a></li>
+                    <li><a href="#" data-file="09_competency_risk_integration_plan.md">09 역량·리스크 통합 진행방향</a></li>
+                    <li><a href="#" data-file="KAPP_DIAGNOSIS_DATA_REFERENCE.md">KAPP 진단 데이터 안내</a></li>
+                    <li><a href="#" data-file="KAPP_DIAGNOSIS_QUESTION_LOGIC.md">KAPP 진단 문항 구성 로직</a></li>
+                    <li><a href="#" data-file="MIGRATION_PLAN_ORIGIN_TO_NEW.md">마이그레이션 계획 (Origin → New)</a></li>
+                    <li><a href="#" data-file="ROUTE_ENTRY_REVIEW.md">ROUTE ENTRY REVIEW</a></li>
+          </ul>
+        </li>
+      </ul>
+        </li>
       </ul>
     </aside>
     <main class="main">
@@ -194,7 +235,8 @@
   </div>
   <script>
     (function() {
-      var docs = [ '01_project_brief_product_new.md', '02_project_brief_frontend_new.md', '03_project_brief_backend_new.md', '04_project_brief_marketer_new.md', '05_project_brief_data_analyst_new.md', '06_implementation_status_and_guide_new.md', '07_data_reference_integration_new.md', '08_employee_management_and_kapp_self_assessment_new.md', '09_competency_risk_integration_plan.md', 'KAPP_DIAGNOSIS_DATA_REFERENCE.md', 'KAPP_DIAGNOSIS_QUESTION_LOGIC.md', 'MIGRATION_PLAN_ORIGIN_TO_NEW.md', 'ROUTE_ENTRY_REVIEW.md' ];
+      var docs = [ '11_development_deployment_history.md', '01_project_brief_product_new.md', '02_project_brief_frontend_new.md', '03_project_brief_backend_new.md', '04_project_brief_marketer_new.md', '05_project_brief_data_analyst_new.md', '06_implementation_status_and_guide_new.md', '07_data_reference_integration_new.md', '08_employee_management_and_kapp_self_assessment_new.md', '09_competency_risk_integration_plan.md', 'KAPP_DIAGNOSIS_DATA_REFERENCE.md', 'KAPP_DIAGNOSIS_QUESTION_LOGIC.md', 'MIGRATION_PLAN_ORIGIN_TO_NEW.md', 'ROUTE_ENTRY_REVIEW.md' ];
+      var docDates = {"01_project_brief_product_new.md":"2026-02-11","02_project_brief_frontend_new.md":"2026-02-11","03_project_brief_backend_new.md":"2026-02-11","04_project_brief_marketer_new.md":"2026-02-11","05_project_brief_data_analyst_new.md":"2026-02-11","06_implementation_status_and_guide_new.md":"2026-02-11","07_data_reference_integration_new.md":"2026-02-11","08_employee_management_and_kapp_self_assessment_new.md":"2026-02-12","09_competency_risk_integration_plan.md":"2026-02-12","11_development_deployment_history.md":"2026-02-13","KAPP_DIAGNOSIS_DATA_REFERENCE.md":"2026-02-12","KAPP_DIAGNOSIS_QUESTION_LOGIC.md":"2026-02-12","MIGRATION_PLAN_ORIGIN_TO_NEW.md":"2026-02-11","ROUTE_ENTRY_REVIEW.md":"2026-02-12"};
       var content = document.getElementById('content');
       var links = document.querySelectorAll('.sidebar a[data-file]');
 
@@ -223,7 +265,9 @@
           })
           .then(function(md) {
             marked.setOptions({ gfm: true, breaks: true });
-            content.innerHTML = marked.parse(md);
+            var body = marked.parse(md);
+            var dateStr = docDates[file] ? '<p class="doc-meta">수정일: ' + docDates[file] + '</p>' : '';
+            content.innerHTML = dateStr + body;
           })
           .catch(function(err) {
             content.innerHTML = '<p class="error">파일을 불러올 수 없습니다. 로컬 서버로 열었는지 확인하세요.</p><pre>' + err.message + '</pre>';
@@ -236,6 +280,17 @@
           loadDoc(a.getAttribute('data-file'));
         });
       });
+
+      var groupBtn = document.querySelector('.sidebar-group-btn');
+      if (groupBtn) {
+        groupBtn.addEventListener('click', function() {
+          var group = groupBtn.closest('.sidebar-group');
+          group.classList.toggle('open');
+          var expanded = group.classList.contains('open');
+          groupBtn.setAttribute('aria-expanded', expanded);
+          groupBtn.textContent = expanded ? '관리자 LMS ▴' : '관리자 LMS ▾';
+        });
+      }
 
       window.addEventListener('popstate', function(e) {
         if (e.state && e.state.file) loadDoc(e.state.file);

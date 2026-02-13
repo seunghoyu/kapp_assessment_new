@@ -24,7 +24,11 @@ const titleKo = {
   'KAPP_DIAGNOSIS_QUESTION_LOGIC.md': 'KAPP 진단 문항 구성 로직',
   'MIGRATION_PLAN_ORIGIN_TO_NEW.md': '마이그레이션 계획 (Origin → New)',
   '09_competency_risk_integration_plan.md': '09 역량·리스크 통합 진행방향',
+  '10_TF_meeting_notes.md': '10 TF팀 회의록',
+  '11_development_deployment_history.md': '⭐ 개발·배포 업데이트 히스토리',
 };
+/** 사이드바 최상단 배치 (번호 없음), 나머지는 '관리자 LMS' 드롭다운 */
+const HISTORY_FILE = '11_development_deployment_history.md';
 
 if (!fs.existsSync(docsDir) || !fs.existsSync(indexPath)) {
   console.error('public/docs 폴더 또는 public/docs/index.html 이 없습니다. 프로젝트 루트에서 실행하세요.');
@@ -48,11 +52,34 @@ function displayNameKorean(filename) {
   return titleKo[filename] != null ? titleKo[filename] : displayName(filename);
 }
 
-const listItems = mdFiles
+const lmsFiles = mdFiles.filter((f) => f !== HISTORY_FILE);
+const historyTitle = titleKo[HISTORY_FILE] != null ? titleKo[HISTORY_FILE] : displayName(HISTORY_FILE);
+const lmsListItems = lmsFiles
   .map((f) => `<li><a href="#" data-file="${f}">${displayNameKorean(f)}</a></li>`)
-  .join('\n        ');
+  .join('\n          ');
+const listItems =
+  `<li><a href="#" data-file="${HISTORY_FILE}">${historyTitle}</a></li>
+        <li class="sidebar-group">
+          <button type="button" class="sidebar-group-btn" aria-expanded="false">관리자 LMS ▾</button>
+          <ul class="sidebar-group-list">
+${lmsListItems.split('\n').map((line) => '          ' + line).join('\n')}
+          </ul>
+        </li>`;
 
-const docsArrayStr = mdFiles.map((f) => `'${f}'`).join(', ');
+const docsArrayStr = [HISTORY_FILE, ...lmsFiles].map((f) => `'${f}'`).join(', ');
+
+/** 각 .md 파일의 수정일 (YYYY-MM-DD) — 문서 상단 표시용 */
+const docDates = {};
+mdFiles.forEach((f) => {
+  const stat = fs.statSync(path.join(docsDir, f));
+  const d = stat.mtime;
+  docDates[f] =
+    d.getFullYear() +
+    '-' +
+    String(d.getMonth() + 1).padStart(2, '0') +
+    '-' +
+    String(d.getDate()).padStart(2, '0');
+});
 
 let html = fs.readFileSync(indexPath, 'utf8');
 
@@ -63,6 +90,10 @@ html = html.replace(
 html = html.replace(
   /var docs = \[[^\]]*\];/,
   `var docs = [ ${docsArrayStr} ];`
+);
+html = html.replace(
+  /var docDates = \{\};/,
+  'var docDates = ' + JSON.stringify(docDates) + ';'
 );
 
 fs.writeFileSync(indexPath, html, 'utf8');

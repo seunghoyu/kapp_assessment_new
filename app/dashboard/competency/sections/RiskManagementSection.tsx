@@ -1,22 +1,26 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import Button from "@/components/ui/Button";
 import {
   organizationData,
-  heatmapDeptOptions,
-  heatmapSkillOptions,
   HEATMAP_SCORE_RANGES_10,
   getSkillsByScoreRange10,
   type HeatmapDeptKey,
 } from "@/data/competency/originHeatmapData";
 import {
   skillRiskData,
-  riskLevelLabels,
   type RiskLevel,
   type SkillRiskItem,
 } from "@/data/competency/originSkillRiskData";
+
+/** 리스크 레벨 → 긴급/주의/보통/양호 (히트맵과 동일 톤) */
+const riskLevelToLabel: Record<RiskLevel, string> = {
+  critical: "긴급",
+  high: "주의",
+  medium: "보통",
+  low: "양호",
+};
 
 const riskPriority: Record<RiskLevel, number> = {
   critical: 0,
@@ -51,45 +55,40 @@ function viewRiskDetails(risk: SkillRiskItem) {
 const allDeptKeys = Object.keys(organizationData.departments) as HeatmapDeptKey[];
 
 export default function RiskManagementSection() {
-  const [heatmapDept, setHeatmapDept] = useState<string>("all");
-  const [heatmapSkill, setHeatmapSkill] = useState<string>("all");
-  const [riskLevelFilter, setRiskLevelFilter] = useState<string>("all");
+  const [selectedDept, setSelectedDept] = useState<HeatmapDeptKey | null>(null);
+  const detailSectionRef = useRef<HTMLDivElement>(null);
 
-  const deptKeys = useMemo(() => {
-    if (heatmapDept === "all") return allDeptKeys;
-    return [heatmapDept as HeatmapDeptKey];
-  }, [heatmapDept]);
+  const deptKeys = useMemo(() => allDeptKeys, []);
+  const isFullView = !selectedDept;
+  const showEducationButton = !!selectedDept;
 
-  const isFullView = heatmapDept === "all";
-  const showEducationButton = !isFullView;
+  const selectedDeptName = selectedDept ? organizationData.departments[selectedDept].name : null;
 
-  const riskCounts = useMemo(() => {
-    const c = { critical: 0, high: 0, medium: 0, low: 0 };
-    skillRiskData.forEach((r) => {
-      c[r.riskLevel]++;
-    });
-    return c;
-  }, []);
+  const risksForDept = useMemo(() => {
+    if (!selectedDeptName) return [];
+    return skillRiskData.filter((r) => r.department === selectedDeptName);
+  }, [selectedDeptName]);
 
-  const filteredRisks = useMemo(() => {
-    if (riskLevelFilter === "all") return [...skillRiskData];
-    return skillRiskData.filter((r) => r.riskLevel === riskLevelFilter);
-  }, [riskLevelFilter]);
+  const risksCriticalHigh = useMemo(
+    () => risksForDept.filter((r) => r.riskLevel === "critical" || r.riskLevel === "high"),
+    [risksForDept]
+  );
 
-  const sortedFilteredRisks = useMemo(() => {
-    return [...filteredRisks].sort(
+  const sortedRisks = useMemo(() => {
+    return [...risksCriticalHigh].sort(
       (a, b) => riskPriority[a.riskLevel] - riskPriority[b.riskLevel]
     );
-  }, [filteredRisks]);
+  }, [risksCriticalHigh]);
 
-  const refreshHeatmap = () => {
-    setHeatmapDept((d) => d);
-    setHeatmapSkill((s) => s);
-  };
+  useEffect(() => {
+    if (selectedDept) {
+      detailSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [selectedDept]);
 
-  const refreshRiskAnalysis = () => {
-    window.alert("스킬 리스크 재분석이 완료되었습니다.");
-  };
+  const handleDeptClick = useCallback((deptKey: HeatmapDeptKey) => {
+    setSelectedDept(deptKey);
+  }, []);
 
   return (
     <>
@@ -102,39 +101,9 @@ export default function RiskManagementSection() {
           <p className="text-sm text-gray-500 mt-1">
             조직도 기반 컬러 시각화로 위험 스킬 즉시 파악
           </p>
-        </div>
-        <div className="flex flex-wrap gap-6 items-end mb-8">
-          <div className="min-w-[200px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">부서 선택</label>
-            <select
-              value={heatmapDept}
-              onChange={(e) => setHeatmapDept(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            >
-              {heatmapDeptOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="min-w-[200px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">스킬 카테고리</label>
-            <select
-              value={heatmapSkill}
-              onChange={(e) => setHeatmapSkill(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            >
-              {heatmapSkillOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <Button variant="primary" size="sm" onClick={refreshHeatmap}>
-            새로고침
-          </Button>
+          <p className="text-sm text-blue-600 mt-1 font-medium">
+            부서명을 클릭하면 해당 부서의 상세 내역을 확인할 수 있습니다.
+          </p>
         </div>
         <div className="w-full min-h-[50vh] overflow-auto rounded-xl border border-gray-200 bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.04)]">
           <div className="w-full p-2">
@@ -145,8 +114,15 @@ export default function RiskManagementSection() {
                   const buckets = getSkillsByScoreRange10(deptKey);
                   return (
                     <tr key={deptKey} className="h-[100px]">
-                      <td className="sticky left-0 z-10 w-[10%] min-w-[80px] h-[100px] p-2 text-sm font-medium text-gray-800 bg-gray-50 align-middle border border-gray-200 rounded-l-lg">
-                        {deptData.name}
+                      <td className="sticky left-0 z-10 w-[10%] min-w-[80px] h-[100px] p-2 align-middle border border-gray-200 rounded-l-lg bg-gray-50">
+                        <button
+                          type="button"
+                          onClick={() => handleDeptClick(deptKey)}
+                          className="w-full text-left text-sm font-medium text-gray-800 hover:text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded px-1 py-2"
+                          title={`${deptData.name} 상세 내역 보기`}
+                        >
+                          {deptData.name}
+                        </button>
                       </td>
                       {HEATMAP_SCORE_RANGES_10.map((range, rangeIndex) => {
                         const items = buckets[rangeIndex] ?? [];
@@ -180,7 +156,7 @@ export default function RiskManagementSection() {
                                   {items.length > 3 && (
                                     <span className="text-xs font-medium opacity-90">+{items.length - 3}</span>
                                   )}
-                                  {showEducationButton && items.some((s) => s.score < 60) && (
+                                  {showEducationButton && selectedDept === deptKey && items.some((s) => s.score < 60) && (
                                     <div className="mt-1 flex flex-wrap gap-1">
                                       {items
                                         .filter((s) => s.score < 60)
@@ -235,81 +211,24 @@ export default function RiskManagementSection() {
         </div>
       </section>
 
-      {/* 2. 조직 건강도 및 스킬 리스크 관리 (origin 그대로) */}
-      <section className="mb-12">
-        <div className="mb-4">
-          <h2 className="text-xl font-bold text-gray-900">
-            조직 건강도 및 스킬 리스크 관리
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            부서별 스킬 분포 분석 및 역량 공백 구역 조기 경고 시스템
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-6 items-end mb-8">
-          <div className="min-w-[200px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              리스크 레벨 필터
-            </label>
-            <select
-              value={riskLevelFilter}
-              onChange={(e) => setRiskLevelFilter(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            >
-              <option value="all">전체 보기</option>
-              <option value="critical">긴급 (Critical)</option>
-              <option value="high">높음 (High)</option>
-              <option value="medium">보통 (Medium)</option>
-              <option value="low">낮음 (Low)</option>
-            </select>
-          </div>
-          <Button variant="primary" size="sm" onClick={refreshRiskAnalysis}>
-            리스크 재분석
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-6 rounded-xl border-2 border-red-500 flex items-center gap-4">
-            <div>
-              <h4 className="text-xs uppercase text-gray-500 font-semibold">긴급</h4>
-              <p className="text-2xl font-bold text-gray-900">{riskCounts.critical}</p>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-xl border-2 border-amber-500 flex items-center gap-4">
-            <div>
-              <h4 className="text-xs uppercase text-gray-500 font-semibold">높음</h4>
-              <p className="text-2xl font-bold text-gray-900">{riskCounts.high}</p>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-xl border-2 border-yellow-500 flex items-center gap-4">
-            <div>
-              <h4 className="text-xs uppercase text-gray-500 font-semibold">보통</h4>
-              <p className="text-2xl font-bold text-gray-900">{riskCounts.medium}</p>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-xl border-2 border-emerald-500 flex items-center gap-4">
-            <div>
-              <h4 className="text-xs uppercase text-gray-500 font-semibold">낮음</h4>
-              <p className="text-2xl font-bold text-gray-900">{riskCounts.low}</p>
-            </div>
-          </div>
-        </div>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="space-y-6">
-              {sortedFilteredRisks.length === 0 ? (
-                <p className="text-center py-12 text-gray-500">해당 레벨의 리스크가 없습니다.</p>
+      {selectedDept && (
+      <section ref={detailSectionRef} className="mb-12 scroll-mt-4">
+        <div className="w-full rounded-xl border border-gray-200 bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.04)] p-6">
+          <h3 className="text-base font-bold text-gray-900 mb-4">스킬별 리스크 상세</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {sortedRisks.length === 0 ? (
+                <p className="col-span-full text-center py-12 text-gray-500">해당 레벨의 리스크가 없습니다.</p>
               ) : (
-                sortedFilteredRisks.map((risk) => {
-                  const label = riskLevelLabels[risk.riskLevel];
+                sortedRisks.map((risk) => {
+                  const label = riskLevelToLabel[risk.riskLevel];
                   const borderClass =
                     risk.riskLevel === "critical"
                       ? "border-l-red-500"
                       : risk.riskLevel === "high"
-                        ? "border-l-amber-500"
+                        ? "border-l-red-200"
                         : risk.riskLevel === "medium"
-                          ? "border-l-yellow-500"
-                          : "border-l-emerald-500";
+                          ? "border-l-green-200"
+                          : "border-l-blue-200";
                   return (
                     <div
                       key={risk.id}
@@ -320,17 +239,17 @@ export default function RiskManagementSection() {
                           <div className="flex items-center gap-3">
                             <div>
                               <h4 className="text-lg font-bold text-gray-900">
-                                {risk.department} - {risk.skill}
+                                {risk.department} — {risk.skill}
                               </h4>
                               <span
                                 className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase ${
                                   risk.riskLevel === "critical"
                                     ? "bg-red-100 text-red-600"
                                     : risk.riskLevel === "high"
-                                      ? "bg-amber-100 text-amber-700"
+                                      ? "bg-red-100 text-red-700"
                                       : risk.riskLevel === "medium"
-                                        ? "bg-yellow-100 text-yellow-700"
-                                        : "bg-emerald-100 text-emerald-700"
+                                        ? "bg-green-100 text-green-700"
+                                        : "bg-blue-100 text-blue-700"
                                 }`}
                               >
                                 {label}
@@ -401,10 +320,10 @@ export default function RiskManagementSection() {
                   );
                 })
               )}
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </section>
+      )}
     </>
   );
 }

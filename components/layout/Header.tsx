@@ -26,7 +26,7 @@ export default function Header({ title, subtitle, actions }: HeaderProps) {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-10 border-b border-gray-200 bg-white">
+    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
       <div className="flex h-16 items-center justify-between px-6">
         {/* Page Title */}
         <div>

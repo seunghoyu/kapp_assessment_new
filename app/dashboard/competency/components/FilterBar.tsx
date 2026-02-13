@@ -20,8 +20,8 @@ interface FilterBarProps {
 }
 
 function downloadCompetencyExcel(filteredData: CompetencyRecord[], dateRange: { start: Date; end: Date }) {
-  const headers = ["부서", "일자", "역량", "점수"];
-  const rows = filteredData.map((r) => [r.department, r.date, r.competency, r.score]);
+  const headers = ["이름", "부서", "직책", "일자", "역량", "점수"];
+  const rows = filteredData.map((r) => [r.employeeName, r.department, r.positionLevel, r.date, r.competency, Math.round(r.score)]);
   const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "역량현황");

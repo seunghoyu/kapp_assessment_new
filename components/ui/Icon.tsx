@@ -27,6 +27,7 @@ import {
   ListTodo,
   UserPlus,
   Eye,
+  Table2,
 } from "lucide-react";
 
 export const Icons = {
@@ -57,6 +58,7 @@ export const Icons = {
   tasks: ListTodo,
   userPlus: UserPlus,
   eye: Eye,
+  table: Table2,
 };
 
 interface IconProps {

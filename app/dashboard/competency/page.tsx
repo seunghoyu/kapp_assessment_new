@@ -13,13 +13,36 @@ import ROICalculatorSection from "./sections/ROICalculatorSection";
 import BenchmarkSection from "./sections/BenchmarkSection";
 import RiskManagementSection from "./sections/RiskManagementSection";
 import Button from "@/components/ui/Button";
-import { useState } from "react";
+import RawDataButton from "./components/RawDataButton";
+import RawDataPanel from "./components/RawDataPanel";
+import type { RawDataTable } from "./components/RawDataPanel";
+import { useState, useMemo } from "react";
 
 type Tab = "overview" | "strategy" | "risk";
+
+const TREND_RAW_COLUMNS = ["이름", "부서", "직책", "역량", "점수", "날짜"];
 
 export default function CompetencyAnalysisPage() {
   const filter = useCompetencyFilter();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [trendRawOpen, setTrendRawOpen] = useState(false);
+
+  const trendRawTables: RawDataTable[] = useMemo(() => {
+    return [
+      {
+        title: "개별 역량 점수 (Raw) — 기간별 추이 기준",
+        columns: TREND_RAW_COLUMNS,
+        rows: filter.filteredData.map((r) => ({
+          이름: r.employeeName,
+          부서: r.department,
+          직책: r.positionLevel,
+          역량: r.competency,
+          점수: Math.round(r.score),
+          날짜: r.date,
+        })),
+      },
+    ];
+  }, [filter.filteredData]);
 
   const TABS: { id: Tab; label: string }[] = [
     { id: "overview", label: "현황 & 비교" },
@@ -82,6 +105,7 @@ export default function CompetencyAnalysisPage() {
                 <DepartmentCompetency 
                   data={filter.barData} 
                   dateRange={filter.dateRange}
+                  rawRecords={filter.filteredData}
                 />
               </section>
 
@@ -89,14 +113,18 @@ export default function CompetencyAnalysisPage() {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>기간별 추이</CardTitle>
-                    <div className="flex gap-1">
+                    <div className="flex items-center gap-2">
+                      <RawDataButton onClick={() => setTrendRawOpen((v) => !v)} />
+                      <div className="flex gap-1">
                         <Button variant={filter.trendMode === 'daily' ? 'primary' : 'ghost'} size="sm" onClick={() => filter.setTrendMode('daily')}>일별</Button>
                         <Button variant={filter.trendMode === 'monthly' ? 'primary' : 'ghost'} size="sm" onClick={() => filter.setTrendMode('monthly')}>월별</Button>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <TrendLineChart data={filter.trendData} />
                   </CardContent>
+                  {trendRawOpen && <RawDataPanel tables={trendRawTables} />}
                 </Card>
               </section>
             </>
@@ -107,15 +135,15 @@ export default function CompetencyAnalysisPage() {
                 <ROICalculatorSection />
               </section>
               <section className="mb-12">
-                <HighPerformerSection />
+                <HighPerformerSection rawRecords={filter.filteredData} />
               </section>
               <section>
-                <BenchmarkSection />
+                <BenchmarkSection rawRecords={filter.filteredData} />
               </section>
             </>
           )}
           {activeTab === "risk" && (
-            <RiskManagementSection />
+            <RiskManagementSection rawRecords={filter.filteredData} />
           )}
         </div>
       </main>

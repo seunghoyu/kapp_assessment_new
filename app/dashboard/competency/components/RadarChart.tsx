@@ -9,9 +9,11 @@ Chart.register(...registerables);
 
 interface RadarChartProps {
   data: ChartData<'radar'>;
+  /** 차트 컨테이너 높이/크기용 (반응형 시 부모에서 제어) */
+  className?: string;
 }
 
-export default function RadarChart({ data }: RadarChartProps) {
+export default function RadarChart({ data, className }: RadarChartProps) {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<ChartType | null>(null);
 
@@ -27,7 +29,8 @@ export default function RadarChart({ data }: RadarChartProps) {
           data: data,
           options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 1,
             scales: {
               r: {
                 min: 0,
@@ -61,5 +64,9 @@ export default function RadarChart({ data }: RadarChartProps) {
     };
   }, [data]);
 
-  return <div className="h-[450px]"><canvas ref={chartRef} /></div>;
+  return (
+    <div className={className ?? "h-[280px] w-full max-w-[320px]"}>
+      <canvas ref={chartRef} />
+    </div>
+  );
 }

@@ -13,6 +13,10 @@ import {
   type RiskLevel,
   type SkillRiskItem,
 } from "@/data/competency/originSkillRiskData";
+import RawDataButton from "../components/RawDataButton";
+import RawDataPanel from "../components/RawDataPanel";
+import type { RawDataTable } from "../components/RawDataPanel";
+import type { CompetencyRecord } from "@/data/competency/competencyRawData";
 
 /** 리스크 레벨 → 긴급/주의/보통/양호 (히트맵과 동일 톤) */
 const riskLevelToLabel: Record<RiskLevel, string> = {
@@ -54,8 +58,15 @@ function viewRiskDetails(risk: SkillRiskItem) {
 
 const allDeptKeys = Object.keys(organizationData.departments) as HeatmapDeptKey[];
 
-export default function RiskManagementSection() {
+const INDIVIDUAL_RAW_COLUMNS = ["이름", "부서", "직책", "역량", "점수", "날짜"];
+
+type RiskManagementSectionProps = {
+  rawRecords?: CompetencyRecord[];
+};
+
+export default function RiskManagementSection({ rawRecords = [] }: RiskManagementSectionProps) {
   const [selectedDept, setSelectedDept] = useState<HeatmapDeptKey | null>(null);
+  const [rawOpen, setRawOpen] = useState(false);
   const detailSectionRef = useRef<HTMLDivElement>(null);
 
   const deptKeys = useMemo(() => allDeptKeys, []);
@@ -90,20 +101,63 @@ export default function RiskManagementSection() {
     setSelectedDept(deptKey);
   }, []);
 
+  const rawTables: RawDataTable[] = useMemo(() => {
+    const heatmapRows: Record<string, unknown>[] = [];
+    (Object.keys(organizationData.departments) as HeatmapDeptKey[]).forEach((key) => {
+      const dept = organizationData.departments[key];
+      Object.entries(dept.skills).forEach(([스킬, 점수]) => {
+        heatmapRows.push({ 부서: dept.name, 스킬, 점수 });
+      });
+    });
+    const riskRows = skillRiskData.map((r) => ({
+      부서: r.department,
+      스킬: r.skill,
+      리스크레벨: riskLevelToLabel[r.riskLevel],
+      전문가수: r.expertCount,
+      필요인원: r.requiredCount,
+      예상영향: r.estimatedImpact,
+      확률: r.probability,
+      영향설명: r.impactDescription,
+      권장사항: r.recommendation,
+    }));
+    const tables: RawDataTable[] = [
+      { title: "부서별 스킬 점수 (히트맵 Raw)", columns: ["부서", "스킬", "점수"], rows: heatmapRows },
+      { title: "스킬 리스크 목록", columns: ["부서", "스킬", "리스크레벨", "전문가수", "필요인원", "예상영향", "확률", "영향설명", "권장사항"], rows: riskRows },
+    ];
+    if (rawRecords.length > 0) {
+      tables.push({
+        title: "개별 역량 점수 (Raw)",
+        columns: INDIVIDUAL_RAW_COLUMNS,
+        rows: rawRecords.map((r) => ({
+          이름: r.employeeName,
+          부서: r.department,
+          직책: r.positionLevel,
+          역량: r.competency,
+          점수: Math.round(r.score),
+          날짜: r.date,
+        })),
+      });
+    }
+    return tables;
+  }, [rawRecords]);
+
   return (
     <>
       {/* 1. 스킬 갭 히트맵 (origin 그대로) */}
       <section className="mb-12">
-        <div className="mb-4">
-          <h2 className="text-xl font-bold text-gray-900">
-            스킬 갭 히트맵
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            조직도 기반 컬러 시각화로 위험 스킬 즉시 파악
-          </p>
-          <p className="text-sm text-blue-600 mt-1 font-medium">
-            부서명을 클릭하면 해당 부서의 상세 내역을 확인할 수 있습니다.
-          </p>
+        <div className="mb-4 flex flex-row items-start justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              스킬 갭 히트맵
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              조직도 기반 컬러 시각화로 위험 스킬 즉시 파악
+            </p>
+            <p className="text-sm text-blue-600 mt-1 font-medium">
+              부서명을 클릭하면 해당 부서의 상세 내역을 확인할 수 있습니다.
+            </p>
+          </div>
+          <RawDataButton onClick={() => setRawOpen((v) => !v)} />
         </div>
         <div className="w-full min-h-[50vh] overflow-auto rounded-xl border border-gray-200 bg-white shadow-[0_1px_2px_0_rgba(0,0,0,0.04)]">
           <div className="w-full p-2">
@@ -209,6 +263,11 @@ export default function RiskManagementSection() {
             우수 (90-100)
           </span>
         </div>
+        {rawOpen && (
+          <div className="mt-4 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+            <RawDataPanel tables={rawTables} />
+          </div>
+        )}
       </section>
 
       {selectedDept && (

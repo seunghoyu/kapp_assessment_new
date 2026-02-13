@@ -5,12 +5,51 @@ export type CompetencyRecord = {
   date: string; // YYYY-MM-DD
   competency: CompetencyType;
   score: number;
+  /** 개인 식별용 */
+  employeeName: string;
+  /** 직책(직급) */
+  positionLevel: string;
 };
 
 export const competencyTypes: CompetencyType[] = ["지식", "적용", "성과", "생산성"];
 
 const departments = ["개발팀", "마케팅팀", "영업팀", "인사팀", "재무팀"];
 const competencies: CompetencyType[] = ["지식", "적용", "성과", "생산성"];
+
+/** 부서별 멤버 (이름, 직책) — Raw에서 누구/어디팀/직책 노출용 */
+const deptMembers: Record<string, { name: string; positionLevel: string }[]> = {
+  개발팀: [
+    { name: "김민준", positionLevel: "대리" },
+    { name: "오승민", positionLevel: "사원" },
+    { name: "류재현", positionLevel: "주임" },
+    { name: "김도윤", positionLevel: "차장" },
+    { name: "오현석", positionLevel: "과장" },
+  ],
+  마케팅팀: [
+    { name: "조예진", positionLevel: "과장" },
+    { name: "황예린", positionLevel: "주임" },
+    { name: "조민서", positionLevel: "차장" },
+    { name: "권수빈", positionLevel: "사원" },
+    { name: "조수현", positionLevel: "인턴" },
+  ],
+  영업팀: [
+    { name: "한지민", positionLevel: "과장" },
+    { name: "강서현", positionLevel: "과장" },
+    { name: "서도훈", positionLevel: "대리" },
+    { name: "홍지민", positionLevel: "대리" },
+  ],
+  인사팀: [
+    { name: "한소희", positionLevel: "대리" },
+    { name: "한예나", positionLevel: "대리" },
+    { name: "박도훈", positionLevel: "사원" },
+  ],
+  재무팀: [
+    { name: "홍지우", positionLevel: "과장" },
+    { name: "송지유", positionLevel: "부장" },
+    { name: "최재윤", positionLevel: "대리" },
+    { name: "임수현", positionLevel: "사원" },
+  ],
+};
 
 // (부서, 역량) 쌍별로 구간 배치 → 역량별로 골고루 분포 (0~30, 30~60, 60~70, 70~80, 80~100)
 // 키: "부서|역량", 값: { min, max }
@@ -53,15 +92,28 @@ const generateDeterministicScore = (department: string, competency: CompetencyTy
   return Math.min(100, Math.max(0, Math.round(score)));
 };
 
+/** (date + competency) 기반으로 부서 내 멤버 인덱스 결정 */
+function getMemberIndex(department: string, date: string, competency: string): number {
+  const members = deptMembers[department];
+  if (!members || members.length === 0) return 0;
+  const hash = (date + competency).split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return Math.abs(hash) % members.length;
+}
+
 const generateDataForDate = (date: string): CompetencyRecord[] => {
   const records: CompetencyRecord[] = [];
   for (const department of departments) {
+    const members = deptMembers[department] ?? [{ name: "미배정", positionLevel: "-" }];
     for (const competency of competencies) {
+      const idx = getMemberIndex(department, date, competency);
+      const member = members[idx];
       records.push({
         department,
         date,
         competency,
         score: generateDeterministicScore(department, competency, date),
+        employeeName: member.name,
+        positionLevel: member.positionLevel,
       });
     }
   }

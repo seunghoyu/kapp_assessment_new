@@ -252,6 +252,15 @@
         <li><a href="#" data-file="app-structure-diagram.html">📐 앱 구조 모식도</a></li>
         <li><a href="#" data-file="11_development_deployment_history.md">⭐ 개발·배포 업데이트 히스토리</a></li>
         <li><a href="#" data-file="12_AI_competency_5layer_data.md">12 AI 역량진단 5레이어 데이터 구조 (요약)</a></li>
+        
+        <li class="sidebar-group">
+          <button type="button" class="sidebar-group-btn" aria-expanded="false">학습자 LMS ▾</button>
+          <ul class="sidebar-group-list">
+          <li><a href="#" data-file="13_consumer_entry_redesign_draft.md">13 소비자 진입점 재구성 초안</a></li>
+                    <li><a href="#" data-file="14_consumer_dashboard_growth_tabs_plan.md">14 마이 대시보드·나의 성장 탭 기획</a></li>
+          </ul>
+        </li>
+        
         <li class="sidebar-group">
           <button type="button" class="sidebar-group-btn" aria-expanded="false">관리자 LMS ▾</button>
           <ul class="sidebar-group-list">
@@ -264,24 +273,11 @@
                     <li><a href="#" data-file="07_data_reference_integration_new.md">07 데이터 참조 및 연동</a></li>
                     <li><a href="#" data-file="08_employee_management_and_kapp_self_assessment_new.md">08 임직원 관리 및 KAPP 자가진단</a></li>
                     <li><a href="#" data-file="09_competency_risk_integration_plan.md">09 역량·리스크 통합 진행방향</a></li>
-                    <li><a href="#" data-file="13_consumer_entry_redesign_draft.md">13 소비자 진입점 재구성 초안</a></li>
                     <li><a href="#" data-file="KAPP_DIAGNOSIS_DATA_REFERENCE.md">KAPP 진단 데이터 안내</a></li>
                     <li><a href="#" data-file="KAPP_DIAGNOSIS_QUESTION_LOGIC.md">KAPP 진단 문항 구성 로직</a></li>
                     <li><a href="#" data-file="MIGRATION_PLAN_ORIGIN_TO_NEW.md">마이그레이션 계획 (Origin → New)</a></li>
                     <li><a href="#" data-file="ROUTE_ENTRY_REVIEW.md">ROUTE ENTRY REVIEW</a></li>
           </ul>
-        </li>
-      </ul>
-        </li>
-      </ul>
-        </li>
-      </ul>
-        </li>
-      </ul>
-        </li>
-      </ul>
-        </li>
-      </ul>
         </li>
       </ul>
     </aside>
@@ -295,7 +291,7 @@
   </div>
   <script>
     (function() {
-      var docs = [ 'app-structure-diagram.html', '11_development_deployment_history.md', '12_AI_competency_5layer_data.md', '01_project_brief_product_new.md', '02_project_brief_frontend_new.md', '03_project_brief_backend_new.md', '04_project_brief_marketer_new.md', '05_project_brief_data_analyst_new.md', '06_implementation_status_and_guide_new.md', '07_data_reference_integration_new.md', '08_employee_management_and_kapp_self_assessment_new.md', '09_competency_risk_integration_plan.md', '13_consumer_entry_redesign_draft.md', 'KAPP_DIAGNOSIS_DATA_REFERENCE.md', 'KAPP_DIAGNOSIS_QUESTION_LOGIC.md', 'MIGRATION_PLAN_ORIGIN_TO_NEW.md', 'ROUTE_ENTRY_REVIEW.md' ];
+      var docs = [ 'app-structure-diagram.html', '11_development_deployment_history.md', '12_AI_competency_5layer_data.md', '13_consumer_entry_redesign_draft.md', '14_consumer_dashboard_growth_tabs_plan.md', '01_project_brief_product_new.md', '02_project_brief_frontend_new.md', '03_project_brief_backend_new.md', '04_project_brief_marketer_new.md', '05_project_brief_data_analyst_new.md', '06_implementation_status_and_guide_new.md', '07_data_reference_integration_new.md', '08_employee_management_and_kapp_self_assessment_new.md', '09_competency_risk_integration_plan.md', 'KAPP_DIAGNOSIS_DATA_REFERENCE.md', 'KAPP_DIAGNOSIS_QUESTION_LOGIC.md', 'MIGRATION_PLAN_ORIGIN_TO_NEW.md', 'ROUTE_ENTRY_REVIEW.md' ];
       var docDates = {"01_project_brief_product_new.md":"2026-02-11","02_project_brief_frontend_new.md":"2026-02-11","03_project_brief_backend_new.md":"2026-02-11","04_project_brief_marketer_new.md":"2026-02-11","05_project_brief_data_analyst_new.md":"2026-02-11","06_implementation_status_and_guide_new.md":"2026-02-11","07_data_reference_integration_new.md":"2026-02-11","08_employee_management_and_kapp_self_assessment_new.md":"2026-02-12","09_competency_risk_integration_plan.md":"2026-02-12","11_development_deployment_history.md":"2026-02-13","KAPP_DIAGNOSIS_DATA_REFERENCE.md":"2026-02-12","KAPP_DIAGNOSIS_QUESTION_LOGIC.md":"2026-02-12","MIGRATION_PLAN_ORIGIN_TO_NEW.md":"2026-02-11","ROUTE_ENTRY_REVIEW.md":"2026-02-12"};
       var content = document.getElementById('content');
       var links = document.querySelectorAll('.sidebar a[data-file]');
@@ -354,16 +350,18 @@
         });
       });
 
-      var groupBtn = document.querySelector('.sidebar-group-btn');
-      if (groupBtn) {
+      var groupBtns = document.querySelectorAll('.sidebar-group-btn');
+      groupBtns.forEach(function(groupBtn) {
         groupBtn.addEventListener('click', function() {
-          var group = groupBtn.closest('.sidebar-group');
+          var group = this.closest('.sidebar-group');
           group.classList.toggle('open');
           var expanded = group.classList.contains('open');
-          groupBtn.setAttribute('aria-expanded', expanded);
-          groupBtn.textContent = expanded ? '관리자 LMS ▴' : '관리자 LMS ▾';
+          this.setAttribute('aria-expanded', expanded);
+          var t = this.textContent.trim();
+          var label = t.replace(/\s*[\u25B4\u25BE]\s*$/, '').trim() || t;
+          this.textContent = label + (expanded ? ' \u25B4' : ' \u25BE');
         });
-      }
+      });
 
       window.addEventListener('popstate', function(e) {
         if (e.state && e.state.file) loadDoc(e.state.file);

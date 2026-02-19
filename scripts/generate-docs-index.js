@@ -28,11 +28,17 @@ const titleKo = {
   '11_development_deployment_history.md': '⭐ 개발·배포 업데이트 히스토리',
   '12_AI_competency_5layer_data.md': '12 AI 역량진단 5레이어 데이터 구조 (요약)',
   '13_consumer_entry_redesign_draft.md': '13 소비자 진입점 재구성 초안',
+  '14_consumer_dashboard_growth_tabs_plan.md': '14 마이 대시보드·나의 성장 탭 기획',
 };
-/** 사이드바 최상단 문서 목록에 배치 (드롭다운 밖), 나머지는 '관리자 LMS' 드롭다운 */
+/** 사이드바 최상단 문서 목록에 배치 (드롭다운 밖) */
 const TOP_LEVEL_FILES = [
   '11_development_deployment_history.md',
   '12_AI_competency_5layer_data.md',
+];
+/** 학습자 LMS 드롭다운에 배치 (13, 14번 등 소비자/학습자 관련) */
+const CONSUMER_LMS_FILES = [
+  '13_consumer_entry_redesign_draft.md',
+  '14_consumer_dashboard_growth_tabs_plan.md',
 ];
 
 if (!fs.existsSync(docsDir) || !fs.existsSync(indexPath)) {
@@ -57,7 +63,10 @@ function displayNameKorean(filename) {
   return titleKo[filename] != null ? titleKo[filename] : displayName(filename);
 }
 
-const lmsFiles = mdFiles.filter((f) => !TOP_LEVEL_FILES.includes(f));
+const remainingAfterTop = mdFiles.filter((f) => !TOP_LEVEL_FILES.includes(f));
+const consumerLmsFiles = CONSUMER_LMS_FILES.filter((f) => remainingAfterTop.includes(f));
+const adminLmsFiles = remainingAfterTop.filter((f) => !CONSUMER_LMS_FILES.includes(f));
+
 const DIAGRAM_FILE = 'app-structure-diagram.html';
 const hasDiagram = fs.existsSync(path.join(docsDir, DIAGRAM_FILE));
 const diagramLink = hasDiagram
@@ -66,23 +75,43 @@ const diagramLink = hasDiagram
 const topLevelListItems = TOP_LEVEL_FILES.filter((f) => mdFiles.includes(f))
   .map((f) => `<li><a href="#" data-file="${f}">${displayNameKorean(f)}</a></li>`)
   .join('\n        ');
-const lmsListItems = lmsFiles
+
+const consumerLmsListItems = consumerLmsFiles
   .map((f) => `<li><a href="#" data-file="${f}">${displayNameKorean(f)}</a></li>`)
   .join('\n          ');
-const listItems =
-  `${diagramLink}
-        ${topLevelListItems}
+const consumerLmsBlock =
+  consumerLmsFiles.length === 0
+    ? ''
+    : `
+        <li class="sidebar-group">
+          <button type="button" class="sidebar-group-btn" aria-expanded="false">학습자 LMS ▾</button>
+          <ul class="sidebar-group-list">
+${consumerLmsListItems.split('\n').map((line) => '          ' + line).join('\n')}
+          </ul>
+        </li>`;
+
+const adminLmsListItems = adminLmsFiles
+  .map((f) => `<li><a href="#" data-file="${f}">${displayNameKorean(f)}</a></li>`)
+  .join('\n          ');
+const adminLmsBlock = `
         <li class="sidebar-group">
           <button type="button" class="sidebar-group-btn" aria-expanded="false">관리자 LMS ▾</button>
           <ul class="sidebar-group-list">
-${lmsListItems.split('\n').map((line) => '          ' + line).join('\n')}
+${adminLmsListItems.split('\n').map((line) => '          ' + line).join('\n')}
           </ul>
         </li>`;
+
+const listItems =
+  `${diagramLink}
+        ${topLevelListItems}
+        ${consumerLmsBlock}
+        ${adminLmsBlock}`;
 
 const docsArrayStr = [
   ...(hasDiagram ? [`'${DIAGRAM_FILE}'`] : []),
   ...TOP_LEVEL_FILES.filter((f) => mdFiles.includes(f)).map((f) => `'${f}'`),
-  ...lmsFiles.map((f) => `'${f}'`),
+  ...consumerLmsFiles.map((f) => `'${f}'`),
+  ...adminLmsFiles.map((f) => `'${f}'`),
 ].join(', ');
 
 /** 각 .md 파일의 수정일 (YYYY-MM-DD) — 문서 상단 표시용 */
@@ -100,8 +129,9 @@ mdFiles.forEach((f) => {
 
 let html = fs.readFileSync(indexPath, 'utf8');
 
+// 사이드바의 바깥 <ul> 전체를 교체 (내부 그룹의 </ul>이 아닌, </aside> 직전 </ul>까지 매칭)
 html = html.replace(
-  /<ul>\s*[\s\S]*?<\/ul>/,
+  /<ul>[\s\S]*<\/ul>(?=\s*<\/aside>)/,
   `<ul>\n        ${listItems}\n      </ul>`
 );
 html = html.replace(

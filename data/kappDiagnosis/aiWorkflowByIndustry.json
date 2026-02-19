@@ -1,0 +1,75 @@
+{
+  "description": "산업별 AI 워크플로우 시나리오 1개. kapp_origin kapp-ai-workflow.js 기반 가상 데이터",
+  "byIndustry": {
+    "IT": {
+      "id": "it_ai_workflow",
+      "industry": "IT",
+      "title": "AI 워크플로우: 코드 리뷰 자동화",
+      "task": "당신은 Backend 개발팀의 리드 개발자입니다. 팀원 5명이 매일 평균 3개의 Pull Request를 올리며, 각 PR 리뷰에 평균 30분이 소요됩니다. 일일 PR 15개, 코드 리뷰 시간 하루 7.5시간입니다. 어떤 AI 워크플로우를 설계하여 리뷰 시간을 50% 단축하고 품질을 유지하겠습니까?",
+      "options": [
+        { "id": "it_ai_a", "choice": "A. GitHub Copilot 단독 사용", "timeReduction": "20%", "qualityScore": 70 },
+        { "id": "it_ai_b", "choice": "B. SonarQube + AI 리뷰 봇 (통합 워크플로우)", "timeReduction": "60%", "qualityScore": 95 },
+        { "id": "it_ai_c", "choice": "C. ChatGPT로 수동 질의", "timeReduction": "10%", "qualityScore": 60 },
+        { "id": "it_ai_d", "choice": "D. AI 도구 없이 수동 리뷰 유지", "timeReduction": "0%", "qualityScore": 85 }
+      ],
+      "answer": 1,
+      "explanation": "SonarQube + AI 봇 조합은 반복적 검토를 자동화하고, 사람은 고차원적 판단에 집중하게 하여 시간 60% 절감과 품질 향상을 동시에 달성합니다."
+    },
+    "금융": {
+      "id": "finance_ai_workflow",
+      "industry": "금융",
+      "title": "AI 워크플로우: 고객 세그먼트 자동 분석",
+      "task": "카드사 마케터인 당신은 매달 50만 고객 데이터를 분석하여 타겟 세그먼트를 선정해야 합니다. 수동 분석 주 20시간. 어떤 AI 워크플로우로 분석 시간을 70% 단축하고 정확도를 높이겠습니까?",
+      "options": [
+        { "id": "fin_ai_a", "choice": "A. Excel + ChatGPT (수식 질의)", "timeReduction": "30%", "qualityScore": 70 },
+        { "id": "fin_ai_b", "choice": "B. Python + AutoML 플랫폼 (H2O.ai 등)", "timeReduction": "75%", "qualityScore": 92 },
+        { "id": "fin_ai_c", "choice": "C. Tableau + AI 인사이트", "timeReduction": "45%", "qualityScore": 80 },
+        { "id": "fin_ai_d", "choice": "D. 수동 분석 유지", "timeReduction": "0%", "qualityScore": 75 }
+      ],
+      "answer": 1,
+      "explanation": "AutoML은 대규모 고객 데이터를 빠르게 클러스터링하고, 마케터가 전략 수립에 집중할 수 있게 합니다."
+    },
+    "의료": {
+      "id": "med_ai_workflow",
+      "industry": "의료",
+      "title": "AI 워크플로우: EMR 데이터 자동 분석",
+      "task": "병원 IT 담당자인 당신은 매월 EMR 데이터를 분석하여 진료 패턴 리포트를 작성해야 합니다. 수동 분석 주 15시간. 어떤 AI 워크플로우로 분석 시간을 65% 단축하고 인사이트 품질을 높이겠습니까?",
+      "options": [
+        { "id": "med_ai_a", "choice": "A. Excel 피벗 테이블", "timeReduction": "15%", "qualityScore": 65 },
+        { "id": "med_ai_b", "choice": "B. AI 의료 데이터 분석 플랫폼", "timeReduction": "70%", "qualityScore": 93 },
+        { "id": "med_ai_c", "choice": "C. ChatGPT 데이터 해석", "timeReduction": "25%", "qualityScore": 70 },
+        { "id": "med_ai_d", "choice": "D. 수동 분석 유지", "timeReduction": "0%", "qualityScore": 80 }
+      ],
+      "answer": 1,
+      "explanation": "AI 플랫폼은 의료 데이터의 복잡한 패턴을 자동으로 발견하고, 담당자는 병원 운영 개선에 집중할 수 있습니다."
+    },
+    "마케팅/광고": {
+      "id": "mkt_ai_workflow",
+      "industry": "마케팅/광고",
+      "title": "AI 워크플로우: 광고 캠페인 자동 최적화",
+      "task": "퍼포먼스 마케터인 당신은 10개 채널에서 매일 50개 광고를 운영합니다. 수동 최적화에 하루 5시간이 소요됩니다. 어떤 AI 워크플로우로 최적화 시간을 단축하고 ROAS를 높이겠습니까?",
+      "options": [
+        { "id": "mkt_ai_a", "choice": "A. 광고 플랫폼 자동 입찰만 사용", "timeReduction": "40%", "qualityScore": 75 },
+        { "id": "mkt_ai_b", "choice": "B. AI 마케팅 자동화 플랫폼 (전체 통합)", "timeReduction": "85%", "qualityScore": 95 },
+        { "id": "mkt_ai_c", "choice": "C. ChatGPT로 소재 아이디어만", "timeReduction": "15%", "qualityScore": 70 },
+        { "id": "mkt_ai_d", "choice": "D. 수동 최적화 유지", "timeReduction": "0%", "qualityScore": 80 }
+      ],
+      "answer": 1,
+      "explanation": "AI 플랫폼은 수십 개 변수를 실시간으로 최적화하고, 마케터는 크리에이티브 전략에 집중할 수 있습니다."
+    },
+    "기타": {
+      "id": "etc_ai_workflow",
+      "industry": "기타",
+      "title": "AI 워크플로우: 업무 보고서 자동화",
+      "task": "당신은 주간 업무 보고서 작성에 매주 5시간을 씁니다. 데이터 수집, 표 작성, 요약 작성이 반복됩니다. 어떤 AI 워크플로우로 보고서 작성 시간을 50% 이상 단축하겠습니까?",
+      "options": [
+        { "id": "etc_ai_a", "choice": "A. Excel 템플릿만 사용", "timeReduction": "10%", "qualityScore": 70 },
+        { "id": "etc_ai_b", "choice": "B. 업무 데이터 연동 + AI 요약 도구", "timeReduction": "60%", "qualityScore": 88 },
+        { "id": "etc_ai_c", "choice": "C. ChatGPT에 수동으로 붙여넣기", "timeReduction": "25%", "qualityScore": 72 },
+        { "id": "etc_ai_d", "choice": "D. 수동 작성 유지", "timeReduction": "0%", "qualityScore": 80 }
+      ],
+      "answer": 1,
+      "explanation": "데이터 연동과 AI 요약을 결합하면 반복 작업이 줄고 일관된 품질의 보고서를 빠르게 작성할 수 있습니다."
+    }
+  }
+}

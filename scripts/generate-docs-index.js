@@ -26,9 +26,14 @@ const titleKo = {
   '09_competency_risk_integration_plan.md': '09 역량·리스크 통합 진행방향',
   '10_TF_meeting_notes.md': '10 TF팀 회의록',
   '11_development_deployment_history.md': '⭐ 개발·배포 업데이트 히스토리',
+  '12_AI_competency_5layer_data.md': '12 AI 역량진단 5레이어 데이터 구조 (요약)',
+  '13_consumer_entry_redesign_draft.md': '13 소비자 진입점 재구성 초안',
 };
-/** 사이드바 최상단 배치 (번호 없음), 나머지는 '관리자 LMS' 드롭다운 */
-const HISTORY_FILE = '11_development_deployment_history.md';
+/** 사이드바 최상단 문서 목록에 배치 (드롭다운 밖), 나머지는 '관리자 LMS' 드롭다운 */
+const TOP_LEVEL_FILES = [
+  '11_development_deployment_history.md',
+  '12_AI_competency_5layer_data.md',
+];
 
 if (!fs.existsSync(docsDir) || !fs.existsSync(indexPath)) {
   console.error('public/docs 폴더 또는 public/docs/index.html 이 없습니다. 프로젝트 루트에서 실행하세요.');
@@ -52,13 +57,21 @@ function displayNameKorean(filename) {
   return titleKo[filename] != null ? titleKo[filename] : displayName(filename);
 }
 
-const lmsFiles = mdFiles.filter((f) => f !== HISTORY_FILE);
-const historyTitle = titleKo[HISTORY_FILE] != null ? titleKo[HISTORY_FILE] : displayName(HISTORY_FILE);
+const lmsFiles = mdFiles.filter((f) => !TOP_LEVEL_FILES.includes(f));
+const DIAGRAM_FILE = 'app-structure-diagram.html';
+const hasDiagram = fs.existsSync(path.join(docsDir, DIAGRAM_FILE));
+const diagramLink = hasDiagram
+  ? `<li><a href="#" data-file="${DIAGRAM_FILE}">📐 앱 구조 모식도</a></li>`
+  : '';
+const topLevelListItems = TOP_LEVEL_FILES.filter((f) => mdFiles.includes(f))
+  .map((f) => `<li><a href="#" data-file="${f}">${displayNameKorean(f)}</a></li>`)
+  .join('\n        ');
 const lmsListItems = lmsFiles
   .map((f) => `<li><a href="#" data-file="${f}">${displayNameKorean(f)}</a></li>`)
   .join('\n          ');
 const listItems =
-  `<li><a href="#" data-file="${HISTORY_FILE}">${historyTitle}</a></li>
+  `${diagramLink}
+        ${topLevelListItems}
         <li class="sidebar-group">
           <button type="button" class="sidebar-group-btn" aria-expanded="false">관리자 LMS ▾</button>
           <ul class="sidebar-group-list">
@@ -66,7 +79,11 @@ ${lmsListItems.split('\n').map((line) => '          ' + line).join('\n')}
           </ul>
         </li>`;
 
-const docsArrayStr = [HISTORY_FILE, ...lmsFiles].map((f) => `'${f}'`).join(', ');
+const docsArrayStr = [
+  ...(hasDiagram ? [`'${DIAGRAM_FILE}'`] : []),
+  ...TOP_LEVEL_FILES.filter((f) => mdFiles.includes(f)).map((f) => `'${f}'`),
+  ...lmsFiles.map((f) => `'${f}'`),
+].join(', ');
 
 /** 각 .md 파일의 수정일 (YYYY-MM-DD) — 문서 상단 표시용 */
 const docDates = {};

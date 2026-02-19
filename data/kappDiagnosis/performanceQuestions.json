@@ -1,0 +1,50 @@
+{
+  "description": "성과 문항(KPI·성과). 산업·직무 반영. kapp_origin 기반 가상 데이터",
+  "questions": [
+    {
+      "id": "perf_fin_1",
+      "category": "performance",
+      "industry": "금융",
+      "job": "카드사업부 마케터",
+      "title": "카드 마케팅 성과 지표",
+      "question": "카드사 마케팅에서 'CAC(고객 획득 비용)'를 낮추면서 발급 건수를 늘리기 위한 방법으로 가장 효과적인 것은?",
+      "options": [
+        { "label": "광고 단가만 낮추기", "score": 40 },
+        { "label": "타겟 세그먼트 정교화 + 바이럴/제휴 활용", "score": 92 },
+        { "label": "프로모션 예산 무한 확대", "score": 35 },
+        { "label": "기존 회원 재활성화보다 신규만 집중", "score": 50 }
+      ],
+      "answer": 1
+    },
+    {
+      "id": "perf_it_1",
+      "category": "performance",
+      "industry": "IT",
+      "job": "개발자(Backend)",
+      "title": "서비스 안정성 KPI",
+      "question": "프로덕션 서비스의 '가용성(availability)'을 99.9%로 유지하기 위해 우선 적용할 KPI로 가장 적절한 것은?",
+      "options": [
+        { "label": "배포 횟수만 늘리기", "score": 30 },
+        { "label": "MTTR(평균 복구 시간), 장애 감지 시간, 배포 롤백율", "score": 95 },
+        { "label": "코드 라인 수", "score": 20 },
+        { "label": "회의 참석률", "score": 15 }
+      ],
+      "answer": 1
+    },
+    {
+      "id": "perf_common_1",
+      "category": "performance",
+      "industry": "",
+      "job": "",
+      "title": "업무 성과 측정",
+      "question": "정량적 성과와 정성적 성과를 균형 있게 평가하기 위한 방법으로 가장 적절한 것은?",
+      "options": [
+        { "label": "숫자 지표만 사용", "score": 45 },
+        { "label": "KPI(정량) + 핵심 업무 결과물·피드백(정성) 조합", "score": 90 },
+        { "label": "상사 주관 평가만", "score": 40 },
+        { "label": "동료 평가만", "score": 50 }
+      ],
+      "answer": 1
+    }
+  ]
+}

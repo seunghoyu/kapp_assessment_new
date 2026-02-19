@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KAPP Assessment - 앱 구조 모식도</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* 뷰포트 100% 기준 반응형: 채우기·축소 */
+    html { height: 100%; box-sizing: border-box; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      min-height: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      font-size: clamp(0.8125rem, 1.2vw + 0.5rem, 0.9375rem);
+    }
+    body .page-root {
+      flex: 1;
+      width: 100%;
+      max-width: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1rem, 4vw, 2rem);
+      padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
+      box-sizing: border-box;
+    }
+    .page-root h1 { font-size: clamp(1.25rem, 3vw + 0.5rem, 1.75rem); }
+    .page-root h2 { font-size: clamp(1rem, 2vw + 0.5rem, 1.125rem); }
+    .page-root h3 { font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1rem); }
+    .page-root .file-hint { font-size: clamp(0.6rem, 1vw + 0.35rem, 0.7rem); color: #94a3b8; margin-top: 2px; }
+    .page-root section { margin-bottom: clamp(1.5rem, 3vh, 2.5rem); }
+    .page-root .mb-12 { margin-bottom: clamp(1.5rem, 3vh, 2.5rem); }
+    .page-root .mb-10 { margin-bottom: clamp(1rem, 2.5vh, 1.5rem); }
+    .page-root header { margin-bottom: clamp(1rem, 2.5vh, 2rem); }
+    .flow-arrow { stroke-dasharray: 5,5; }
+    /* 데이터 출처 테이블: 간격·반응형·가독성 */
+    .data-source-table { border-collapse: collapse; table-layout: fixed; width: 100%; }
+    .data-source-table th, .data-source-table td { padding: 0.75rem 0.875rem; vertical-align: top; word-break: break-word; overflow-wrap: break-word; }
+    .data-source-table th { font-weight: 600; color: #334155; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+    .data-source-table td { border-bottom: 1px solid #f1f5f9; }
+    .data-source-table tbody tr:hover { background: #fafafa; }
+    @media (min-width: 1024px) {
+      .data-source-table th:nth-child(1), .data-source-table td:nth-child(1) { width: 10%; }
+      .data-source-table th:nth-child(2), .data-source-table td:nth-child(2) { width: 18%; }
+      .data-source-table th:nth-child(3), .data-source-table td:nth-child(3) { width: 16%; }
+      .data-source-table th:nth-child(4), .data-source-table td:nth-child(4) { width: 28%; }
+      .data-source-table th:nth-child(5), .data-source-table td:nth-child(5) { width: 28%; }
+    }
+    @media (max-width: 1023px) { .data-source-table { table-layout: auto; min-width: 640px; } }
+    .data-shape-list { list-style: none; padding: 0; margin: 0; font-size: 0.8125rem; line-height: 1.6; color: #475569; }
+    .data-shape-list li { padding: 0.15rem 0; border-bottom: 1px solid #f1f5f9; }
+    .data-shape-list li:last-child { border-bottom: none; }
+    .data-shape-list .var { font-weight: 500; color: #0f172a; }
+    .data-shape-list .mean { margin-left: 0.25rem; color: #64748b; }
+    /* 데이터 형태: 테이블 안 테이블 — 행 사이 구분선만, 간격 작게 */
+    .data-shape-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; margin: 0; border: none; }
+    .data-shape-table th, .data-shape-table td { padding: 0.15rem 0.3rem; border: none; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+    .data-shape-table tr:last-child th, .data-shape-table tr:last-child td { border-bottom: none; }
+    .data-shape-table th { background: #f8fafc; color: #475569; font-weight: 600; width: 38%; }
+    .data-shape-table td { color: #64748b; }
+    .data-shape-table .var-cell { font-weight: 500; color: #0f172a; }
+    /* 하위 트리: 종속 구조용 */
+    .data-shape-sub { margin-top: 0.35rem; margin-left: 0.5rem; border-left: 2px solid #e2e8f0; padding-left: 0.35rem; }
+    .data-shape-sub .sub-caption { font-size: 0.65rem; color: #64748b; margin-bottom: 0.15rem; font-weight: 600; }
+    /* Excel처럼 컬럼 너비 드래그 조절 */
+    .resizable-table { table-layout: fixed; }
+    .resizable-table th { position: relative; user-select: none; }
+    .resizable-table th .resize-handle {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      cursor: col-resize;
+      z-index: 1;
+    }
+    .resizable-table th .resize-handle:hover,
+    .resizable-table th .resize-handle.resizing { background: rgba(59, 130, 246, 0.2); }
+    /* 섹션·카드 반응형 여백 */
+    .page-root .rounded-xl { padding: clamp(0.75rem, 2vw, 1.5rem); }
+    .page-root .grid { gap: clamp(0.75rem, 2vw, 1.5rem); }
+    .page-root .space-y-4 > * + * { margin-top: clamp(0.5rem, 1.5vw, 1rem); }
+    .page-root .space-y-2 > * + * { margin-top: clamp(0.25rem, 1vw, 0.5rem); }
+    .page-root table { font-size: clamp(0.75rem, 1vw + 0.4rem, 0.875rem); }
+    .page-root th, .page-root td { padding: clamp(0.5rem, 1vw, 0.75rem) clamp(0.5rem, 1.2vw, 0.875rem); }
+    @media (max-width: 768px) {
+      .page-root .grid.md\:grid-cols-2 { grid-template-columns: 1fr; }
+      .page-root .flex-wrap { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+  <div class="page-root">
+    <!-- 헤더 -->
+    <header class="text-center">
+      <h1 class="font-bold text-slate-800 mb-2">KAPP Assessment 앱 구조 모식도</h1>
+      <p class="text-slate-600">소비자·관리자 흐름과 페이지 계층 구조(DOM)</p>
+    </header>
+
+    <!-- 최초 진입점 -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+        최초 진입점
+      </h2>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex justify-center">
+        <div class="text-center">
+          <div class="inline-block bg-gradient-to-br from-blue-500 to-emerald-500 text-white rounded-2xl px-8 py-4 font-bold text-lg">
+            홈 (메인 랜딩)
+          </div>
+          <p class="file-hint mt-2">app/page.tsx</p>
+          <p class="text-xs text-slate-500 mt-1">경로: /</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 흐름 분기 -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+        사용자 흐름 분기
+      </h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- 소비자 흐름 -->
+        <div class="bg-white rounded-xl shadow-sm border-2 border-blue-200 overflow-hidden">
+          <div class="bg-blue-50 px-4 py-3 border-b border-blue-100">
+            <h3 class="font-semibold text-blue-800">👤 소비자 (KAPP 진단 이용자)</h3>
+          </div>
+          <div class="p-5 space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0">1</div>
+              <div>
+                <div class="font-medium">홈에서 "KAPP 진단 시작하기" 클릭</div>
+                <p class="file-hint">→ /login</p>
+              </div>
+            </div>
+            <div class="flex justify-center">
+              <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+              <div class="font-medium text-slate-800">로그인 / 회원가입</div>
+              <p class="text-sm text-slate-600 mt-1">이메일 + 비밀번호 (최초: 설정, 재방문: 로그인)</p>
+              <p class="file-hint">app/login/page.tsx | /login</p>
+            </div>
+            <div class="flex justify-center">
+              <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
+              <div class="font-semibold text-blue-800">소비자 대시보드</div>
+              <p class="text-sm text-slate-600 mt-1">KAPP 진단, 마이 대시보드, 교육 큐레이션, 나의 성장</p>
+              <p class="file-hint">app/app/layout.tsx + page.tsx | /app</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 관리자 흐름 -->
+        <div class="bg-white rounded-xl shadow-sm border-2 border-amber-200 overflow-hidden">
+          <div class="bg-amber-50 px-4 py-3 border-b border-amber-100">
+            <h3 class="font-semibold text-amber-800">🔧 관리자 (LMS 담당자)</h3>
+          </div>
+          <div class="p-5 space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 font-bold shrink-0">1</div>
+              <div>
+                <div class="font-medium">로그인 페이지에서 "관리자 페이지로 이동" 클릭</div>
+                <p class="file-hint">또는 직접 /admin 접근</p>
+              </div>
+            </div>
+            <div class="flex justify-center">
+              <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+              <div class="font-medium text-slate-800">관리자 로그인</div>
+              <p class="text-sm text-slate-600 mt-1">이메일 + 비밀번호</p>
+              <p class="file-hint">app/admin/page.tsx | /admin</p>
+            </div>
+            <div class="flex justify-center">
+              <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+            <div class="bg-amber-50 rounded-lg p-4 border-2 border-amber-200">
+              <div class="font-semibold text-amber-800">관리자 대시보드 (ERP)</div>
+              <p class="text-sm text-slate-600 mt-1">직원 관리, 역량 분석, 교육 프로그램 등</p>
+              <p class="file-hint">app/dashboard/layout.tsx | /dashboard</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 전체 페이지 계층 구조 -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        전체 페이지 계층 구조
+      </h2>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto p-6">
+          <div class="flex flex-col gap-1 min-w-max">
+            <!-- 루트 -->
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 font-mono text-sm">/</span>
+              <span class="font-medium">(홈)</span>
+              <span class="file-hint ml-2">app/page.tsx</span>
+            </div>
+
+            <!-- 1단계: login, admin, app, dashboard -->
+            <div class="ml-6 border-l-2 border-slate-200 pl-4 space-y-2">
+              <div class="flex items-center gap-2 py-1">
+                <span class="text-blue-600 font-mono text-sm">/login</span>
+                <span>소비자 로그인</span>
+                <span class="file-hint">app/login/page.tsx</span>
+              </div>
+              <div class="flex items-center gap-2 py-1">
+                <span class="text-amber-600 font-mono text-sm">/admin</span>
+                <span>관리자 로그인</span>
+                <span class="file-hint">app/admin/page.tsx</span>
+              </div>
+
+              <!-- /app 하위 -->
+              <div class="py-2">
+                <div class="flex items-center gap-2 font-medium text-blue-700">
+                  <span class="font-mono text-sm">/app</span>
+                  <span>소비자 대시보드</span>
+                  <span class="file-hint">app/app/layout.tsx, page.tsx</span>
+                </div>
+                <div class="ml-6 mt-2 border-l-2 border-blue-100 pl-4 space-y-1">
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="font-mono text-xs text-blue-600">/app/diagnosis</span>
+                    <span class="text-sm">KAPP 진단</span>
+                    <span class="file-hint">app/app/diagnosis/page.tsx</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="font-mono text-xs text-blue-600">/app/dashboard</span>
+                    <span class="text-sm">마이 대시보드</span>
+                    <span class="file-hint">app/app/dashboard/page.tsx</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="font-mono text-xs text-blue-600">/app/education</span>
+                    <span class="text-sm">교육 큐레이션</span>
+                    <span class="file-hint">app/app/education/page.tsx</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="font-mono text-xs text-blue-600">/app/growth</span>
+                    <span class="text-sm">나의 성장</span>
+                    <span class="file-hint">app/app/growth/page.tsx</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- /dashboard 하위 -->
+              <div class="py-2">
+                <div class="flex items-center gap-2 font-medium text-amber-700">
+                  <span class="font-mono text-sm">/dashboard</span>
+                  <span>관리자 대시보드</span>
+                  <span class="file-hint">app/dashboard/layout.tsx</span>
+                </div>
+                <div class="ml-6 mt-2 border-l-2 border-amber-100 pl-4 space-y-1">
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="font-mono text-xs text-amber-600">/dashboard</span>
+                    <span class="text-sm">개요</span>
+                    <span class="file-hint">app/dashboard/page.tsx</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="font-mono text-xs text-amber-600">/dashboard/competency</span>
+                    <span class="text-sm">역량 분석</span>
+                    <span class="file-hint">app/dashboard/competency/page.tsx</span>
+                  </div>
+                  <div class="flex items-center gap-2 py-0.5">
+                    <span class="font-mono text-xs text-amber-600">/dashboard/employees</span>
+                    <span class="text-sm">직원 관리</span>
+                    <span class="file-hint">app/dashboard/employees/page.tsx</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 시각적 트리 다이어그램 -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-violet-500"></span>
+        구조 한눈에 보기
+      </h2>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+        <div class="flex flex-wrap justify-center gap-4 md:gap-8">
+          <!-- 홈 -->
+          <div class="flex flex-col items-center">
+            <div class="w-32 h-14 rounded-xl bg-gradient-to-r from-blue-400 to-emerald-400 text-white flex items-center justify-center text-center text-sm font-semibold shadow">
+              홈<br><span class="text-xs opacity-90">/</span>
+            </div>
+            <p class="file-hint mt-2">page.tsx</p>
+          </div>
+
+          <div class="flex items-center text-slate-300 self-center">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </div>
+
+          <!-- 분기 -->
+          <div class="flex flex-col gap-6">
+            <div class="flex flex-col items-center">
+              <div class="w-36 h-12 rounded-lg bg-blue-100 border-2 border-blue-300 flex items-center justify-center text-blue-800 text-sm font-medium">
+                소비자 로그인
+              </div>
+              <p class="file-hint mt-1">login/page.tsx</p>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-36 h-12 rounded-lg bg-amber-100 border-2 border-amber-300 flex items-center justify-center text-amber-800 text-sm font-medium">
+                관리자 로그인
+              </div>
+              <p class="file-hint mt-1">admin/page.tsx</p>
+            </div>
+          </div>
+
+          <div class="flex items-center text-slate-300 self-center">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </div>
+
+          <!-- 소비자 앱 -->
+          <div class="flex flex-col items-center">
+            <div class="w-40 rounded-xl bg-blue-50 border-2 border-blue-200 p-3">
+              <div class="text-center font-semibold text-blue-800 text-sm mb-2">소비자 앱</div>
+              <div class="grid grid-cols-2 gap-1 text-xs">
+                <div class="bg-white rounded px-2 py-1 border border-blue-100">KAPP 진단</div>
+                <div class="bg-white rounded px-2 py-1 border border-blue-100">마이 대시보드</div>
+                <div class="bg-white rounded px-2 py-1 border border-blue-100">교육 큐레이션</div>
+                <div class="bg-white rounded px-2 py-1 border border-blue-100">나의 성장</div>
+              </div>
+            </div>
+            <p class="file-hint mt-2">app/</p>
+          </div>
+
+          <!-- 관리자 대시보드 -->
+          <div class="flex flex-col items-center">
+            <div class="w-40 rounded-xl bg-amber-50 border-2 border-amber-200 p-3">
+              <div class="text-center font-semibold text-amber-800 text-sm mb-2">관리자 대시보드</div>
+              <div class="grid grid-cols-2 gap-1 text-xs">
+                <div class="bg-white rounded px-2 py-1 border border-amber-100">개요</div>
+                <div class="bg-white rounded px-2 py-1 border border-amber-100">역량 분석</div>
+                <div class="bg-white rounded px-2 py-1 border border-amber-100">직원 관리</div>
+                <div class="bg-white rounded px-2 py-1 border border-amber-100">교육 프로그램</div>
+              </div>
+            </div>
+            <p class="file-hint mt-2">dashboard/</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 경로 요약 테이블 -->
+    <section>
+      <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+        경로·파일 매핑 요약
+      </h2>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <table class="w-full text-sm resizable-table">
+          <thead class="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th class="text-left py-3 px-4 font-semibold text-slate-700">경로</th>
+              <th class="text-left py-3 px-4 font-semibold text-slate-700">화면명</th>
+              <th class="text-left py-3 px-4 font-semibold text-slate-700">파일 위치</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr><td class="py-2 px-4 font-mono text-blue-600">/</td><td>홈 (메인 랜딩)</td><td class="file-hint">app/page.tsx</td></tr>
+            <tr><td class="py-2 px-4 font-mono text-blue-600">/login</td><td>소비자 로그인</td><td class="file-hint">app/login/page.tsx</td></tr>
+            <tr><td class="py-2 px-4 font-mono text-amber-600">/admin</td><td>관리자 로그인</td><td class="file-hint">app/admin/page.tsx</td></tr>
+            <tr><td class="py-2 px-4 font-mono text-blue-600">/app</td><td>소비자 대시보드</td><td class="file-hint">app/app/page.tsx</td></tr>
+            <tr><td class="py-2 px-4 font-mono text-blue-600 pl-8">/app/diagnosis</td><td>KAPP 진단</td><td class="file-hint">app/app/diagnosis/page.tsx</td></tr>
+            <tr><td class="py-2 px-4 font-mono text-blue-600 pl-8">/app/dashboard</td><td>마이 대시보드</td><td class="file-hint">app/app/dashboard/page.tsx</td></tr>
+            <tr><td class="py-2 px-4 font-mono text-blue-600 pl-8">/app/education</td><td>교육 큐레이션</td><td class="file-hint">app/app/education/page.tsx</td></tr>
+            <tr><td class="py-2 px-4 font-mono text-blue-600 pl-8">/app/growth</td><td>나의 성장</td><td class="file-hint">app/app/growth/page.tsx</td></tr>
+            <tr><td class="py-2 px-4 font-mono text-amber-600">/dashboard</td><td>관리자 대시보드 (개요)</td><td class="file-hint">app/dashboard/page.tsx</td></tr>
+            <tr><td class="py-2 px-4 font-mono text-amber-600 pl-8">/dashboard/competency</td><td>역량 분석</td><td class="file-hint">app/dashboard/competency/page.tsx</td></tr>
+            <tr><td class="py-2 px-4 font-mono text-amber-600 pl-8">/dashboard/employees</td><td>직원 관리</td><td class="file-hint">app/dashboard/employees/page.tsx</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 상세 역할 (페이지·영역별) -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+        상세 역할 (페이지·영역별)
+      </h2>
+      <p class="text-sm text-slate-600 mb-4">각 경로/화면이 담당하는 역할, 사용 데이터, 데이터 출처, 가공 방식, 코드 위치를 정리했습니다.</p>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <table class="w-full text-sm resizable-table">
+          <thead class="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th class="text-left py-3 px-4 font-semibold text-slate-700 w-28">경로</th>
+              <th class="text-left py-3 px-4 font-semibold text-slate-700">역할 (상세)</th>
+              <th class="text-left py-3 px-4 font-semibold text-slate-700">데이터 출처</th>
+              <th class="text-left py-3 px-4 font-semibold text-slate-700">가공 방식</th>
+              <th class="text-left py-3 px-4 font-semibold text-slate-700">코드 위치</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-slate-700">
+            <tr>
+              <td class="py-3 px-4 font-mono text-blue-600">/</td>
+              <td class="py-3 px-4">소비자 최초 진입 랜딩. KAPP 진단·교육·성과 소개, CTA(진단 시작하기 → /login). 상단 메뉴 없음.</td>
+              <td class="py-3 px-4 file-hint">lib/routes.ts (ROUTES.HOME 등)</td>
+              <td class="py-3 px-4">없음. 경로 상수만 참조.</td>
+              <td class="py-3 px-4 file-hint">app/page.tsx</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-blue-600">/login</td>
+              <td class="py-3 px-4">소비자 로그인/최초 비밀번호 설정. 재방문 시 이메일로 재방문 여부 판별 후 로그인 폼 표시. 로그인 성공 시 /app 이동. "관리자 페이지로 이동" 링크 제공.</td>
+              <td class="py-3 px-4 file-hint">localStorage 키 "kapp_consumer_accounts" (이메일→비밀번호 맵)</td>
+              <td class="py-3 px-4">저장: setStoredAccounts(JSON). 조회: getStoredAccounts() → JSON.parse. app/login/page.tsx 내부 함수.</td>
+              <td class="py-3 px-4 file-hint">app/login/page.tsx</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-amber-600">/admin</td>
+              <td class="py-3 px-4">관리자 전용 로그인. 이메일·비밀번호 입력 후 관리자 대시보드(/dashboard)로 이동. 소비자와 인증 체계 분리.</td>
+              <td class="py-3 px-4 file-hint">(현재 mock 또는 별도 API 연동 가능)</td>
+              <td class="py-3 px-4">없음 또는 서버 인증.</td>
+              <td class="py-3 px-4 file-hint">app/admin/page.tsx</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-blue-600">/app</td>
+              <td class="py-3 px-4">소비자 대시보드 레이아웃. 사이드바(ConsumerSidebar)로 KAPP 진단·마이 대시보드·교육 큐레이션·나의 성장 메뉴 제공. layout에서 자식 페이지 렌더링.</td>
+              <td class="py-3 px-4 file-hint">lib/routes.ts (ROUTES.APP_*)</td>
+              <td class="py-3 px-4">없음.</td>
+              <td class="py-3 px-4 file-hint">app/app/layout.tsx, page.tsx, components/layout/ConsumerSidebar.tsx</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-blue-600 pl-8">/app/diagnosis</td>
+              <td class="py-3 px-4">KAPP 지능형 역량 진단 전체 플로우: 시작(0)→정보입력(1)→지식(2)→적용(3)→성과(4)→인바스켓(5)→AI(6)→결과(7). 단계별 문항/시나리오는 산업·직무·직급에 따라 필터링. 인바스켓은 왼쪽 메일 목록·가운데 본문 영역으로 표시.</td>
+              <td class="py-3 px-4 file-hint">data/kappDiagnosis/userInfoOptions.json, knowledgeQuestions.json, applicationQuestions.json, performanceQuestions.json, etrayByIndustry.json, aiWorkflowByIndustry.json</td>
+              <td class="py-3 px-4">정보입력: industryJobData→산업별 직무 목록. 지식/적용/성과: industry·job·position 일치 또는 공통 필터. 인바스켓·AI: form.industry로 byIndustry 키 선택, 없으면 "기타". 답안은 answers 상태로 보관.</td>
+              <td class="py-3 px-4 file-hint">app/app/diagnosis/page.tsx</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-blue-600 pl-8">/app/dashboard</td>
+              <td class="py-3 px-4">마이 대시보드(소비자 본인 진단 결과·성장 요약). placeholder 또는 이후 API 연동.</td>
+              <td class="py-3 px-4 file-hint">(추후 연동)</td>
+              <td class="py-3 px-4">—</td>
+              <td class="py-3 px-4 file-hint">app/app/dashboard/page.tsx</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-blue-600 pl-8">/app/education</td>
+              <td class="py-3 px-4">교육 큐레이션: 추천 교육 목록. placeholder.</td>
+              <td class="py-3 px-4 file-hint">(추후 연동)</td>
+              <td class="py-3 px-4">—</td>
+              <td class="py-3 px-4 file-hint">app/app/education/page.tsx</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-blue-600 pl-8">/app/growth</td>
+              <td class="py-3 px-4">나의 성장: 성장 기록·학습 이력. placeholder.</td>
+              <td class="py-3 px-4 file-hint">(추후 연동)</td>
+              <td class="py-3 px-4">—</td>
+              <td class="py-3 px-4 file-hint">app/app/growth/page.tsx</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-amber-600">/dashboard</td>
+              <td class="py-3 px-4">관리자 대시보드 개요. 전략·직원·역량 요약. strategyMapper.json 등 사용.</td>
+              <td class="py-3 px-4 file-hint">data/dashboard/strategyMapper.json, data/employees/employees*.ts 등</td>
+              <td class="py-3 px-4">strategyMapper: JSON import. 직원/역량: 타입·필터 훅 사용.</td>
+              <td class="py-3 px-4 file-hint">app/dashboard/page.tsx, sections/*</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-amber-600 pl-8">/dashboard/competency</td>
+              <td class="py-3 px-4">역량 분석: 부서별·역량 유형별 히트맵, 트렌드, 고성과자·리스크. competencyRawData, originHeatmapData, originSkillRiskData, highPerformerData 사용.</td>
+              <td class="py-3 px-4 file-hint">data/competency/competencyRawData, originHeatmapData, originSkillRiskData, highPerformerData</td>
+              <td class="py-3 px-4">useCompetencyFilter 훅으로 필터. DepartmentCompetency, TrendLineChart 등에서 시각화.</td>
+              <td class="py-3 px-4 file-hint">app/dashboard/competency/page.tsx, hooks/useCompetencyFilter.ts, components/*</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-amber-600 pl-8">/dashboard/employees</td>
+              <td class="py-3 px-4">직원 관리: 목록·검색·상세. employeesData 등 사용.</td>
+              <td class="py-3 px-4 file-hint">data/employees/employeesData, data/employees/employees</td>
+              <td class="py-3 px-4">직원 목록 필터·정렬. 타입 Employee 등.</td>
+              <td class="py-3 px-4 file-hint">app/dashboard/employees/page.tsx</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 데이터 출처·가공·위치 (진단 및 공통) -->
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+        데이터 출처·가공·위치
+      </h2>
+      <p class="text-sm text-slate-600 mb-4">데이터가 어디서 오는지, <strong>각 변수가 무엇을 의미하는지(한글)</strong>, 가공 시 어떻게·어디서 처리되는지 정리했습니다. 비개발자도 참고할 수 있도록 변수명과 한글 설명을 매핑했습니다.</p>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+        <table class="data-source-table text-sm resizable-table">
+          <thead>
+            <tr>
+              <th>데이터</th>
+              <th>역할</th>
+              <th>출처 (파일 경로)</th>
+              <th>데이터 형태 (변수 → 한글 의미)</th>
+              <th>가공 방식 및 위치</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-medium text-slate-800">userInfoOptions</td>
+              <td>진단 정보 입력 옵션: 산업·직무, 직급, 연차, 기업규모, 진단목표</td>
+              <td class="file-hint">data/kappDiagnosis/userInfoOptions.json</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">description</td><td>설명(선택)</td></tr>
+                  <tr><td class="var-cell">industryJobData</td><td>산업별 직무 정보 (산업명 → 아이콘, 직무 목록)</td></tr>
+                  <tr><td class="var-cell">positionLevels</td><td>직급 목록 (value, label)</td></tr>
+                  <tr><td class="var-cell">experienceYears</td><td>연차 목록 (value, label)</td></tr>
+                  <tr><td class="var-cell">companySizes</td><td>기업 규모 목록 (value, label, icon)</td></tr>
+                  <tr><td class="var-cell">diagnosticGoals</td><td>진단 목표 목록 (value, label)</td></tr>
+                </table>
+              </td>
+              <td>가공 없음. 진단 페이지에서 산업 선택 시 해당 직무 목록 표시.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">knowledgeQuestions</td>
+              <td>지식 문항 목록 (업종·직무·난이도·질문·선택지·정답)</td>
+              <td class="file-hint">data/kappDiagnosis/knowledgeQuestions.json</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">description</td><td>설명(선택)</td></tr>
+                  <tr><td class="var-cell">questions</td><td>문항 배열</td></tr>
+                </table>
+                <div class="data-shape-sub">
+                  <div class="sub-caption">questions[] 한 항목 구조</div>
+                  <table class="data-shape-table">
+                    <tr><th>변수</th><th>한글 의미</th></tr>
+                    <tr><td class="var-cell">id</td><td>문항 ID</td></tr>
+                    <tr><td class="var-cell">category</td><td>문항 유형</td></tr>
+                    <tr><td class="var-cell">difficulty</td><td>난이도 (easy/medium/hard)</td></tr>
+                    <tr><td class="var-cell">industry</td><td>산업</td></tr>
+                    <tr><td class="var-cell">job</td><td>직무</td></tr>
+                    <tr><td class="var-cell">question</td><td>질문 문장</td></tr>
+                    <tr><td class="var-cell">options</td><td>선택지 배열</td></tr>
+                    <tr><td class="var-cell">answer</td><td>정답 번호(인덱스)</td></tr>
+                    <tr><td class="var-cell">explanation</td><td>해설(선택)</td></tr>
+                  </table>
+                </div>
+              </td>
+              <td>진단 페이지에서 산업·직무에 맞는 문항만 필터 후 최대 5문항 표시.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">applicationQuestions</td>
+              <td>적용(시나리오) 문항: 산업·직무·직급·제목·시나리오·선택지</td>
+              <td class="file-hint">data/kappDiagnosis/applicationQuestions.json</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">questions</td><td>문항 배열</td></tr>
+                </table>
+                <div class="data-shape-sub">
+                  <div class="sub-caption">questions[] 한 항목 구조</div>
+                  <table class="data-shape-table">
+                    <tr><th>변수</th><th>한글 의미</th></tr>
+                    <tr><td class="var-cell">id</td><td>문항 ID</td></tr>
+                    <tr><td class="var-cell">category</td><td>적용(시나리오)</td></tr>
+                    <tr><td class="var-cell">industry / job / position</td><td>산업·직무·직급</td></tr>
+                    <tr><td class="var-cell">title</td><td>제목</td></tr>
+                    <tr><td class="var-cell">scenario</td><td>상황 설명</td></tr>
+                    <tr><td class="var-cell">question</td><td>질문</td></tr>
+                    <tr><td class="var-cell">options</td><td>선택지 (label, score)</td></tr>
+                    <tr><td class="var-cell">answer</td><td>정답 번호(인덱스)</td></tr>
+                  </table>
+                </div>
+              </td>
+              <td>산업·직무·직급 일치 또는 공통 문항만 필터 후 최대 4문항 표시.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">performanceQuestions</td>
+              <td>성과 문항: 산업·직무·제목·질문·선택지</td>
+              <td class="file-hint">data/kappDiagnosis/performanceQuestions.json</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">questions</td><td>문항 배열</td></tr>
+                </table>
+                <div class="data-shape-sub">
+                  <div class="sub-caption">questions[] 한 항목 구조</div>
+                  <table class="data-shape-table">
+                    <tr><th>변수</th><th>한글 의미</th></tr>
+                    <tr><td class="var-cell">id</td><td>문항 ID</td></tr>
+                    <tr><td class="var-cell">category</td><td>성과</td></tr>
+                    <tr><td class="var-cell">industry / job</td><td>산업·직무</td></tr>
+                    <tr><td class="var-cell">title</td><td>제목</td></tr>
+                    <tr><td class="var-cell">question</td><td>질문</td></tr>
+                    <tr><td class="var-cell">options</td><td>선택지 (label, score)</td></tr>
+                    <tr><td class="var-cell">answer</td><td>정답 번호(인덱스)</td></tr>
+                  </table>
+                </div>
+              </td>
+              <td>산업·직무 일치 또는 공통 문항만 필터 후 최대 4문항 표시.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">etrayByIndustry</td>
+              <td>산업별 디지털 인바스켓 이메일 세트</td>
+              <td class="file-hint">data/kappDiagnosis/etrayByIndustry.json</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">byIndustry</td><td>산업명(IT, 금융, 의료 등)을 키로 하는 객체</td></tr>
+                </table>
+                <div class="data-shape-sub">
+                  <div class="sub-caption">byIndustry[산업명] → 이메일[] 한 항목 구조</div>
+                  <table class="data-shape-table">
+                    <tr><th>변수</th><th>한글 의미</th></tr>
+                    <tr><td class="var-cell">id</td><td>이메일 ID</td></tr>
+                    <tr><td class="var-cell">sender</td><td>발신자</td></tr>
+                    <tr><td class="var-cell">subject</td><td>제목</td></tr>
+                    <tr><td class="var-cell">time</td><td>수신 시각</td></tr>
+                    <tr><td class="var-cell">priority</td><td>우선순위</td></tr>
+                    <tr><td class="var-cell">body</td><td>본문</td></tr>
+                    <tr><td class="var-cell">unread</td><td>읽음 여부(선택)</td></tr>
+                  </table>
+                </div>
+              </td>
+              <td>선택한 산업에 해당하는 이메일 목록 사용. 미지정 산업은 "기타" 세트 사용.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">aiWorkflowByIndustry</td>
+              <td>산업별 AI 워크플로우 시나리오 1개</td>
+              <td class="file-hint">data/kappDiagnosis/aiWorkflowByIndustry.json</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">byIndustry</td><td>산업명을 키로 하는 객체</td></tr>
+                </table>
+                <div class="data-shape-sub">
+                  <div class="sub-caption">byIndustry[산업명] → 시나리오 1개 구조</div>
+                  <table class="data-shape-table">
+                    <tr><th>변수</th><th>한글 의미</th></tr>
+                    <tr><td class="var-cell">id</td><td>시나리오 ID</td></tr>
+                    <tr><td class="var-cell">industry</td><td>산업</td></tr>
+                    <tr><td class="var-cell">title</td><td>제목</td></tr>
+                    <tr><td class="var-cell">task</td><td>과제 설명</td></tr>
+                    <tr><td class="var-cell">options</td><td>선택지 (id, choice, 시간 단축률, 품질 점수)</td></tr>
+                    <tr><td class="var-cell">answer</td><td>정답 번호(인덱스)</td></tr>
+                    <tr><td class="var-cell">explanation</td><td>해설(선택)</td></tr>
+                  </table>
+                </div>
+              </td>
+              <td>선택한 산업에 해당하는 시나리오 1개 사용. 미지정 산업은 "기타" 사용.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">kapp_consumer_accounts</td>
+              <td>소비자 로그인용 이메일→비밀번호 맵(mock)</td>
+              <td class="file-hint">브라우저 localStorage</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">키</td><td>이메일 주소</td></tr>
+                  <tr><td class="var-cell">값</td><td>비밀번호(저장용). 객체 하나가 "이메일: 비밀번호" 목록</td></tr>
+                </table>
+              </td>
+              <td>로그인 페이지에서 저장·조회. 최초 비밀번호 설정 시 맵에 추가.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">ROUTES</td>
+              <td>앱 전역 경로 상수</td>
+              <td class="file-hint">lib/routes.ts</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">HOME / LOGIN / ADMIN / APP / APP_DIAGNOSIS 등</td><td>각각 "/", "/login", "/admin", "/app", "/app/diagnosis" 등 경로 문자열</td></tr>
+                </table>
+              </td>
+              <td>가공 없음. 페이지·링크에서 경로로 사용.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">competencyRawData 등</td>
+              <td>관리자 역량 분석: 역량 유형·레코드·히트맵·리스크·고성과자</td>
+              <td class="file-hint">data/competency/*.ts</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">competencyTypes</td><td>역량 유형 목록</td></tr>
+                  <tr><td class="var-cell">CompetencyRecord</td><td>직원별 역량 레코드(이름, 부서, 역량 점수 등)</td></tr>
+                  <tr><td class="var-cell">heatmap / skillRisk / highPerformer</td><td>부서별·역량별 집계, 리스크, 고성과자 데이터 (파일별 구조 상이)</td></tr>
+                </table>
+              </td>
+              <td>역량 분석 훅에서 필터·집계 후 차트 등에 사용.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">employeesData / employees</td>
+              <td>관리자 직원 목록·상세</td>
+              <td class="file-hint">data/employees/*.ts</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">id / name / department / role / email</td><td>직원 ID, 이름, 부서, 역할, 이메일</td></tr>
+                  <tr><td class="var-cell">competency</td><td>역량 정보(선택). 배열 또는 맵 형태</td></tr>
+                </table>
+              </td>
+              <td>직원 페이지·섹션에서 import. 목록 필터·정렬은 페이지 내 state.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">strategyMapper</td>
+              <td>관리자 대시보드 전략·KPI 매핑</td>
+              <td class="file-hint">data/dashboard/strategyMapper.json</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">전략/카드별 키-값</td><td>대시보드에 표시할 전략 항목과 KPI 매핑 정보. JSON 파일 구조 참고</td></tr>
+                </table>
+              </td>
+              <td>대시보드 페이지에서 import 후 전략 카드 등에 표시.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="mt-12 text-center text-slate-500 text-xs">
+      KAPP Assessment New · DOM
+    </footer>
+  </div>
+  <script>
+    (function() {
+      function makeResizable(table) {
+        var thead = table.querySelector('thead tr');
+        if (!thead) return;
+        var ths = thead.querySelectorAll('th');
+        var colgroup = table.querySelector('colgroup');
+        if (!colgroup) {
+          colgroup = document.createElement('colgroup');
+          table.insertBefore(colgroup, table.firstChild);
+        }
+        colgroup.innerHTML = '';
+        var cols = [];
+        for (var i = 0; i < ths.length; i++) {
+          var col = document.createElement('col');
+          var w = (100 / ths.length).toFixed(1);
+          col.style.width = w + '%';
+          colgroup.appendChild(col);
+          cols.push(col);
+        }
+        var handle, startX, startW, colIndex;
+        function onMove(e) {
+          if (!handle) return;
+          var dx = e.pageX - startX;
+          var newW = Math.max(20, startW + dx);
+          cols[colIndex].style.width = newW + 'px';
+        }
+        function onUp() {
+          handle.classList.remove('resizing');
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+          handle = null;
+        }
+        for (var i = 0; i < ths.length; i++) {
+          (function(idx) {
+            var th = ths[idx];
+            if (th.querySelector('.resize-handle')) return;
+            var grip = document.createElement('div');
+            grip.className = 'resize-handle';
+            grip.title = '드래그하여 열 너비 조절';
+            th.style.position = 'relative';
+            th.appendChild(grip);
+            grip.addEventListener('mousedown', function(e) {
+              e.preventDefault();
+              handle = grip;
+              grip.classList.add('resizing');
+              startX = e.pageX;
+              var col = cols[idx];
+              var w = th.offsetWidth;
+              startW = w;
+              col.style.width = w + 'px';
+              colIndex = idx;
+              document.body.style.cursor = 'col-resize';
+              document.body.style.userSelect = 'none';
+              document.addEventListener('mousemove', onMove);
+              document.addEventListener('mouseup', onUp);
+            });
+          })(i);
+        }
+      }
+      document.querySelectorAll('.resizable-table').forEach(makeResizable);
+    })();
+  </script>
+</body>
+</html>

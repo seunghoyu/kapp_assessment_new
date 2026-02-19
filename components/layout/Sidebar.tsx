@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import Image from "next/image";
+import { ROUTES } from "@/lib/routes";
 
 interface SidebarItem {
   icon: keyof typeof import("@/components/ui/Icon").Icons;
@@ -23,22 +24,22 @@ interface DashboardSubItem {
 }
 
 const dashboardSubItems: DashboardSubItem[] = [
-  { label: "개요", href: "/dashboard" },
-  { label: "역량 분석", href: "/dashboard/competency" },
+  { label: "개요", href: ROUTES.DASHBOARD },
+  { label: "역량 분석", href: `${ROUTES.DASHBOARD}/competency` },
 ];
 
 // 대시보드 외 단일 메뉴
 const mainSections: SidebarGroup = {
   items: [
-    { icon: "users", label: "직원 관리", href: "/dashboard/employees" },
-    { icon: "analytics", label: "분석/리포트", href: "/dashboard/analytics" },
-    { icon: "programs", label: "교육 프로그램", href: "/dashboard/programs" },
+    { icon: "users", label: "직원 관리", href: `${ROUTES.DASHBOARD}/employees` },
+    { icon: "analytics", label: "분석/리포트", href: `${ROUTES.DASHBOARD}/analytics` },
+    { icon: "programs", label: "교육 프로그램", href: `${ROUTES.DASHBOARD}/programs` },
   ],
 };
 
 const bottomSections: SidebarGroup = {
   items: [
-    { icon: "settings", label: "설정", href: "/dashboard/settings" },
+    { icon: "settings", label: "설정", href: `${ROUTES.DASHBOARD}/settings` },
   ],
 };
 
@@ -82,7 +83,7 @@ export default function Sidebar() {
     <aside className={`flex flex-shrink-0 flex-col border-r border-gray-200 bg-white transition-all duration-300 sticky top-0 self-start h-screen ${isCollapsed ? 'w-16' : 'w-56'}`}>
       <div className="border-b border-gray-200 h-16 px-4 flex items-center justify-between">
         {!isCollapsed && (
-          <Link href="/dashboard" className="relative w-full h-full flex items-center justify-center">
+          <Link href={ROUTES.DASHBOARD} className="relative w-full h-full flex items-center justify-center">
             <Image
               src="/images/logo.png"
               alt="Kapp Assessment Logo"

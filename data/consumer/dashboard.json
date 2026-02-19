@@ -1,0 +1,82 @@
+{
+  "description": "마이 대시보드(KAPP 대시보드) 더미 데이터. 진단 결과 연동 전 기본 표시용.",
+  "kappLabels": [
+    { "key": "knowledge", "label": "Knowledge", "short": "지식" },
+    { "key": "application", "label": "Application", "short": "적용" },
+    { "key": "performance", "label": "Performance", "short": "성과" },
+    { "key": "productivity", "label": "Productivity", "short": "생산성" }
+  ],
+  "scores": {
+    "my": {
+      "knowledge": 78,
+      "application": 72,
+      "performance": 80,
+      "productivity": 85
+    },
+    "positionAverage": {
+      "knowledge": 72,
+      "application": 70,
+      "performance": 74,
+      "productivity": 75
+    }
+  },
+  "insights": [
+    {
+      "id": "1",
+      "title": "전반적 성과",
+      "desc": "직급 평균 대비 우수한 역량을 보이고 있습니다.",
+      "type": "positive"
+    },
+    {
+      "id": "2",
+      "title": "강점 영역",
+      "desc": "생산성(Productivity) 영역이 특히 높습니다. 업무 효율화 역량을 활용해 보세요.",
+      "type": "strength"
+    },
+    {
+      "id": "3",
+      "title": "성장 기회",
+      "desc": "적용(Application) 영역을 보강하면 시나리오 대응력이 더욱 높아질 수 있습니다.",
+      "type": "improve"
+    }
+  ],
+  "marketPosition": {
+    "currentLevel": "중급 (Mid-Level)",
+    "percentile": "35",
+    "strengthCount": 5,
+    "improvementCount": 3,
+    "averageCount": 2,
+    "opportunitySummary": "6개월 내 상위 25% 달성 가능성 높음"
+  },
+  "marketBenchmark": {
+    "positionAvgScore": 73,
+    "myAvgScore": 79,
+    "percentileRank": "상위 약 28%"
+  },
+  "industryBenchmark": {
+    "knowledge": 92,
+    "application": 90,
+    "performance": 91,
+    "productivity": 93
+  },
+  "marketActions": [
+    { "icon": "📚", "title": "지식 역량 강화", "description": "산업 트렌드와 최신 기술 습득을 위한 학습 추천", "priority": "high" },
+    { "icon": "🔨", "title": "실무 프로젝트 참여", "description": "실전 경험을 통한 적용 능력 향상 필요", "priority": "high" },
+    { "icon": "📊", "title": "성과 지표 개선", "description": "목표 설정 및 성과 측정 체계 구축", "priority": "medium" },
+    { "icon": "🎯", "title": "리더십 역량 개발", "description": "팀 리드 및 관리자 역할로의 성장 준비", "priority": "medium" }
+  ],
+  "recommendedActions": [
+    "적용(Application) 영역 실무 시나리오 연습",
+    "동일 업계 벤치마크 사례 학습"
+  ],
+  "roadmap": {
+    "careerSimulatorDescription": "3~5년 후 목표 경로를 선택하면 추천 학습 경로를 제안합니다.",
+    "careerPlaceholder": "커리어 타임라인 영역 (추후 산업·직무별 경로 연동)",
+    "idpDescription": "진단된 스킬 갭을 메우는 맞춤형 성장 로드맵입니다.",
+    "idpItems": [
+      "적용(Application) 실무 시나리오 학습 3개월",
+      "동일 업계 벤치마크 사례 스터디 참여",
+      "분기별 재진단으로 진행도 확인"
+    ]
+  }
+}

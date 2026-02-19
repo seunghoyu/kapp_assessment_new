@@ -1,0 +1,39 @@
+{
+  "description": "나의 성장 페이지 더미 데이터. 챌린지·인증서·멘토링 목표 목록 등.",
+  "dailyTip": {
+    "category": "생산성",
+    "duration": "1분",
+    "title": "오늘 할 일을 3개만 적고, 하나씩 완료해 보세요",
+    "content": "할 일 목록이 길수록 부담만 커집니다. 아침에 '오늘 꼭 할 3가지'만 정해 두고, 하나 완료할 때마다 체크하면 동기 부여에 도움이 됩니다."
+  },
+  "defaultStats": {
+    "streakDays": 0,
+    "completedTips": 0,
+    "weeklyProgress": "0/7"
+  },
+  "certificate": {
+    "recipientName": "홍길동",
+    "position": "개발팀 · 대리",
+    "scores": {
+      "knowledge": 85,
+      "application": 78,
+      "performance": 82,
+      "productivity": 90
+    },
+    "overallScore": 84,
+    "grade": "우수",
+    "issueDate": "2026.02.19",
+    "certId": "KAPP-2026-XXXXXX",
+    "issuerTitle": "해커스 캠퍼스 Business · NEXT GEN",
+    "certificateTitle": "역량 진단 인증서",
+    "certificateSubtitle": "KAPP 4차원 역량 평가"
+  },
+  "careerGoals": [
+    "테크 리드",
+    "데이터 사이언티스트",
+    "프로덕트 매니저",
+    "마케팅 팀장",
+    "금융 애널리스트",
+    "직접 입력"
+  ]
+}

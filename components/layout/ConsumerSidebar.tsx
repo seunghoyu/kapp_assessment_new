@@ -7,7 +7,6 @@ import Image from "next/image";
 import {
   ClipboardList,
   LayoutDashboard,
-  GraduationCap,
   Sprout,
   ChevronLeft,
   ChevronRight,
@@ -17,7 +16,6 @@ import { ROUTES } from "@/lib/routes";
 const consumerMenuItems = [
   { icon: ClipboardList, label: "KAPP 진단", href: ROUTES.APP_DIAGNOSIS },
   { icon: LayoutDashboard, label: "마이 대시보드", href: ROUTES.APP_MY_DASHBOARD },
-  { icon: GraduationCap, label: "교육 큐레이션", href: ROUTES.APP_EDUCATION },
   { icon: Sprout, label: "나의 성장", href: ROUTES.APP_GROWTH },
 ];
 

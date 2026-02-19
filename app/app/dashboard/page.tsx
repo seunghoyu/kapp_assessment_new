@@ -11,7 +11,6 @@ import {
   Route,
   FileText,
   GraduationCap,
-  ChartLine,
 } from "lucide-react";
 import {
   Radar,
@@ -39,7 +38,17 @@ const { kappLabels, scores, insights, marketPosition, marketBenchmark, industryB
   kappLabels: { key: string; label: string; short: string }[];
   scores: { my: Record<string, number>; positionAverage: Record<string, number> };
   insights: { id: string; title: string; desc: string; type: string }[];
-  marketPosition: { currentLevel: string; percentile: string; strengthCount: number; improvementCount: number; averageCount: number; opportunitySummary: string };
+  marketPosition: {
+    currentLevel: string;
+    percentile: string;
+    strengthCount: number;
+    improvementCount: number;
+    averageCount: number;
+    opportunitySummary: string;
+    currentLevelDesc?: string;
+    competitivenessDesc?: string;
+    opportunityDesc?: string;
+  };
   marketBenchmark: { positionAvgScore: number; myAvgScore: number; percentileRank: string };
   industryBenchmark?: Record<string, number>;
   marketActions?: MarketAction[];
@@ -68,7 +77,6 @@ const industries = (careerPathData as { industries?: string[] }).industries ?? O
 export default function ConsumerDashboardPage() {
   const router = useRouter();
   const [tab, setTab] = useState<DashboardTab>("my-competency");
-  const [showGrowthPlanModal, setShowGrowthPlanModal] = useState(false);
   const [showCoursesModal, setShowCoursesModal] = useState(false);
   const [careerIndustry, setCareerIndustry] = useState("IT");
   const [careerPathIndex, setCareerPathIndex] = useState(0);
@@ -77,8 +85,8 @@ export default function ConsumerDashboardPage() {
   const actions = (marketActions && marketActions.length > 0) ? marketActions : marketActionsFallback;
 
   const radarData = useMemo(() => {
-    return kappLabels.map(({ key, label }) => ({
-      subject: label,
+    return kappLabels.map(({ key, short }) => ({
+      subject: short,
       나: scores.my[key] ?? 0,
       직급평균: scores.positionAverage[key] ?? 0,
       fullMark: 100,
@@ -86,8 +94,8 @@ export default function ConsumerDashboardPage() {
   }, [kappLabels, scores.my, scores.positionAverage]);
 
   const barData = useMemo(() => {
-    return kappLabels.map(({ key, label }) => ({
-      name: label,
+    return kappLabels.map(({ key, short }) => ({
+      name: short,
       나: scores.my[key] ?? 0,
       직급평균: scores.positionAverage[key] ?? 0,
     }));
@@ -95,8 +103,8 @@ export default function ConsumerDashboardPage() {
 
   const industryRadarData = useMemo(() => {
     const bench: Record<string, number> = ib as Record<string, number>;
-    return kappLabels.map(({ key, label }) => ({
-      subject: label,
+    return kappLabels.map(({ key, short }) => ({
+      subject: short,
       "업계 상위 10%": bench[key] ?? 0,
       "나의 점수": scores.my[key] ?? 0,
       fullMark: 100,
@@ -178,25 +186,25 @@ export default function ConsumerDashboardPage() {
               </section>
 
               {/* KAPP 4차원 역량 점수 + 레이더 */}
-              <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+              <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden w-full">
                 <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
                   <BarChart3 className="w-5 h-5 text-blue-600" />
                   <h2 className="text-sm font-semibold text-gray-800">KAPP 4차원 역량 점수</h2>
                 </div>
-                <div className="p-4 flex flex-col lg:flex-row gap-6">
-                  <div className="lg:w-1/2 flex items-center justify-center min-h-[260px]">
-                    <ResponsiveContainer width="100%" height={260}>
+                <div className="p-4 flex flex-col lg:flex-row gap-6 w-full min-w-0">
+                  <div className="lg:w-1/2 flex items-center justify-center min-h-[280px] w-full">
+                    <ResponsiveContainer width="100%" height={280}>
                       <RadarChart data={radarData}>
                         <PolarGrid />
-                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11 }} />
-                        <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 10 }} />
+                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12 }} />
+                        <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 11 }} />
                         <Tooltip
                           contentStyle={{ fontSize: 12, borderRadius: 8 }}
                           formatter={(value, name) => [`${Number(value)}점`, name ?? ""]}
                           labelFormatter={(label) => `${label}`}
                         />
                         <Radar
-                          name="나"
+                          name="본인"
                           dataKey="나"
                           stroke="#2563eb"
                           fill="#2563eb"
@@ -215,22 +223,25 @@ export default function ConsumerDashboardPage() {
                       </RadarChart>
                     </ResponsiveContainer>
                   </div>
-                  <div className="lg:w-1/2">
-                    <div className="grid grid-cols-2 gap-3">
-                      {kappLabels.map(({ key, short }) => (
-                        <div
-                          key={key}
-                          title={`${short}: 나 ${scores.my[key]}점, 직급 평균 ${scores.positionAverage[key]}점`}
-                          className="rounded-lg border border-gray-100 p-3 flex justify-between items-center cursor-default"
-                        >
-                          <span className="text-sm font-medium text-gray-700">{short}</span>
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-lg font-bold text-blue-600">{scores.my[key]}</span>
-                            <span className="text-xs text-gray-400">vs {scores.positionAverage[key]}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="lg:w-1/2 flex-shrink-0 w-full min-w-0 flex items-center">
+                    <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                      <thead>
+                        <tr className="bg-gray-50 border-b border-gray-200">
+                          <th className="text-left py-3 px-3 font-semibold text-gray-700">역량</th>
+                          <th className="text-right py-3 px-3 font-semibold text-blue-600">본인 점수</th>
+                          <th className="text-right py-3 px-3 font-semibold text-gray-600">직급 평균 점수</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {kappLabels.map(({ key, short }) => (
+                          <tr key={key} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50">
+                            <td className="py-2.5 px-3 font-medium text-gray-800">{short}</td>
+                            <td className="py-2.5 px-3 text-right font-semibold text-blue-600">{scores.my[key]}점</td>
+                            <td className="py-2.5 px-3 text-right text-gray-600">{scores.positionAverage[key]}점</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </section>
@@ -252,32 +263,39 @@ export default function ConsumerDashboardPage() {
                       <h3 className="text-sm font-semibold text-gray-800">현재 포지션</h3>
                     </div>
                     <p className="text-lg font-bold text-gray-900">{marketPosition.currentLevel}</p>
-                    <p className="text-xs text-gray-500">업계 상위 약 {marketPosition.percentile}%</p>
+                    <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                      {(marketPosition as { currentLevelDesc?: string }).currentLevelDesc ?? `업계 상위 약 ${marketPosition.percentile}%`}
+                    </p>
                   </div>
                   <div className="rounded-lg border border-gray-200 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Trophy className="w-4 h-4 text-amber-500" />
                       <h3 className="text-sm font-semibold text-gray-800">경쟁력 분석</h3>
                     </div>
-                    <p className="text-sm text-gray-600">강점 스킬 {marketPosition.strengthCount}개, 개선 필요 {marketPosition.improvementCount}개</p>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {(marketPosition as { competitivenessDesc?: string }).competitivenessDesc ?? `강점 스킬 ${marketPosition.strengthCount}개, 개선 필요 ${marketPosition.improvementCount}개`}
+                    </p>
                   </div>
                   <div className="rounded-lg border border-gray-200 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Rocket className="w-4 h-4 text-emerald-600" />
                       <h3 className="text-sm font-semibold text-gray-800">성장 기회</h3>
                     </div>
-                    <p className="text-sm text-gray-600">{marketPosition.opportunitySummary}</p>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {(marketPosition as { opportunityDesc?: string }).opportunityDesc ?? marketPosition.opportunitySummary}
+                    </p>
                   </div>
                 </div>
-                <div className="px-4 pb-4">
-                  <h4 className="text-xs font-semibold text-gray-600 mb-2">산업군 벤치마크 (상위 10% vs 나)</h4>
-                  <p className="text-xs text-gray-500 mb-2">업계 최상위권과의 역량 비교를 통해 개선 포인트를 파악하세요</p>
-                  <div className="h-[240px] rounded-lg">
+                <div className="px-4 pb-4 flex flex-col lg:flex-row gap-6">
+                  <div className="lg:w-1/2 min-h-[280px] rounded-lg flex flex-col">
+                    <h4 className="text-xs font-semibold text-gray-600 mb-2">산업군 벤치마크 (상위 10% vs 나)</h4>
+                    <p className="text-xs text-gray-500 mb-2">업계 최상위권과의 역량 비교를 통해 개선 포인트를 파악하세요</p>
+                    <div className="flex-1 min-h-[240px]">
                     <ResponsiveContainer width="100%" height={240}>
                       <RadarChart data={industryRadarData}>
                         <PolarGrid />
-                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10 }} />
-                        <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 9 }} />
+                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12 }} />
+                        <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 11 }} />
                         <Tooltip
                           contentStyle={{ fontSize: 12, borderRadius: 8 }}
                           formatter={(value, name) => [`${Number(value)}점`, name ?? ""]}
@@ -300,37 +318,30 @@ export default function ConsumerDashboardPage() {
                         <Legend />
                       </RadarChart>
                     </ResponsiveContainer>
+                    </div>
                   </div>
-                </div>
-                <div className="px-4 pb-4">
-                  <h4 className="text-xs font-semibold text-gray-600 mb-2">상위권 진입을 위한 추천 액션</h4>
-                  <div className="space-y-2 mb-4">
-                    {actions.map((action, i) => (
-                      <div
-                        key={i}
-                        className={`rounded-lg border p-3 flex items-start gap-3 ${
-                          action.priority === "high" ? "border-red-100 bg-red-50/50" : action.priority === "medium" ? "border-amber-100 bg-amber-50/50" : "border-gray-100 bg-gray-50/50"
-                        }`}
-                      >
-                        <span className="text-lg">{action.icon}</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">{action.title}</p>
-                          <p className="text-xs text-gray-600 mt-0.5">{action.description}</p>
+                  <div className="lg:w-1/2 flex-shrink-0 min-w-0">
+                    <h4 className="text-xs font-semibold text-gray-600 mb-2">상위권 진입을 위한 추천 액션</h4>
+                    <div className="space-y-2">
+                      {actions.map((action, i) => (
+                        <div
+                          key={i}
+                          className={`rounded-lg border p-3 flex items-start gap-3 ${
+                            action.priority === "high" ? "border-red-100 bg-red-50/50" : action.priority === "medium" ? "border-amber-100 bg-amber-50/50" : "border-gray-100 bg-gray-50/50"
+                          }`}
+                        >
+                          <span className="text-lg flex-shrink-0">{action.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900">{action.title}</p>
+                            <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">{action.description}</p>
+                          </div>
+                          <span className={`text-xs px-2 py-0.5 rounded flex-shrink-0 ${action.priority === "high" ? "bg-red-100 text-red-700" : action.priority === "medium" ? "bg-amber-100 text-amber-700" : "bg-gray-200 text-gray-600"}`}>
+                            {action.priority === "high" ? "높음" : action.priority === "medium" ? "중간" : "낮음"}
+                          </span>
                         </div>
-                        <span className={`text-xs px-2 py-0.5 rounded ${action.priority === "high" ? "bg-red-100 text-red-700" : action.priority === "medium" ? "bg-amber-100 text-amber-700" : "bg-gray-200 text-gray-600"}`}>
-                          {action.priority === "high" ? "높음" : action.priority === "medium" ? "중간" : "낮음"}
-                        </span>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowGrowthPlanModal(true)}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
-                  >
-                    <ChartLine className="w-4 h-4" />
-                    맞춤 성장 플랜 시작하기
-                  </button>
                 </div>
               </section>
               <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
@@ -338,22 +349,49 @@ export default function ConsumerDashboardPage() {
                   <h2 className="text-sm font-semibold text-gray-800">시장 벤치마킹</h2>
                   <p className="text-xs text-gray-500 mt-0.5">동일 업계 대비 나의 위치</p>
                 </div>
-                <div className="p-4 h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                      <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                      <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
-                      <Tooltip formatter={(value, name) => [`${Number(value)}점`, name ?? ""]} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-                      <Bar dataKey="나" fill="#2563eb" radius={[4, 4, 0, 0]} name="나" />
-                      <Bar dataKey="직급평균" fill="#94a3b8" radius={[4, 4, 0, 0]} name="직급 평균" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="px-4 pb-4 flex gap-6 text-sm">
-                  <span className="text-gray-600">동일 직급 평균: {marketBenchmark.positionAvgScore}점</span>
-                  <span className="font-semibold text-blue-600">나의 평균: {marketBenchmark.myAvgScore}점</span>
-                  <span className="text-gray-500">{marketBenchmark.percentileRank}</span>
+                <div className="p-4 flex flex-col lg:flex-row gap-6">
+                  <div className="lg:w-1/2 min-h-[240px]">
+                    <ResponsiveContainer width="100%" height={240}>
+                      <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }} barCategoryGap="30%">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                        <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                        <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
+                        <Tooltip formatter={(value, name) => [`${Number(value)}점`, name ?? ""]} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                        <Bar dataKey="나" fill="#2563eb" radius={[4, 4, 0, 0]} name="본인" barSize={24} />
+                        <Bar dataKey="직급평균" fill="#94a3b8" radius={[4, 4, 0, 0]} name="직급 평균" barSize={24} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="lg:w-1/2 flex-shrink-0 min-w-0">
+                    <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                      <thead>
+                        <tr className="bg-gray-50 border-b border-gray-200">
+                          <th className="text-left py-3 px-3 font-semibold text-gray-700">역량</th>
+                          <th className="text-right py-3 px-3 font-semibold text-blue-600">본인</th>
+                          <th className="text-right py-3 px-3 font-semibold text-gray-600">직급 평균</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {kappLabels.map(({ key, short }) => (
+                          <tr key={key} className="border-b border-gray-100 last:border-0">
+                            <td className="py-2 px-3 font-medium text-gray-800">{short}</td>
+                            <td className="py-2 px-3 text-right font-semibold text-blue-600">{scores.my[key]}점</td>
+                            <td className="py-2 px-3 text-right text-gray-600">{scores.positionAverage[key]}점</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot className="bg-gray-50 border-t-2 border-gray-200">
+                        <tr>
+                          <td className="py-2 px-3 font-medium text-gray-800">평균</td>
+                          <td className="py-2 px-3 text-right font-semibold text-blue-600">{marketBenchmark.myAvgScore}점</td>
+                          <td className="py-2 px-3 text-right text-gray-600">{marketBenchmark.positionAvgScore}점</td>
+                        </tr>
+                        <tr>
+                          <td colSpan={3} className="py-1.5 px-3 text-xs text-gray-500 text-center">{marketBenchmark.percentileRank}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
                 </div>
               </section>
             </div>
@@ -469,19 +507,6 @@ export default function ConsumerDashboardPage() {
           )}
         </div>
       </div>
-
-      {/* 모달: 맞춤 성장 플랜 */}
-      {showGrowthPlanModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setShowGrowthPlanModal(false)}>
-          <div className="bg-white rounded-xl shadow-lg max-w-sm w-full p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
-            <p className="text-sm text-gray-700">맞춤 성장 플랜이 곧 시작됩니다. 교육 큐레이션 페이지로 이동합니다.</p>
-            <div className="flex gap-2 justify-end">
-              <button type="button" onClick={() => setShowGrowthPlanModal(false)} className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">취소</button>
-              <button type="button" onClick={() => { setShowGrowthPlanModal(false); router.push("/app/education"); }} className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">교육 페이지로 이동</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 모달: 추천 강의 둘러보기 */}
       {showCoursesModal && (

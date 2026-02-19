@@ -442,9 +442,9 @@
             </tr>
             <tr>
               <td class="py-3 px-4 font-mono text-blue-600 pl-8">/app/dashboard</td>
-              <td class="py-3 px-4">마이 대시보드(소비자 본인 진단 결과·성장 요약). placeholder 또는 이후 API 연동.</td>
-              <td class="py-3 px-4 file-hint">(추후 연동)</td>
-              <td class="py-3 px-4">—</td>
+              <td class="py-3 px-4">마이 대시보드. 탭: 내 역량(레이더·AI 인사이트)·시장·경쟁력(포지션·산업군 벤치마크 레이더·추천 액션·모달)·성장 로드맵(커리어 시뮬레이터·IDP). 차트/점수 툴팁, 버튼 클릭 시 모달 후 /app/education 이동.</td>
+              <td class="py-3 px-4 file-hint">data/consumer/dashboard.json, careerPathByIndustry.json</td>
+              <td class="py-3 px-4">JSON import. 산업·경로 선택에 따라 커리어 타임라인·학습 경로 표시.</td>
               <td class="py-3 px-4 file-hint">app/app/dashboard/page.tsx</td>
             </tr>
             <tr>
@@ -456,9 +456,9 @@
             </tr>
             <tr>
               <td class="py-3 px-4 font-mono text-blue-600 pl-8">/app/growth</td>
-              <td class="py-3 px-4">나의 성장: 성장 기록·학습 이력. placeholder.</td>
-              <td class="py-3 px-4 file-hint">(추후 연동)</td>
-              <td class="py-3 px-4">—</td>
+              <td class="py-3 px-4">나의 성장. 탭: 챌린지·AI 멘토링·인증서. JSON 기반 더미 표시.</td>
+              <td class="py-3 px-4 file-hint">data/consumer/growth.json</td>
+              <td class="py-3 px-4">JSON import. 탭별 목록·카드 렌더링.</td>
               <td class="py-3 px-4 file-hint">app/app/growth/page.tsx</td>
             </tr>
             <tr>
@@ -664,6 +664,47 @@
                 </table>
               </td>
               <td>로그인 페이지에서 저장·조회. 최초 비밀번호 설정 시 맵에 추가.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">dashboard.json</td>
+              <td>마이 대시보드: KAPP 점수·인사이트·시장 포지션·산업군 벤치마크·추천 액션·로드맵 요약</td>
+              <td class="file-hint">data/consumer/dashboard.json</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">kappLabels / scores</td><td>4차원 역량 라벨·나/직급평균 점수</td></tr>
+                  <tr><td class="var-cell">insights / marketPosition / marketBenchmark</td><td>AI 인사이트·시장 포지션·벤치마크 통계</td></tr>
+                  <tr><td class="var-cell">industryBenchmark / marketActions</td><td>업계 상위 10% 점수·추천 액션 목록</td></tr>
+                  <tr><td class="var-cell">roadmap</td><td>커리어 시뮬레이터 설명·IDP 항목</td></tr>
+                </table>
+              </td>
+              <td>대시보드 페이지에서 import. 레이더·바 차트·액션 카드·모달 연동.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">careerPathByIndustry.json</td>
+              <td>산업별 커리어 경로 시뮬레이터: 현재→1.5년→3년 역할·스킬·확률, 추천 학습 경로</td>
+              <td class="file-hint">data/consumer/careerPathByIndustry.json</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">industries / data</td><td>산업 목록·산업별 paths·learningPath</td></tr>
+                  <tr><td class="var-cell">paths[] (current, milestone1, milestone2)</td><td>역할·스킬·연도·확률</td></tr>
+                  <tr><td class="var-cell">learningPath[]</td><td>과정명·기간·우선순위</td></tr>
+                </table>
+              </td>
+              <td>성장 로드맵 탭에서 산업·경로 선택 시 타임라인·학습 경로 표시.</td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">growth.json</td>
+              <td>나의 성장: 챌린지·AI 멘토링·인증서 탭용 목록 데이터</td>
+              <td class="file-hint">data/consumer/growth.json</td>
+              <td>
+                <table class="data-shape-table">
+                  <tr><th>변수</th><th>한글 의미</th></tr>
+                  <tr><td class="var-cell">challenges / mentoring / certificates</td><td>탭별 항목 배열(제목·설명·메타 등)</td></tr>
+                </table>
+              </td>
+              <td>나의 성장 페이지에서 import. 탭별 카드·목록 렌더링.</td>
             </tr>
             <tr>
               <td class="font-medium text-slate-800">ROUTES</td>

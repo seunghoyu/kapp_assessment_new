@@ -24,7 +24,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
-      <div className="max-w-lg w-full flex flex-col items-center gap-6">
+      <div className="max-w-xl w-full flex flex-col items-center gap-6">
         <div className="flex flex-col items-center gap-3">
           <Image
             src="/images/logo.png"
@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
           </p>
         </div>
 
-        <div className="w-full max-w-lg bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <div className="w-full max-w-xl bg-white border border-gray-200 rounded-xl shadow-sm p-6">
           <h2 className="text-xl font-semibold text-gray-900 text-center mb-6">
             로그인
           </h2>

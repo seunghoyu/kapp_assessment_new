@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, Fragment } from "react";
+import { useState, useMemo, useEffect, useCallback, Fragment, useRef } from "react";
 import {
   BookOpen,
   Cog,
@@ -12,6 +12,8 @@ import {
   Mailbox,
   Bot,
   BarChart3,
+  HelpCircle,
+  X,
 } from "lucide-react";
 import userInfoOptions from "@/data/kappDiagnosis/userInfoOptions.json";
 import knowledgeData from "@/data/kappDiagnosis/knowledgeQuestions.json";
@@ -19,6 +21,9 @@ import applicationData from "@/data/kappDiagnosis/applicationQuestions.json";
 import performanceData from "@/data/kappDiagnosis/performanceQuestions.json";
 import etrayData from "@/data/kappDiagnosis/etrayByIndustry.json";
 import aiWorkflowData from "@/data/kappDiagnosis/aiWorkflowByIndustry.json";
+import { getInbasketQuestions } from "@/lib/inbasketData";
+import InbasketList, { type InbasketQuestion } from "./InbasketList";
+import InbasketSimulation from "./InbasketSimulation";
 
 /** KAPP 진단 데이터 안내 + 문항 구성 로직 문서 기준 (kapp_origin flow 동일) */
 const STEPS = [
@@ -125,6 +130,86 @@ type AiWorkflow = { id: string; industry: string; title: string; task: string; o
 const ETRAY_INDUSTRY_KEYS = ["IT", "금융", "의료", "마케팅/광고", "기타"];
 const AI_INDUSTRY_KEYS = ["IT", "금융", "의료", "마케팅/광고", "기타"];
 
+const DIAGNOSIS_STORAGE_KEY = "kapp_diagnosis_state";
+const INBASKET_TUTORIAL_DISMISSED_KEY = "kapp_inbasket_tutorial_dismissed";
+
+type PersistedState = {
+  step: number;
+  form: {
+    name: string;
+    email: string;
+    industry: string;
+    job: string;
+    position: string;
+    experienceYears: string;
+    company: string;
+    companySize: string;
+    diagnosticGoals: string[];
+  };
+  selectedEtrayId: string | null;
+  inbasketView: "list" | "simulation";
+  inbasketSelectedId: string | null;
+  answers: {
+    knowledge: number[];
+    application: number[];
+    performance: number[];
+    etray: Record<string, string>;
+    ai: number | null;
+  };
+};
+
+function loadPersistedState(): Partial<PersistedState> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(DIAGNOSIS_STORAGE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw) as unknown;
+    if (!data || typeof data !== "object") return null;
+    const d = data as Record<string, unknown>;
+    const step = typeof d.step === "number" && d.step >= 0 && d.step <= 7 ? d.step : undefined;
+    if (step === undefined) return null;
+    return {
+      step,
+      form: typeof d.form === "object" && d.form !== null ? (d.form as PersistedState["form"]) : undefined,
+      selectedEtrayId: typeof d.selectedEtrayId === "string" || d.selectedEtrayId === null ? d.selectedEtrayId : undefined,
+      inbasketView: d.inbasketView === "list" || d.inbasketView === "simulation" ? d.inbasketView : undefined,
+      inbasketSelectedId: typeof d.inbasketSelectedId === "string" || d.inbasketSelectedId === null ? d.inbasketSelectedId : undefined,
+      answers: typeof d.answers === "object" && d.answers !== null ? (d.answers as PersistedState["answers"]) : undefined,
+    } as Partial<PersistedState>;
+  } catch {
+    return null;
+  }
+}
+
+function savePersistedState(state: PersistedState) {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(DIAGNOSIS_STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // ignore
+  }
+}
+
+const initialForm = {
+  name: "",
+  email: "",
+  industry: "",
+  job: "",
+  position: "",
+  experienceYears: "",
+  company: "",
+  companySize: "",
+  diagnosticGoals: [] as string[],
+};
+
+const initialAnswers = {
+  knowledge: [] as number[],
+  application: [] as number[],
+  performance: [] as number[],
+  etray: {} as Record<string, string>,
+  ai: null as number | null,
+};
+
 export default function DiagnosisPage() {
   const [step, setStep] = useState(0);
   const industryJobData = userInfoOptions.industryJobData as IndustryJobData;
@@ -133,26 +218,52 @@ export default function DiagnosisPage() {
   const companySizes = userInfoOptions.companySizes as (OptionItem & { icon?: string })[];
   const diagnosticGoals = userInfoOptions.diagnosticGoals as OptionItem[];
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    industry: "",
-    job: "",
-    position: "",
-    experienceYears: "",
-    company: "",
-    companySize: "",
-    diagnosticGoals: [] as string[],
-  });
-
+  const [form, setForm] = useState(initialForm);
   const [selectedEtrayId, setSelectedEtrayId] = useState<string | null>(null);
-  const [answers, setAnswers] = useState({
-    knowledge: [] as number[],
-    application: [] as number[],
-    performance: [] as number[],
-    etray: {} as Record<string, string>,
-    ai: null as number | null,
-  });
+  const [inbasketView, setInbasketView] = useState<"list" | "simulation">("list");
+  const [inbasketSelectedId, setInbasketSelectedId] = useState<string | null>(null);
+  const [answers, setAnswers] = useState(initialAnswers);
+  const hasRestored = useRef(false);
+  const skipNextSave = useRef(true);
+
+  // 디지털 인바스켓 튜토리얼: 첫 진입 시 자동 표시, 닫기 후에는 호버 시에만 표시
+  const [inbasketTutorialDismissed, setInbasketTutorialDismissed] = useState(true);
+  const [inbasketTutorialHover, setInbasketTutorialHover] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setInbasketTutorialDismissed(sessionStorage.getItem(INBASKET_TUTORIAL_DISMISSED_KEY) === "1");
+  }, []);
+
+  // GET 요청/새로고침 시 복원: sessionStorage에서 진단 진행 상태 복원
+  useEffect(() => {
+    if (hasRestored.current) return;
+    hasRestored.current = true;
+    const saved = loadPersistedState();
+    if (!saved || saved.step === undefined) return;
+    setStep(saved.step);
+    if (saved.form) setForm({ ...initialForm, ...saved.form });
+    if (saved.selectedEtrayId !== undefined) setSelectedEtrayId(saved.selectedEtrayId);
+    if (saved.inbasketView !== undefined) setInbasketView(saved.inbasketView);
+    if (saved.inbasketSelectedId !== undefined) setInbasketSelectedId(saved.inbasketSelectedId);
+    if (saved.answers) setAnswers({ ...initialAnswers, ...saved.answers });
+  }, []);
+
+  // 진단 상태 변경 시 sessionStorage에 저장 (첫 마운트 시 복원 전 덮어쓰기 방지)
+  useEffect(() => {
+    if (skipNextSave.current) {
+      skipNextSave.current = false;
+      return;
+    }
+    const state: PersistedState = {
+      step,
+      form,
+      selectedEtrayId,
+      inbasketView,
+      inbasketSelectedId,
+      answers,
+    };
+    savePersistedState(state);
+  }, [step, form, selectedEtrayId, inbasketView, inbasketSelectedId, answers]);
 
   const knowledgeList = (knowledgeData as { questions: KnowledgeQ[] }).questions;
   const applicationList = (applicationData as { questions: ApplicationQ[] }).questions;
@@ -197,6 +308,18 @@ export default function DiagnosisPage() {
     const key = AI_INDUSTRY_KEYS.includes(form.industry) ? form.industry : "기타";
     return aiByIndustry[key] ?? aiByIndustry["기타"] ?? null;
   }, [form.industry]);
+
+  const inbasketQuestions = getInbasketQuestions();
+  const selectedInbasketQuestion = useMemo(
+    () => (inbasketSelectedId ? inbasketQuestions.find((q) => q.id === inbasketSelectedId) ?? null : null),
+    [inbasketSelectedId, inbasketQuestions]
+  );
+
+  /** 디지털 인바스켓 시뮬레이션 → 목록으로 돌아가기. step은 변경하지 않음(5 유지). */
+  const handleInbasketBackToList = useCallback(() => {
+    setInbasketView("list");
+    setInbasketSelectedId(null);
+  }, []);
 
   const industryList = useMemo(() => Object.keys(industryJobData), [industryJobData]);
   const jobList = useMemo(
@@ -262,14 +385,72 @@ export default function DiagnosisPage() {
 
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden p-6">
         <div className="flex-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col min-h-0">
-          {/* 진행현황: 메인 카드 우측 상단 (단계별 방향 표시) */}
-          <div className="flex-shrink-0 flex justify-end items-center gap-0.5 flex-wrap px-4 py-2 border-b border-gray-100">
+          {/* 진행현황: step 5일 때 좌측에 디지털 인바스켓 제목 + 툴팁 아이콘, 우측에 단계 버튼 */}
+          <div className="flex-shrink-0 flex justify-between items-center gap-4 px-4 py-2 border-b border-gray-100">
+            {step === 5 ? (
+              <div className="min-w-0 flex items-start gap-2">
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900 truncate">디지털 인바스켓</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">실전 업무 의사결정 시뮬레이터 · 전체 {inbasketQuestions.length}개 문항</p>
+                </div>
+                <div
+                  className="relative shrink-0 pt-0.5"
+                  onMouseEnter={() => setInbasketTutorialHover(true)}
+                  onMouseLeave={() => setInbasketTutorialHover(false)}
+                >
+                  <button
+                    type="button"
+                    className="p-1.5 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                    aria-label="디지털 인바스켓 이용 안내"
+                  >
+                    <HelpCircle className="h-5 w-5" />
+                  </button>
+                  {(inbasketTutorialDismissed ? inbasketTutorialHover : true) && (
+                    <div className="absolute left-0 top-full mt-1 z-20 w-96 rounded-xl border border-gray-200 bg-white shadow-lg p-4 text-left">
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <span className="font-semibold text-gray-900 text-sm">디지털 인바스켓 안내</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInbasketTutorialDismissed(true);
+                            setInbasketTutorialHover(false);
+                            if (typeof window !== "undefined") sessionStorage.setItem(INBASKET_TUTORIAL_DISMISSED_KEY, "1");
+                          }}
+                          className="p-1 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                          aria-label="닫기"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-4 leading-relaxed">
+                        디지털 인바스켓은 <strong>실전 업무 의사결정 시뮬레이터</strong>입니다. 이메일·메신저·보고서·일정 등 실제와 비슷한 업무 상황을 체험하며, 우선순위를 정하고 결정하는 역량을 확인할 수 있습니다.
+                      </p>
+                      <p className="font-semibold text-gray-800 text-xs mb-2">이용 방법</p>
+                      <ul className="text-xs text-gray-600 space-y-2 list-disc list-inside">
+                        <li>상단에서 <strong>직무</strong>를 선택하면 해당 직무 문항만 보입니다.</li>
+                        <li>표에서 <strong>상세보기</strong>로 내용을 확인하고, <strong>진행하기</strong>로 시뮬레이션을 시작하세요.</li>
+                        <li>시뮬레이션 안에서 지시에 따라 업무를 처리한 뒤, 하단 <strong>완료하고 다음 단계로</strong>를 누르면 다음 단계로 이동합니다.</li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div />
+            )}
+            <div className="flex items-center justify-end gap-0.5 flex-wrap shrink-0">
             {STEPS.map((s, i) => (
               <Fragment key={s.id}>
                 {i > 0 && <span className="text-gray-300 text-xs mx-0.5 select-none" aria-hidden>→</span>}
                 <button
                   type="button"
-                  onClick={() => setStep(s.id)}
+                  onClick={() => {
+                    if (step === 5 && inbasketView === "simulation" && s.id === 5) {
+                      handleInbasketBackToList();
+                    } else {
+                      setStep(s.id);
+                    }
+                  }}
                   className={`rounded-lg px-2 py-1.5 text-xs font-medium transition-colors shrink-0 ${
                     step === s.id
                       ? "bg-blue-600 text-white"
@@ -280,6 +461,7 @@ export default function DiagnosisPage() {
                 </button>
               </Fragment>
             ))}
+            </div>
           </div>
           {/* 단계별 콘텐츠 (가운데·중앙 배치를 위해 flex 컨테이너) */}
           <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
@@ -631,94 +813,29 @@ export default function DiagnosisPage() {
             </div>
           )}
 
-          {/* 5: 디지털 인바스켓 — 왼쪽: 안 읽은 메일 목록, 가운데: 클릭 시 본문 */}
+          {/* 5: 디지털 인바스켓 — 목록 뷰(16종) / 시뮬레이션 뷰(타이머·완료) */}
           {step === 5 && STEP_DETAILS[5] && (
-            <div className="flex-1 flex flex-col min-h-0">
-              <div className="flex-shrink-0 px-4 py-2 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-bold text-gray-900">{STEP_DETAILS[5].title}</h2>
-                <p className="text-xs text-gray-500 mt-0.5">현재 산업: {form.industry || "(미선택 → 기타)"} · 메일을 클릭하면 본문이 가운데에 표시됩니다.</p>
-              </div>
-              {etrayEmails.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center p-6">
-                  <p className="text-gray-500">해당 산업의 인바스켓 이메일 세트가 없습니다.</p>
-                </div>
+            <>
+              {inbasketView === "simulation" && selectedInbasketQuestion ? (
+                <InbasketSimulation
+                  question={selectedInbasketQuestion}
+                  onBack={handleInbasketBackToList}
+                  onComplete={() => {
+                    setInbasketView("list");
+                    setInbasketSelectedId(null);
+                    setStep(6);
+                  }}
+                />
               ) : (
-                <div className="flex-1 flex min-h-0">
-                  {/* 왼쪽: 안 읽은 메일 목록 */}
-                  <div className="w-72 sm:w-80 flex-shrink-0 border-r border-gray-200 bg-white overflow-y-auto">
-                    <div className="p-2 border-b border-gray-100 bg-gray-50 text-xs font-medium text-gray-600">
-                      안 읽은 메일 ({etrayEmails.length})
-                    </div>
-                    <ul className="divide-y divide-gray-100">
-                      {etrayEmails.map((em) => (
-                        <li key={em.id}>
-                          <button
-                            type="button"
-                            onClick={() => setSelectedEtrayId(em.id)}
-                            className={`w-full text-left p-3 hover:bg-gray-50 transition-colors border-l-2 ${
-                              selectedEtrayId === em.id
-                                ? "border-violet-500 bg-violet-50/50"
-                                : "border-transparent"
-                            }`}
-                          >
-                            <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-medium mr-1.5 ${
-                              em.priority === "critical" ? "bg-red-100 text-red-800" :
-                              em.priority === "high" ? "bg-orange-100 text-orange-800" :
-                              em.priority === "medium" ? "bg-yellow-100 text-yellow-800" : "bg-gray-100 text-gray-600"
-                            }`}>
-                              {em.priority}
-                            </span>
-                            <span className="text-xs text-gray-500">{em.time}</span>
-                            <p className="font-medium text-gray-900 truncate text-sm mt-1" title={em.subject}>{em.subject}</p>
-                            <p className="text-xs text-gray-500 truncate mt-0.5">{em.sender}</p>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  {/* 가운데: 선택한 메일 본문 */}
-                  <div className="flex-1 min-w-0 overflow-y-auto bg-gray-50/50 p-4">
-                    {selectedEtrayId ? (() => {
-                      const em = etrayEmails.find((e) => e.id === selectedEtrayId);
-                      if (!em) return null;
-                      return (
-                        <div className="max-w-2xl mx-auto bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                          <div className="p-4 border-b border-gray-200">
-                            <p className="text-xs text-gray-500">{em.sender}</p>
-                            <h3 className="font-semibold text-gray-900 mt-1">{em.subject}</h3>
-                            <p className="text-xs text-gray-500 mt-1">{em.time}</p>
-                          </div>
-                          <div className="p-4">
-                            <p className="text-sm text-gray-700 whitespace-pre-wrap">{em.body}</p>
-                          </div>
-                          <div className="p-3 border-t border-gray-100 bg-gray-50 flex flex-wrap gap-2">
-                            <span className="text-xs text-gray-500 mr-2">이 메일에 대한 액션:</span>
-                            {["열기", "답장", "전달", "보관"].map((action) => (
-                              <button
-                                key={action}
-                                type="button"
-                                onClick={() => setAnswers((a) => ({ ...a, etray: { ...a.etray, [em.id]: action } }))}
-                                className={`rounded-lg px-3 py-1.5 text-sm font-medium border ${
-                                  answers.etray[em.id] === action
-                                    ? "border-violet-500 bg-violet-500 text-white"
-                                    : "border-gray-200 bg-white text-gray-600 hover:bg-gray-100"
-                                }`}
-                              >
-                                {action}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })() : (
-                      <div className="h-full flex items-center justify-center text-gray-400 text-sm">
-                        왼쪽 목록에서 메일을 클릭하면 본문이 여기에 표시됩니다.
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <InbasketList
+                  questions={inbasketQuestions}
+                  onStart={(id) => {
+                    setInbasketSelectedId(id);
+                    setInbasketView("simulation");
+                  }}
+                />
               )}
-            </div>
+            </>
           )}
 
           {/* 6: AI 워크플로우 — 산업별 시나리오 1개 전부 표시 */}
@@ -792,22 +909,37 @@ export default function DiagnosisPage() {
             </div>
           )}
           </div>
-          {/* 이전 / 다음: 메인 카드 좌하·우하 */}
+          {/* 이전 / 다음: 메인 카드 좌하·우하. 디지털 인바스켓 시뮬레이션 뷰에서는 "목록으로"(step 변경 없음) */}
           <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-t border-gray-100">
-            <button
-              type="button"
-              onClick={() => setStep((s) => Math.max(0, s - 1))}
-              disabled={step === 0}
-              className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:pointer-events-none"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              이전
-            </button>
+            {step === 5 && inbasketView === "simulation" ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleInbasketBackToList();
+                }}
+                className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                목록으로
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setStep((s) => Math.max(0, s - 1))}
+                disabled={step === 0}
+                className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:pointer-events-none"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                이전
+              </button>
+            )}
             {step < STEPS.length - 1 ? (
               <button
                 type="button"
                 onClick={goNext}
-                disabled={step === 1 && !canNext()}
+                disabled={false}
                 className="flex items-center gap-2 rounded-lg bg-blue-600 text-white px-6 py-2 text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
               >
                 다음

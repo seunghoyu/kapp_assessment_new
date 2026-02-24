@@ -29,6 +29,13 @@ const titleKo = {
   '12_AI_competency_5layer_data.md': '12 AI 역량진단 5레이어 데이터 구조 (요약)',
   '13_consumer_entry_redesign_draft.md': '13 소비자 진입점 재구성 초안',
   '14_consumer_dashboard_growth_tabs_plan.md': '14 마이 대시보드·나의 성장 탭 기획',
+  '15_digital_inbasket_integration_plan.md': '15 디지털 인바스켓 Next.js 통합 기획·분석',
+  '16_digital_inbasket_48_questions_and_components.md': '16 디지털 인바스켓 문항 48개 vs 컴포넌트 16개',
+  '17_digital_inbasket_original_vs_current_audit.md': '17 디지털 인바스켓 원본 vs 현재 대조·검수 및 추가 변환 목록',
+  '18_inbasket_dummy_data_and_loading.md': '18 디지털 인바스켓 더미데이터 및 로딩 로직',
+  '19_digital_inbasket_simulation_guide.md': '19 디지털 인바스켓 시뮬레이션 가이드',
+  '20_digital_inbasket_ux_and_result_mapping.md': '20 디지털 인바스켓 UX 개선 및 결과 매핑 제안',
+  '21_digital_inbasket_ui_ux_improvements.md': '21 디지털 인바스켓 UI·UX 개선방안',
 };
 /** 사이드바 최상단 문서 목록에 배치 (드롭다운 밖) */
 const TOP_LEVEL_FILES = [
@@ -39,6 +46,13 @@ const TOP_LEVEL_FILES = [
 const CONSUMER_LMS_FILES = [
   '13_consumer_entry_redesign_draft.md',
   '14_consumer_dashboard_growth_tabs_plan.md',
+  '15_digital_inbasket_integration_plan.md',
+  '16_digital_inbasket_48_questions_and_components.md',
+  '17_digital_inbasket_original_vs_current_audit.md',
+  '18_inbasket_dummy_data_and_loading.md',
+  '19_digital_inbasket_simulation_guide.md',
+  '20_digital_inbasket_ux_and_result_mapping.md',
+  '21_digital_inbasket_ui_ux_improvements.md',
 ];
 
 if (!fs.existsSync(docsDir) || !fs.existsSync(indexPath)) {

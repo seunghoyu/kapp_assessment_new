@@ -254,6 +254,14 @@
         <li><a href="#" data-file="12_AI_competency_5layer_data.md">12 AI 역량진단 5레이어 데이터 구조 (요약)</a></li>
         
         <li class="sidebar-group">
+          <button type="button" class="sidebar-group-btn" aria-expanded="false">전체 구조도 ▾</button>
+          <ul class="sidebar-group-list">
+          <li><a href="#" data-file="dom_principle.md">DOM 구조도 작성 원칙</a></li>
+                    <li><a href="#" data-file="dom_DataSchema.html">전체 구조도 (Data Schema)</a></li>
+          </ul>
+        </li>
+        
+        <li class="sidebar-group">
           <button type="button" class="sidebar-group-btn" aria-expanded="false">학습자 LMS ▾</button>
           <ul class="sidebar-group-list">
           <li><a href="#" data-file="13_consumer_entry_redesign_draft.md">13 소비자 진입점 재구성 초안</a></li>
@@ -298,7 +306,7 @@
   </div>
   <script>
     (function() {
-      var docs = [ 'app-structure-diagram.html', '11_development_deployment_history.md', '12_AI_competency_5layer_data.md', '13_consumer_entry_redesign_draft.md', '14_consumer_dashboard_growth_tabs_plan.md', '15_digital_inbasket_integration_plan.md', '16_digital_inbasket_48_questions_and_components.md', '17_digital_inbasket_original_vs_current_audit.md', '18_inbasket_dummy_data_and_loading.md', '19_digital_inbasket_simulation_guide.md', '20_digital_inbasket_ux_and_result_mapping.md', '21_digital_inbasket_ui_ux_improvements.md', '01_project_brief_product_new.md', '02_project_brief_frontend_new.md', '03_project_brief_backend_new.md', '04_project_brief_marketer_new.md', '05_project_brief_data_analyst_new.md', '06_implementation_status_and_guide_new.md', '07_data_reference_integration_new.md', '08_employee_management_and_kapp_self_assessment_new.md', '09_competency_risk_integration_plan.md', 'KAPP_DIAGNOSIS_DATA_REFERENCE.md', 'KAPP_DIAGNOSIS_QUESTION_LOGIC.md', 'MIGRATION_PLAN_ORIGIN_TO_NEW.md', 'ROUTE_ENTRY_REVIEW.md' ];
+      var docs = [ 'app-structure-diagram.html', '11_development_deployment_history.md', '12_AI_competency_5layer_data.md', 'dom_principle.md', 'dom_DataSchema.html', '13_consumer_entry_redesign_draft.md', '14_consumer_dashboard_growth_tabs_plan.md', '15_digital_inbasket_integration_plan.md', '16_digital_inbasket_48_questions_and_components.md', '17_digital_inbasket_original_vs_current_audit.md', '18_inbasket_dummy_data_and_loading.md', '19_digital_inbasket_simulation_guide.md', '20_digital_inbasket_ux_and_result_mapping.md', '21_digital_inbasket_ui_ux_improvements.md', '01_project_brief_product_new.md', '02_project_brief_frontend_new.md', '03_project_brief_backend_new.md', '04_project_brief_marketer_new.md', '05_project_brief_data_analyst_new.md', '06_implementation_status_and_guide_new.md', '07_data_reference_integration_new.md', '08_employee_management_and_kapp_self_assessment_new.md', '09_competency_risk_integration_plan.md', 'KAPP_DIAGNOSIS_DATA_REFERENCE.md', 'KAPP_DIAGNOSIS_QUESTION_LOGIC.md', 'MIGRATION_PLAN_ORIGIN_TO_NEW.md', 'ROUTE_ENTRY_REVIEW.md' ];
       var docDates = {"01_project_brief_product_new.md":"2026-02-11","02_project_brief_frontend_new.md":"2026-02-11","03_project_brief_backend_new.md":"2026-02-11","04_project_brief_marketer_new.md":"2026-02-11","05_project_brief_data_analyst_new.md":"2026-02-11","06_implementation_status_and_guide_new.md":"2026-02-11","07_data_reference_integration_new.md":"2026-02-11","08_employee_management_and_kapp_self_assessment_new.md":"2026-02-12","09_competency_risk_integration_plan.md":"2026-02-12","11_development_deployment_history.md":"2026-02-13","KAPP_DIAGNOSIS_DATA_REFERENCE.md":"2026-02-12","KAPP_DIAGNOSIS_QUESTION_LOGIC.md":"2026-02-12","MIGRATION_PLAN_ORIGIN_TO_NEW.md":"2026-02-11","ROUTE_ENTRY_REVIEW.md":"2026-02-12"};
       var content = document.getElementById('content');
       var links = document.querySelectorAll('.sidebar a[data-file]');
@@ -325,7 +333,7 @@
         history.replaceState({ file: file }, '', '?file=' + encodeURIComponent(file));
 
         if (file.endsWith('.html')) {
-          var isDiagram = file === 'app-structure-diagram.html';
+          var isDiagram = file === 'app-structure-diagram.html' || file === 'dom_DataSchema.html';
           var iframeHeight = isDiagram ? '100vh' : '80vh';
           var iframeStyle = 'width:100%;height:' + iframeHeight + ';min-height:' + (isDiagram ? '100vh' : '720px') + ';border:none;display:block;';
           content.innerHTML = '<iframe src="' + file + '" style="' + iframeStyle + '"></iframe>';

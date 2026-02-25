@@ -36,7 +36,11 @@ const titleKo = {
   '19_digital_inbasket_simulation_guide.md': '19 디지털 인바스켓 시뮬레이션 가이드',
   '20_digital_inbasket_ux_and_result_mapping.md': '20 디지털 인바스켓 UX 개선 및 결과 매핑 제안',
   '21_digital_inbasket_ui_ux_improvements.md': '21 디지털 인바스켓 UI·UX 개선방안',
+  'dom_principle.md': 'DOM 구조도 작성 원칙',
 };
+/** 전체 구조도 드롭다운에 배치 (dom_principle + dom_DataSchema.html) */
+const STRUCTURE_DIAGRAM_FILES = ['dom_principle.md', 'dom_DataSchema.html'];
+const STRUCTURE_DIAGRAM_TITLES = { 'dom_principle.md': 'DOM 구조도 작성 원칙', 'dom_DataSchema.html': '전체 구조도 (Data Schema)' };
 /** 사이드바 최상단 문서 목록에 배치 (드롭다운 밖) */
 const TOP_LEVEL_FILES = [
   '11_development_deployment_history.md',
@@ -77,7 +81,10 @@ function displayNameKorean(filename) {
   return titleKo[filename] != null ? titleKo[filename] : displayName(filename);
 }
 
-const remainingAfterTop = mdFiles.filter((f) => !TOP_LEVEL_FILES.includes(f));
+const remainingAfterTop = mdFiles.filter((f) => !TOP_LEVEL_FILES.includes(f) && !STRUCTURE_DIAGRAM_FILES.includes(f));
+const structureDiagramExisting = STRUCTURE_DIAGRAM_FILES.filter((f) =>
+  f.endsWith('.md') ? mdFiles.includes(f) : fs.existsSync(path.join(docsDir, f))
+);
 const consumerLmsFiles = CONSUMER_LMS_FILES.filter((f) => remainingAfterTop.includes(f));
 const adminLmsFiles = remainingAfterTop.filter((f) => !CONSUMER_LMS_FILES.includes(f));
 
@@ -89,6 +96,20 @@ const diagramLink = hasDiagram
 const topLevelListItems = TOP_LEVEL_FILES.filter((f) => mdFiles.includes(f))
   .map((f) => `<li><a href="#" data-file="${f}">${displayNameKorean(f)}</a></li>`)
   .join('\n        ');
+
+const structureDiagramListItems = structureDiagramExisting
+  .map((f) => `<li><a href="#" data-file="${f}">${STRUCTURE_DIAGRAM_TITLES[f] || f}</a></li>`)
+  .join('\n          ');
+const structureDiagramBlock =
+  structureDiagramExisting.length === 0
+    ? ''
+    : `
+        <li class="sidebar-group">
+          <button type="button" class="sidebar-group-btn" aria-expanded="false">전체 구조도 ▾</button>
+          <ul class="sidebar-group-list">
+${structureDiagramListItems.split('\n').map((line) => '          ' + line).join('\n')}
+          </ul>
+        </li>`;
 
 const consumerLmsListItems = consumerLmsFiles
   .map((f) => `<li><a href="#" data-file="${f}">${displayNameKorean(f)}</a></li>`)
@@ -118,19 +139,21 @@ ${adminLmsListItems.split('\n').map((line) => '          ' + line).join('\n')}
 const listItems =
   `${diagramLink}
         ${topLevelListItems}
+        ${structureDiagramBlock}
         ${consumerLmsBlock}
         ${adminLmsBlock}`;
 
 const docsArrayStr = [
   ...(hasDiagram ? [`'${DIAGRAM_FILE}'`] : []),
   ...TOP_LEVEL_FILES.filter((f) => mdFiles.includes(f)).map((f) => `'${f}'`),
+  ...structureDiagramExisting.map((f) => `'${f}'`),
   ...consumerLmsFiles.map((f) => `'${f}'`),
   ...adminLmsFiles.map((f) => `'${f}'`),
 ].join(', ');
 
-/** 각 .md 파일의 수정일 (YYYY-MM-DD) — 문서 상단 표시용 */
+/** 각 .md 및 전체 구조도 .html 파일의 수정일 (YYYY-MM-DD) — 문서 상단 표시용 */
 const docDates = {};
-mdFiles.forEach((f) => {
+[...mdFiles, ...structureDiagramExisting.filter((f) => f.endsWith('.html'))].forEach((f) => {
   const stat = fs.statSync(path.join(docsDir, f));
   const d = stat.mtime;
   docDates[f] =

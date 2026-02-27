@@ -37,6 +37,7 @@ const titleKo = {
   '20_digital_inbasket_ux_and_result_mapping.md': '20 디지털 인바스켓 UX 개선 및 결과 매핑 제안',
   '21_digital_inbasket_ui_ux_improvements.md': '21 디지털 인바스켓 UI·UX 개선방안',
   'dom_principle.md': 'DOM 구조도 작성 원칙',
+  '방향성_대안.md': '방향성 대안',
 };
 /** 전체 구조도 드롭다운에 배치 (dom_principle + dom_DataSchema.html) */
 const STRUCTURE_DIAGRAM_FILES = ['dom_principle.md', 'dom_DataSchema.html'];
@@ -45,6 +46,7 @@ const STRUCTURE_DIAGRAM_TITLES = { 'dom_principle.md': 'DOM 구조도 작성 원
 const TOP_LEVEL_FILES = [
   '11_development_deployment_history.md',
   '12_AI_competency_5layer_data.md',
+  '방향성_대안.md',
 ];
 /** 학습자 LMS 드롭다운에 배치 (13, 14번 등 소비자/학습자 관련) */
 const CONSUMER_LMS_FILES = [

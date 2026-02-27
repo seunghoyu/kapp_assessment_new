@@ -36,12 +36,11 @@ const titleKo = {
   '19_digital_inbasket_simulation_guide.md': '19 디지털 인바스켓 시뮬레이션 가이드',
   '20_digital_inbasket_ux_and_result_mapping.md': '20 디지털 인바스켓 UX 개선 및 결과 매핑 제안',
   '21_digital_inbasket_ui_ux_improvements.md': '21 디지털 인바스켓 UI·UX 개선방안',
-  'dom_principle.md': 'DOM 구조도 작성 원칙',
   '방향성_대안.md': '방향성 대안',
 };
-/** 전체 구조도 드롭다운에 배치 (dom_principle + dom_DataSchema.html) */
-const STRUCTURE_DIAGRAM_FILES = ['dom_principle.md', 'dom_DataSchema.html'];
-const STRUCTURE_DIAGRAM_TITLES = { 'dom_principle.md': 'DOM 구조도 작성 원칙', 'dom_DataSchema.html': '전체 구조도 (Data Schema)' };
+/** 아키텍쳐 드롭다운에 배치 (dom_DataSchema.html) */
+const STRUCTURE_DIAGRAM_FILES = ['dom_DataSchema.html'];
+const STRUCTURE_DIAGRAM_TITLES = { 'dom_DataSchema.html': '아키텍쳐' };
 /** 사이드바 최상단 문서 목록에 배치 (드롭다운 밖) */
 const TOP_LEVEL_FILES = [
   '11_development_deployment_history.md',
@@ -107,7 +106,7 @@ const structureDiagramBlock =
     ? ''
     : `
         <li class="sidebar-group">
-          <button type="button" class="sidebar-group-btn" aria-expanded="false">전체 구조도 ▾</button>
+          <button type="button" class="sidebar-group-btn" aria-expanded="false">아키텍쳐 ▾</button>
           <ul class="sidebar-group-list">
 ${structureDiagramListItems.split('\n').map((line) => '          ' + line).join('\n')}
           </ul>

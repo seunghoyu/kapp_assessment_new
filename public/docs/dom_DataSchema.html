@@ -3,262 +3,388 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>방향성 대안 · DOM 구조도 (Data Schema)</title>
+  <title>메뉴 구조도</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
-    html { height: 100%; }
-    body {
-      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-      min-height: 100%;
-      margin: 0;
-      background: #f1f5f9;
-      color: #1e293b;
-      font-size: clamp(0.8125rem, 1.2vw + 0.5rem, 0.9375rem);
-    }
-    .page-root {
+    html, body { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Noto Sans KR', sans-serif; background: #e5e7eb; color: #374151; overflow: hidden; }
+    .page {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
       width: 100%;
-      max-width: 100%;
-      min-height: 100vh;
-      padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1rem, 4vw, 2rem);
-      padding-bottom: 2.5rem;
+      padding: 0.5rem;
+      min-height: 0;
     }
-    .page-root header { margin-bottom: clamp(1rem, 2.5vh, 2rem); text-align: center; }
-    .page-root h1 { font-size: clamp(1.25rem, 3vw + 0.5rem, 1.75rem); font-weight: 700; color: #0f172a; margin: 0 0 0.25rem 0; }
-    .page-root header p { color: #64748b; margin: 0; font-size: 0.9rem; }
-    .diagram-card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,.06);
-      border: 1px solid #e2e8f0;
-      overflow: hidden;
-      padding: clamp(1rem, 3vw, 1.5rem);
-    }
-    /* 트리 다이어그램: 박스 + 연결선 */
-    .tree { padding: 0; margin: 0; }
-    .node {
-      position: relative;
-      margin-bottom: 0.5rem;
-      padding-left: 1.25rem;
-      border-left: 2px solid #cbd5e1;
-      margin-left: 0;
-    }
-    .node.level-0 { padding-left: 0; margin-left: 0; border-left: none; }
-    .node.level-1 { margin-left: 0.5rem; }
-    .node.level-2 { margin-left: 1.5rem; }
-    .node.level-3 { margin-left: 2.5rem; }
-    .node.level-4 { margin-left: 3.5rem; }
-    .node.level-5 { margin-left: 4.5rem; }
-    .node-head {
-      display: inline-flex;
+    .page-header {
+      display: flex;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      padding: 0.35rem 0.65rem;
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-radius: 8px;
-      font-weight: 600;
-      color: #0369a1;
-      font-size: 0.9rem;
-    }
-    .node.node-root .node-head {
-      background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
-      border-color: #0ea5e9;
-      color: #0c4a6e;
-      font-size: 1rem;
-    }
-    .node-attr {
-      font-size: 0.8rem;
-      color: #64748b;
-      font-weight: 500;
-      padding: 0.2rem 0.45rem;
-      background: #fefce8;
-      border: 1px solid #fde047;
+      justify-content: space-between;
+      flex-shrink: 0;
+      padding: 0.4rem 0.6rem;
+      background: #f9fafb;
+      border: 1px solid #d1d5db;
       border-radius: 6px;
+      margin-bottom: 0.5rem;
     }
-    .node-comment {
-      display: block;
-      font-size: 0.75rem;
-      color: #64748b;
-      margin-top: 0.35rem;
-      margin-bottom: 0.15rem;
-      padding: 0.35rem 0.5rem;
-      padding-left: 0.75rem;
-      border-left: 3px solid #e2e8f0;
-      background: #f8fafc;
-      border-radius: 0 6px 6px 0;
-      line-height: 1.5;
+    .page-header h1 { margin: 0; font-size: 1rem; font-weight: 600; color: #374151; }
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
-    .node-text-ref { font-size: 0.75rem; color: #059669; margin-left: 0.25rem; }
+    .zoom-controls button {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid #9ca3af;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #374151;
+    }
+    .zoom-controls button:hover { background: #f3f4f6; border-color: #6b7280; }
+    .zoom-controls span { font-size: 0.85rem; color: #6b7280; min-width: 3rem; text-align: center; }
+    .tree-viewport {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      background: #f3f4f6;
+      background-image:
+        linear-gradient(#e5e7eb 1px, transparent 1px),
+        linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
+      background-size: 12px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+    .tree-canvas {
+      display: inline-block;
+      transform-origin: center center;
+      flex-shrink: 0;
+    }
+    .tree-stage {
+      position: relative;
+      display: inline-block;
+    }
+    .tree-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+    .tree-nodes {
+      position: relative;
+      display: inline-block;
+    }
+    .node {
+      position: absolute;
+      white-space: nowrap;
+      padding: 0.6rem 1rem;
+      background: #ffffff;
+      border: 1px solid #9ca3af;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #1f2937;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+    .node:hover {
+      border-color: #4b5563;
+      border-width: 2px;
+      margin: -1px;
+    }
+    .node.selected {
+      background: #e5e7eb;
+      border-color: #6b7280;
+      border-width: 2px;
+      margin: -1px;
+    }
+    .node .route { font-size: 0.8rem; color: #6b7280; margin-top: 0.2rem; }
+    .node.node-action .route { display: none; }
+    .node.node-action { background: #f9fafb; border-style: dashed; }
+    .node.node-action .label { font-size: 0.85rem; }
   </style>
 </head>
 <body>
-  <div class="page-root">
-    <header>
-      <h1>방향성 대안 · DOM 구조도 (Data Schema)</h1>
-      <p>노드별 구조와 설명 (DOM 구조도 작성 원칙 적용)</p>
+  <div class="page">
+    <header class="page-header">
+      <div>
+        <h1>메뉴 구조도 (페이지 · 버튼 연결)</h1>
+        <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #6b7280;">시작: 상세페이지 → KAPP 진단하기 → 로그인 → (관리자 페이지로 이동 시 관리자 로그인 / 바로 로그인 시 개인회원 앱)</p>
+      </div>
+      <div class="zoom-controls">
+        <button type="button" id="zoomOut" aria-label="축소">−</button>
+        <span id="zoomLabel">100%</span>
+        <button type="button" id="zoomIn" aria-label="확대">+</button>
+      </div>
     </header>
-
-    <div class="diagram-card">
-      <div class="tree">
-
-        <div class="node node-root level-0">
-          <span class="node-head">document</span>
-          <div class="node-comment">문서 루트</div>
+    <div class="tree-viewport" id="treeViewport">
+      <div class="tree-canvas" id="treeCanvas">
+        <div class="tree-stage" id="treeStage">
+          <svg class="tree-svg" id="treeSvg" aria-hidden="true"></svg>
+          <div class="tree-nodes" id="treeNodes"></div>
         </div>
-
-        <div class="node level-1">
-          <span class="node-head">&lt;html&gt;</span>
-          <div class="node-comment">방향성 대안 전체 구조 (head + body)</div>
-        </div>
-
-        <div class="node level-2">
-          <span class="node-head">&lt;head&gt;</span>
-        </div>
-        <div class="node level-3">
-          <span class="node-head">&lt;title&gt;</span>
-          <div class="node-comment">#text: 방향성 대안 · 전체 구조도 (DOM Data Schema)</div>
-        </div>
-
-        <div class="node level-2">
-          <span class="node-head">&lt;body&gt;</span>
-        </div>
-        <div class="node level-3">
-          <span class="node-head">&lt;main&gt;</span>
-          <span class="node-attr">@id="content"</span>
-          <div class="node-comment">본문 컨테이너</div>
-        </div>
-        <div class="node level-4">
-          <span class="node-head">&lt;h1&gt;</span>
-          <div class="node-comment">#text: 방향성 대안 · 전체 구조도 (DOM Data Schema)</div>
-        </div>
-
-        <!-- section 1 -->
-        <div class="node level-4">
-          <span class="node-head">&lt;section&gt;</span>
-          <span class="node-attr">@data-section="1"</span>
-          <div class="node-comment">1. 관리자 LMS — 스킬 갭 제공. 대시보드 형태(부서별 스킬 갭 대시보드), 스킬 매트릭스 기반 현황 시각화</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;h2&gt;</span>
-          <div class="node-comment">#text: 1. 관리자 LMS</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;p&gt;</span>
-          <div class="node-comment">#text: 스킬 갭 제공</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;ul&gt;</span>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;li&gt;</span>
-          <div class="node-comment">#text: 대시보드 형태 — 부서별 스킬 갭 대시보드</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;li&gt;</span>
-          <div class="node-comment">#text: 스킬 매트릭스 기반 현황 시각화</div>
-        </div>
-
-        <!-- section 2 -->
-        <div class="node level-4">
-          <span class="node-head">&lt;section&gt;</span>
-          <span class="node-attr">@data-section="2"</span>
-          <div class="node-comment">2. 스킬 갭 구조적 요인 분석 — 스킬 갭 의미(요구 역량 대비 낮을 때 갭), 내부·외부 요인, AI로 요인 선택(리스트업·분류), 대분류 2개 안에서 선택(기술환경·직무구조·세대 변화 등), 인사 담당자 선택, ROI 분석(스킬링전략+ROI)·한계예산·인원 수 입력, AI 분석 작동</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;h2&gt;</span>
-          <div class="node-comment">#text: 2. 스킬 역량이 낮은 부분 기반 · 스킬 갭 구조적 요인 분석</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;p&gt;</span>
-          <div class="node-comment">#text: 스킬 갭의 의미: 회사 및 조직이 요구하는 역량 수준에 비해 낮은 경우 갭이 발생함.</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;ul&gt;</span>
-          <span class="node-text-ref">#text: 구조적 요인·AI 선택 등</span>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;div&gt;</span>
-          <span class="node-attr">@class="block"</span>
-          <div class="node-comment">운영 방식 — 대분류 2개 선택, 인사 담당자 선택, ROI·한계예산·인원 수, AI 분석 작동</div>
-        </div>
-
-        <!-- section 3 -->
-        <div class="node level-4">
-          <span class="node-head">&lt;section&gt;</span>
-          <span class="node-attr">@data-section="3"</span>
-          <div class="node-comment">3. 스킬 갭 요인 ↔ 전략 연결 — 저역량 부서·개인 → 교육 설계 전략·교육 연계 제안(AI 자동완성), 스킬링 전략(업스킬링·리스킬링·크로스 스킬링), 큐레이션 구조 테이블, 목적(문제 정의·신뢰도·만족도 상승)</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;h2&gt;</span>
-          <div class="node-comment">#text: 3. 스킬 갭 요인이 전략과 연결</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;p&gt;</span>
-          <div class="node-comment">#text: 저역량 부서·개인 → 교육 설계 전략·교육 연계 제안 (AI 자동완성)</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;p&gt;</span>
-          <div class="node-comment">#text: 스킬링 전략: 업스킬링, 리스킬링, 크로스 스킬링</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;table&gt;</span>
-          <span class="node-attr">@data-name="큐레이션구조"</span>
-          <div class="node-comment">전략 | 교육 목표 | 교육 방식 — 업스킬링(역량·성과 고도화 / 실무연계·고급도구·동료피드백), 리스킬링(직무 전환 / 온보딩·프로젝트·실습+멘토링), 크로스스킬링(인접 직무 협업 / 워크숍·교차과제)</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;p&gt;</span>
-          <span class="node-attr">@class="purpose"</span>
-          <div class="node-comment">#text: 목적 — 스킬 갭 요인 정의 → 조직 문제 명확화, 신뢰도·만족도 상승. (기존 흐름은 큐레이션 단계에서 중단될 것)</div>
-        </div>
-
-        <!-- section 4 -->
-        <div class="node level-4">
-          <span class="node-head">&lt;section&gt;</span>
-          <span class="node-attr">@data-section="4"</span>
-          <div class="node-comment">4. 교육 방식 확인 → B2B 기업교육 문의 채널 — 문의사항 자동완성, 큐레이션 단계 문의 증가, 기존 비즈니스 모델 연계, 통화 인입률·미팅 빈도로 효과 입증</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;h2&gt;</span>
-          <div class="node-comment">#text: 4. 교육 방식을 확인 → B2B 기업교육 문의 채널로 이어지기</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;ul&gt;</span>
-          <span class="node-text-ref">#text: 문의 자동완성, 목적, 비즈니스 연계, 효과 입증</span>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;div&gt;</span>
-          <span class="node-attr">@class="block"</span>
-          <div class="node-comment">해당 구조의 차별점 — 매출 중심 아님, 문제 구조→전략→교육 설계 흐름, AI 생성 구조 확장 가능</div>
-        </div>
-
-        <!-- section 5 -->
-        <div class="node level-4">
-          <span class="node-head">&lt;section&gt;</span>
-          <span class="node-attr">@data-section="5"</span>
-          <div class="node-comment">5. 진행 단계 — 프론트에서 해당 흐름으로 LMS 개선, 단순 확인용 그래프·불필요 부분 제외(통합·간소화)</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;h2&gt;</span>
-          <div class="node-comment">#text: 5. 해당 내용으로 진행 시 단계</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;ul&gt;</span>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;li&gt;</span>
-          <div class="node-comment">#text: 프론트단에서 해당 흐름으로 이어지도록 LMS 개선</div>
-        </div>
-        <div class="node level-5">
-          <span class="node-head">&lt;li&gt;</span>
-          <div class="node-comment">#text: 단순 확인용 그래프나 쓸데없는 부분 제외 (통합 및 간소화 필요)</div>
-        </div>
-
       </div>
     </div>
   </div>
+
+  <script>
+    (function () {
+      // ——— 페이지 정의 (id → label, route) ———
+      var PAGES = {
+        home: { label: '상세페이지 (시작)', route: '/' },
+        login: { label: '로그인', route: '/login' },
+        admin: { label: '관리자', route: '/admin' },
+        dashboard: { label: '관리자 대시보드', route: '/dashboard' },
+        app: { label: '앱 홈 (학습자)', route: '/app' },
+        diagnosis: { label: 'KAPP 진단', route: '/app/diagnosis' },
+        appDashboard: { label: '마이 대시보드', route: '/app/dashboard' },
+        education: { label: '나의 교육', route: '/app/education' },
+        growth: { label: '나의 성장', route: '/app/growth' }
+      };
+
+      // ——— 버튼/링크 연결 (from → [버튼명] → to) ———
+      var EDGES = [
+        { from: 'home', buttonLabel: 'KAPP 진단 시작하기', to: 'login' },
+        { from: 'home', buttonLabel: '무료로 진단 시작하기', to: 'login' },
+        { from: 'home', buttonLabel: 'KAPP 진단 (푸터)', to: 'login' },
+        { from: 'home', buttonLabel: '관리자 페이지로 이동', to: 'admin' },
+        { from: 'home', buttonLabel: '도입 문의 (1:1 상담)', to: 'admin' },
+        { from: 'home', buttonLabel: '대시보드 (푸터)', to: 'app' },
+        { from: 'login', buttonLabel: '로그인 (제출) → 개인회원', to: 'app' },
+        { from: 'login', buttonLabel: '관리자 페이지로 이동 →', to: 'admin' },
+        { from: 'admin', buttonLabel: '로그인 (제출) → 관리자', to: 'dashboard' },
+        { from: 'admin', buttonLabel: '← 홈으로 돌아가기', to: 'home' },
+        { from: 'app', buttonLabel: 'KAPP 진단 시작하기', to: 'diagnosis' }
+      ];
+
+      var nodeIdCounter = 0;
+      function nextId() { return 'n' + (nodeIdCounter++); }
+      var MAX_DEPTH = 7;
+
+      function buildTree(fromPageId, depth) {
+        if (depth > MAX_DEPTH) return null;
+        var page = PAGES[fromPageId];
+        if (!page) return null;
+        var node = { type: 'page', id: nextId(), label: page.label, route: page.route, children: [] };
+        var outEdges = EDGES.filter(function (e) { return e.from === fromPageId; });
+        outEdges.forEach(function (e) {
+          var actionNode = { type: 'action', id: nextId(), label: e.buttonLabel, route: '', children: [] };
+          var targetNode = buildTree(e.to, depth + 1);
+          if (targetNode) actionNode.children.push(targetNode);
+          node.children.push(actionNode);
+        });
+        return node;
+      }
+
+      var TREE_DATA = [ buildTree('home', 0) ];
+
+      // ——— 상수 (레퍼런스: 컴팩트 간격, 읽기 좋은 노드 크기) ———
+      var NODE_WIDTH = 150;
+      var NODE_HEIGHT = 46;
+      var COL_GAP = 28;
+      var ROW_GAP = 14;
+      var CONNECTOR_HALF = 16;
+
+      function getLayout(roots) {
+        var layout = {};
+        var row = 0;
+        function countRows(items) {
+          return items.reduce(function (s, it) {
+            return s + (it.children && it.children.length ? countRows(it.children) : 1);
+          }, 0);
+        }
+        function assign(items, depth) {
+          items.forEach(function (item) {
+            var children = item.children || [];
+            if (children.length) {
+              var startY = row;
+              assign(children, depth + 1);
+              var endY = row - 1;
+              layout[item.id] = { item: item, depth: depth, x: depth, y: (startY + endY) / 2 };
+            } else {
+              layout[item.id] = { item: item, depth: depth, x: depth, y: row };
+              row++;
+            }
+          });
+        }
+        assign(roots, 0);
+        return layout;
+      }
+
+      function collectConnectors(roots, layout) {
+        var conn = [];
+        function walk(items) {
+          items.forEach(function (item) {
+            var children = item.children || [];
+            if (children.length) {
+              children.forEach(function (ch) {
+                conn.push({ parent: item.id, child: ch.id });
+              });
+              walk(children);
+            }
+          });
+        }
+        walk(roots);
+        return conn;
+      }
+
+      function px(nodeX, nodeY) {
+        return {
+          x: 2 * CONNECTOR_HALF + nodeX * (NODE_WIDTH + COL_GAP),
+          y: 2 * CONNECTOR_HALF + nodeY * (NODE_HEIGHT + ROW_GAP)
+        };
+      }
+
+      function escapeHtml(s) {
+        if (s == null) return '';
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function render() {
+        nodeIdCounter = 0;
+        TREE_DATA = [ buildTree('home', 0) ];
+        var layout = getLayout(TREE_DATA);
+        var connectors = collectConnectors(TREE_DATA, layout);
+        var nodesContainer = document.getElementById('treeNodes');
+        var svg = document.getElementById('treeSvg');
+        nodesContainer.innerHTML = '';
+        var maxX = 0, maxY = 0;
+        Object.keys(layout).forEach(function (id) {
+          var l = layout[id];
+          if (l.x > maxX) maxX = l.x;
+          if (l.y > maxY) maxY = l.y;
+        });
+        var totalW = 2 * CONNECTOR_HALF + (maxX + 1) * NODE_WIDTH + maxX * COL_GAP;
+        var totalH = 2 * CONNECTOR_HALF + (maxY + 1) * NODE_HEIGHT + maxY * ROW_GAP;
+        svg.setAttribute('width', totalW);
+        svg.setAttribute('height', totalH);
+        var arrowSize = 6;
+        var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        var marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+        marker.setAttribute('id', 'arrow');
+        marker.setAttribute('markerWidth', arrowSize);
+        marker.setAttribute('markerHeight', arrowSize);
+        marker.setAttribute('refX', arrowSize);
+        marker.setAttribute('refY', arrowSize / 2);
+        marker.setAttribute('orient', 'auto');
+        var arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        arrowPath.setAttribute('d', 'M0,0 L' + arrowSize + ',' + (arrowSize/2) + ' L0,' + arrowSize + ' Z');
+        arrowPath.setAttribute('fill', '#6b7280');
+        marker.appendChild(arrowPath);
+        defs.appendChild(marker);
+        svg.innerHTML = '';
+        svg.appendChild(defs);
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        var d = [];
+        connectors.forEach(function (c) {
+          var p = layout[c.parent];
+          var ch = layout[c.child];
+          if (!p || !ch) return;
+          var from = px(p.x, p.y);
+          var to = px(ch.x, ch.y);
+          var fromRight = from.x + NODE_WIDTH;
+          var fromCy = from.y + NODE_HEIGHT / 2;
+          var toLeft = to.x;
+          var toCy = to.y + NODE_HEIGHT / 2;
+          var midX = fromRight + CONNECTOR_HALF;
+          d.push('M', fromRight, fromCy, 'H', midX, 'V', toCy, 'H', toLeft - arrowSize);
+        });
+        path.setAttribute('d', d.join(' '));
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', '#6b7280');
+        path.setAttribute('stroke-width', '1');
+        path.setAttribute('marker-end', 'url(#arrow)');
+        svg.appendChild(path);
+        Object.keys(layout).forEach(function (id) {
+          var l = layout[id];
+          var p = px(l.x, l.y);
+          var el = document.createElement('div');
+          el.className = 'node' + (l.item.type === 'action' ? ' node-action' : '');
+          el.dataset.id = id;
+          el.style.left = p.x + 'px';
+          el.style.top = p.y + 'px';
+          el.style.minWidth = NODE_WIDTH + 'px';
+          el.style.minHeight = NODE_HEIGHT + 'px';
+          var route = l.item.route ? escapeHtml(l.item.route) : '';
+          el.innerHTML = '<span class="label">' + escapeHtml(l.item.label) + '</span>' + (route ? '<br><span class="route">' + route + '</span>' : '');
+          nodesContainer.appendChild(el);
+        });
+        nodesContainer.style.width = totalW + 'px';
+        nodesContainer.style.height = totalH + 'px';
+        var stage = document.getElementById('treeStage');
+        stage.style.width = totalW + 'px';
+        stage.style.height = totalH + 'px';
+        document.getElementById('treeCanvas').style.minWidth = totalW + 32 + 'px';
+        document.getElementById('treeCanvas').style.minHeight = totalH + 32 + 'px';
+        lastTreeW = totalW + 32;
+        lastTreeH = totalH + 32;
+      }
+
+      var lastTreeW = 0, lastTreeH = 0;
+      var minScale = 0.5;
+
+      function fitToView() {
+        if (lastTreeW <= 0 || lastTreeH <= 0) return;
+        var vp = document.getElementById('treeViewport');
+        var pad = 24;
+        var fit = Math.min((vp.clientWidth - pad) / lastTreeW, (vp.clientHeight - pad) / lastTreeH);
+        fit = Math.max(0.5, Math.min(1, fit));
+        scale = fit;
+        minScale = fit;
+        applyZoom();
+      }
+
+      // 선택 상태
+      document.getElementById('treeNodes').addEventListener('click', function (e) {
+        var node = e.target.closest('.node');
+        if (!node) return;
+        document.querySelectorAll('.node.selected').forEach(function (n) { n.classList.remove('selected'); });
+        node.classList.add('selected');
+      });
+
+      // 줌 (축소 제한: minScale 이하로 축소 불가)
+      var scale = 1;
+      var canvas = document.getElementById('treeCanvas');
+      var viewport = document.getElementById('treeViewport');
+      function applyZoom() {
+        canvas.style.transform = 'scale(' + scale + ')';
+        document.getElementById('zoomLabel').textContent = Math.round(scale * 100) + '%';
+      }
+      document.getElementById('zoomIn').addEventListener('click', function () {
+        scale = Math.min(2, scale + 0.2);
+        applyZoom();
+      });
+      document.getElementById('zoomOut').addEventListener('click', function () {
+        scale = Math.max(minScale, scale - 0.2);
+        applyZoom();
+      });
+      viewport.addEventListener('wheel', function (e) {
+        if (!e.ctrlKey) return;
+        e.preventDefault();
+        if (e.deltaY < 0) scale = Math.min(2, scale + 0.08);
+        else scale = Math.max(minScale, scale - 0.08);
+        applyZoom();
+      }, { passive: false });
+
+      window.addEventListener('resize', function () { fitToView(); });
+
+      render();
+      fitToView();
+    })();
+  </script>
 </body>
 </html>

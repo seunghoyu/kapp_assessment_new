@@ -67,13 +67,15 @@ function getCategoryIcon(category: string) {
   return map[category] || FileText;
 }
 
-/** 우선순위별 좌측 보조 강조(띠 대신 색으로만 구분) */
+/** 분류(우선순위)별 좌측 보조 강조 */
 function getPriorityBorderClass(priority: string) {
   switch (priority) {
     case "긴급":
       return "border-l-red-500";
     case "낮음":
       return "border-l-gray-400";
+    case "자동화":
+      return "border-l-violet-500";
     case "보통":
     default:
       return "border-l-blue-500";
@@ -87,20 +89,49 @@ function getPriorityBadgeClass(priority: string) {
       return "bg-red-500 text-white";
     case "낮음":
       return "bg-gray-500 text-white";
+    case "자동화":
+      return "bg-violet-500 text-white";
     case "보통":
     default:
       return "bg-blue-500 text-white";
   }
 }
 
+export type AiWorkflowRow = {
+  id: string;
+  industry: string;
+  title: string;
+  task: string;
+  options: { id: string; choice: string; timeReduction: string; qualityScore: number }[];
+  answer: number;
+  explanation?: string;
+};
+
 type Props = {
   questions: InbasketQuestion[];
+  aiWorkflow: AiWorkflowRow | null;
   onStart: (questionId: string) => void;
 };
 
-export default function InbasketList({ questions, onStart }: Props) {
+const AI_WORKFLOW_ID = "ai-workflow";
+
+const TEST_ENV_TOOLTIP = (
+  <>
+    <p className="text-xs font-semibold text-amber-900 mb-1.5">테스트 환경</p>
+    <p className="text-[11px] text-amber-800 leading-relaxed">
+      현재는 <strong>테스트 환경</strong>입니다. 전체 문항과 직무 선택이 노출됩니다.
+    </p>
+    <p className="text-[11px] text-amber-800 leading-relaxed mt-2">
+      실제 학습자 환경에서는 &quot;선정 문항&quot; 헤더로 표시되며, 직무·산업군·기업규모·직급에 따라 선정된 <strong>인당 4문항</strong>만 노출됩니다. 직무 선택 UI는 보이지 않습니다.
+    </p>
+  </>
+);
+
+export default function InbasketList({ questions, aiWorkflow, onStart }: Props) {
   const [jobFilter, setJobFilter] = useState("전체");
   const [modalQuestion, setModalQuestion] = useState<InbasketQuestion | null>(null);
+  const [aiWorkflowModalOpen, setAiWorkflowModalOpen] = useState(false);
+  const [testEnvTooltipOpen, setTestEnvTooltipOpen] = useState(false);
 
   const filtered = useMemo(() => {
     if (jobFilter === "전체") return questions;
@@ -123,11 +154,25 @@ export default function InbasketList({ questions, onStart }: Props) {
       {/* 메인: 직무 선택 + 문항 그리드 (제목은 진단 페이지 단계 바 좌측에 표시됨) */}
       <div className="flex-1 min-h-0 overflow-y-auto p-4">
         <div className="rounded-xl bg-white border border-gray-300 shadow-sm overflow-hidden flex flex-col h-full min-h-0">
-          {/* 직무 선택 섹션 — 대시보드 섹션 헤더 톤 */}
-          <div className="flex-shrink-0 px-4 py-3 border-b border-gray-200 bg-gray-50/50 flex items-center gap-2">
+          {/* 직무 선택 섹션 — 테스트 환경에서만 노출, 실제 환경에서는 "선정 문항" 헤더로 대체 */}
+          <div className="flex-shrink-0 px-4 py-3 border-b border-gray-200 bg-gray-50/50 flex items-center gap-2 flex-wrap">
             <LayoutGrid className="w-5 h-5 text-blue-600 shrink-0" />
             <h2 className="text-sm font-semibold text-gray-800">직무 선택</h2>
-            <span className="ml-2 text-xs text-gray-500">현재: {jobFilter}</span>
+            <span className="text-xs text-gray-500">현재: {jobFilter}</span>
+            <span
+              className="relative ml-auto inline-flex"
+              onMouseEnter={() => setTestEnvTooltipOpen(true)}
+              onMouseLeave={() => setTestEnvTooltipOpen(false)}
+            >
+              <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-800 cursor-help">
+                테스트 환경
+              </span>
+              {testEnvTooltipOpen && (
+                <span className="absolute right-0 top-full z-30 mt-1 w-72 rounded-lg border border-amber-200 bg-amber-50 p-3 text-left shadow-lg">
+                  {TEST_ENV_TOOLTIP}
+                </span>
+              )}
+            </span>
           </div>
           <div className="flex-shrink-0 p-4 flex flex-wrap gap-2">
             {JOB_PILLS.map((p) => {
@@ -172,7 +217,7 @@ export default function InbasketList({ questions, onStart }: Props) {
               <table className="w-full border-collapse table-fixed">
                 <thead className="sticky top-0 z-10 bg-gray-50 border-b border-gray-300">
                   <tr>
-                    <th className="text-left py-3 pl-4 pr-2 text-sm font-semibold text-gray-600 w-[10%]">우선순위</th>
+                    <th className="text-left py-3 pl-4 pr-2 text-sm font-semibold text-gray-600 w-[10%]">분류</th>
                     <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600 w-[28%]">제목</th>
                     <th className="text-left py-3 pl-2 pr-2 text-sm font-semibold text-gray-600 w-[14%]">발신자</th>
                     <th className="text-left py-3 pl-2 pr-2 text-sm font-semibold text-gray-600 w-[14%]">카테고리</th>
@@ -190,7 +235,7 @@ export default function InbasketList({ questions, onStart }: Props) {
                         className={`border-b border-gray-200 hover:bg-gray-50/80 transition-colors ${getPriorityBorderClass(q.priority)}`}
                       >
                         <td className="py-5 pl-4 pr-2 align-middle">
-                          <span className={`inline-block whitespace-nowrap rounded px-2 py-1 text-xs font-medium ${getPriorityBadgeClass(q.priority)}`}>
+                          <span className={`inline-block whitespace-nowrap rounded px-2 py-1 text-xs font-medium ${getPriorityBadgeClass(q.priority || "보통")}`}>
                             {priorityLabel}
                           </span>
                         </td>
@@ -235,12 +280,113 @@ export default function InbasketList({ questions, onStart }: Props) {
                       </tr>
                     );
                   })}
+                  {aiWorkflow && (
+                    <tr className="border-b border-gray-200 hover:bg-gray-50/80 transition-colors border-l-violet-500">
+                      <td className="py-5 pl-4 pr-2 align-middle">
+                        <span className="inline-block whitespace-nowrap rounded px-2 py-1 text-xs font-medium bg-violet-500 text-white">
+                          자동화
+                        </span>
+                      </td>
+                      <td className="py-5 px-2 align-middle">
+                        <button
+                          type="button"
+                          onClick={() => setAiWorkflowModalOpen(true)}
+                          className="text-left w-full font-semibold text-gray-900 text-sm line-clamp-2 hover:text-blue-600 transition-colors"
+                        >
+                          {aiWorkflow.title}
+                        </button>
+                      </td>
+                      <td className="py-5 pl-2 pr-2 align-middle text-sm text-gray-600">
+                        <span className="truncate block">—</span>
+                      </td>
+                      <td className="py-5 pl-2 pr-2 align-middle">
+                        <span className="inline-block max-w-full rounded-md bg-violet-50 px-2 py-1 text-sm font-semibold text-violet-800 border border-violet-200 truncate whitespace-nowrap">
+                          자동화
+                        </span>
+                      </td>
+                      <td className="py-5 pl-2 pr-4 align-middle text-sm text-gray-500">
+                        <p className="line-clamp-2">{aiWorkflow.task.length > 120 ? aiWorkflow.task.substring(0, 120) + "..." : aiWorkflow.task}</p>
+                      </td>
+                      <td className="py-5 pl-4 pr-4 align-middle text-right">
+                        <div className="flex flex-col gap-2 items-end justify-center">
+                          <button
+                            type="button"
+                            onClick={() => setAiWorkflowModalOpen(true)}
+                            className="py-2 px-3 rounded-lg text-xs font-medium border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                          >
+                            상세보기
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onStart(AI_WORKFLOW_ID)}
+                            className="py-2 px-3 rounded-lg text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                          >
+                            진행하기
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             )}
           </div>
         </div>
       </div>
+
+      {/* AI 워크플로우(자동화) 상세 모달 */}
+      {aiWorkflowModalOpen && aiWorkflow && (
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/50 flex items-center justify-center p-4"
+          onClick={() => setAiWorkflowModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setAiWorkflowModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <div className="space-y-4">
+              <div className="border-b border-gray-200 pb-3">
+                <div className="flex items-start justify-between gap-3">
+                  <h2 className="text-lg font-bold text-gray-800 flex-1">{aiWorkflow.title}</h2>
+                  <span className="shrink-0 rounded px-2 py-1 text-xs font-medium bg-violet-500 text-white">
+                    자동화
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mt-2">
+                  <span className="flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-green-500" />
+                    자동화
+                  </span>
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-1.5">
+                  <FileText className="h-3.5 w-3.5 text-blue-600" />
+                  시나리오 내용
+                </h3>
+                <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{aiWorkflow.task}</div>
+              </div>
+              <div className="flex gap-2 pt-3">
+                <button
+                  type="button"
+                  onClick={() => { onStart(AI_WORKFLOW_ID); setAiWorkflowModalOpen(false); }}
+                  className="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 text-white py-3 rounded-lg text-sm font-semibold hover:bg-blue-700"
+                >
+                  <Play className="h-4 w-4" />
+                  진행하기
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 상세 모달: 원본 구조(제목+우선순위, 발신자/날짜/카테고리, 문항 내용, 첨부, 시뮬레이션 시작/기본 응답 작성) */}
       {modalQuestion && (

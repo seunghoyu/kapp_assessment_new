@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 테스트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Questions API 테스트</h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-4">
+            <h2 class="text-xl font-bold mb-4">API 호출 상태</h2>
+            <div id="status" class="mb-4">
+                <span class="text-gray-600">테스트 중...</span>
+            </div>
+            <button onclick="testAPI()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                다시 테스트
+            </button>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-bold mb-4">응답 데이터</h2>
+            <pre id="response" class="bg-gray-50 p-4 rounded overflow-auto max-h-96 text-xs"></pre>
+        </div>
+        
+        <div class="mt-4">
+            <a href="index.html" class="text-blue-600 hover:underline">← 메인 페이지로 돌아가기</a>
+        </div>
+    </div>
+
+    <script>
+        async function testAPI() {
+            const statusEl = document.getElementById('status');
+            const responseEl = document.getElementById('response');
+            
+            statusEl.innerHTML = '<span class="text-yellow-600">⏳ API 호출 중...</span>';
+            responseEl.textContent = '';
+            
+            try {
+                console.log('API 호출 시작: tables/questions?limit=100');
+                const startTime = Date.now();
+                
+                const response = await fetch('tables/questions?limit=100');
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                console.log('응답 상태:', response.status);
+                console.log('응답 시간:', duration + 'ms');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('받은 데이터:', data);
+                
+                const questionCount = data.data ? data.data.length : 0;
+                
+                statusEl.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="text-green-600 font-bold">✅ API 호출 성공!</div>
+                        <div class="text-sm text-gray-600">
+                            <div>• 상태 코드: ${response.status} ${response.statusText}</div>
+                            <div>• 응답 시간: ${duration}ms</div>
+                            <div class="font-bold text-lg mt-2">• 문항 개수: ${questionCount}개</div>
+                        </div>
+                    </div>
+                `;
+                
+                responseEl.textContent = JSON.stringify(data, null, 2);
+                
+                if (questionCount === 0) {
+                    statusEl.innerHTML += `
+                        <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+                            <div class="text-yellow-800 font-bold">⚠️ 경고</div>
+                            <div class="text-sm text-yellow-700">데이터베이스에 문항이 없습니다!</div>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('API 호출 실패:', error);
+                
+                statusEl.innerHTML = `
+                    <div class="text-red-600 font-bold">❌ API 호출 실패</div>
+                    <div class="text-sm text-red-500 mt-2">${error.message}</div>
+                `;
+                
+                responseEl.textContent = `에러 발생:\n\n${error.stack}`;
+            }
+        }
+        
+        // 페이지 로드 시 자동 실행
+        testAPI();
+    </script>
+</body>
+</html>

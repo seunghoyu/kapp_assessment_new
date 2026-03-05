@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, Bot, Award, Download, MessageSquare } from "lucide-react";
+import { Zap, Award, Download } from "lucide-react";
 import growthData from "@/data/consumer/growth.json";
 
-const { dailyTip, defaultStats, certificate, careerGoals } = growthData as {
+const { dailyTip, defaultStats, certificate } = growthData as {
   dailyTip: { category: string; duration: string; title: string; content: string };
   defaultStats: { streakDays: number; completedTips: number; weeklyProgress: string };
   certificate: {
@@ -19,7 +19,6 @@ const { dailyTip, defaultStats, certificate, careerGoals } = growthData as {
     certificateTitle: string;
     certificateSubtitle: string;
   };
-  careerGoals: string[];
 };
 
 export default function GrowthPage() {
@@ -63,80 +62,48 @@ export default function GrowthPage() {
 
       <div className="flex-1 min-h-0 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto space-y-6">
-          {/* ─── 기본: 오늘의 1% 챌린지 (상단 고정) + AI 멘토링 ─── */}
+          {/* ─── 기본: 오늘의 1% 챌린지 (상단 고정) ─── */}
           {activeTab === "main" && (
-            <>
-              {/* 오늘의 1% 효율 챌린지: 항상 상단 */}
-              <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-4 py-3 border-b border-gray-100 bg-amber-50/50 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-amber-500" />
-                    <h2 className="text-sm font-semibold text-gray-800">오늘의 1% 효율 챌린지</h2>
-                  </div>
-                  <span className="text-xs text-gray-500">매일 1분, 실무에 바로 적용 가능한 팁</span>
+            <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100 bg-amber-50/50 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-amber-500" />
+                  <h2 className="text-sm font-semibold text-gray-800">오늘의 1% 효율 챌린지</h2>
                 </div>
-                <div className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
-                      {dailyTip.category}
-                    </span>
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
-                      <Zap className="w-3 h-3" /> {dailyTip.duration}
-                    </span>
-                  </div>
-                  <h3 className="text-base font-semibold text-gray-900 mb-2">{dailyTip.title}</h3>
-                  <p className="text-sm text-gray-600 mb-4">{dailyTip.content}</p>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      className="rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700"
-                    >
-                      적용 완료
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
-                      나중에 보기
-                    </button>
-                  </div>
+                <span className="text-xs text-gray-500">매일 1분, 실무에 바로 적용 가능한 팁</span>
+              </div>
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
+                    {dailyTip.category}
+                  </span>
+                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                    <Zap className="w-3 h-3" /> {dailyTip.duration}
+                  </span>
                 </div>
-                <div className="px-4 py-3 border-t border-gray-100 bg-gray-50/50 flex gap-6 text-sm">
-                  <span className="text-gray-600">연속 학습 <strong>{streakDays}일</strong></span>
-                  <span className="text-gray-600">완료한 팁 <strong>{completedTips}개</strong></span>
-                  <span className="text-gray-600">이번 주 목표 <strong>{weeklyProgress}</strong></span>
+                <h3 className="text-base font-semibold text-gray-900 mb-2">{dailyTip.title}</h3>
+                <p className="text-sm text-gray-600 mb-4">{dailyTip.content}</p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700"
+                  >
+                    적용 완료
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    나중에 보기
+                  </button>
                 </div>
-              </section>
-
-              {/* AI 커리어 멘토링: 챌린지 바로 밑 */}
-              <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
-                  <Bot className="w-5 h-5 text-blue-600" />
-                  <h2 className="text-sm font-semibold text-gray-800">AI 커리어 멘토링</h2>
-                </div>
-                <div className="p-4">
-                  <p className="text-sm text-gray-600 mb-4">다음 커리어 목표를 선택하면 1:1 코칭과 갭 분석을 제공합니다.</p>
-                  <div className="rounded-lg border border-gray-200 p-4 mb-4">
-                    <h4 className="text-xs font-semibold text-gray-500 mb-2">선망하는 다음 커리어를 선택하세요</h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {careerGoals.map((label) => (
-                        <button
-                          key={label}
-                          type="button"
-                          className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 text-left"
-                        >
-                          {label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="rounded-lg border border-dashed border-gray-200 p-6 flex flex-col items-center justify-center gap-2 text-gray-500 text-sm">
-                    <MessageSquare className="w-10 h-10 text-gray-300" />
-                    <p>목표를 선택하면 AI 멘토와의 대화가 시작됩니다.</p>
-                  </div>
-                </div>
-              </section>
-            </>
+              </div>
+              <div className="px-4 py-3 border-t border-gray-100 bg-gray-50/50 flex gap-6 text-sm">
+                <span className="text-gray-600">연속 학습 <strong>{streakDays}일</strong></span>
+                <span className="text-gray-600">완료한 팁 <strong>{completedTips}개</strong></span>
+                <span className="text-gray-600">이번 주 목표 <strong>{weeklyProgress}</strong></span>
+              </div>
+            </section>
           )}
 
           {/* ─── 인증서 탭 ─── */}

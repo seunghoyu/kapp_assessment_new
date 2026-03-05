@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디지털 인바스켓 시스템</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        .gradient-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .job-pill {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #4b5563;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+        .job-pill:hover {
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+        }
+        .job-pill.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .job-pill .count {
+            margin-left: 0.25rem;
+            padding: 0.125rem 0.5rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 9999px;
+            font-size: 0.75rem;
+        }
+        .job-pill.active .count {
+            background: rgba(255,255,255,0.3);
+        }
+        .question-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .priority-urgent { 
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+        .priority-normal { 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .priority-low { 
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-header text-white shadow-2xl">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white bg-opacity-20 p-4 rounded-2xl floating">
+                        <i class="fas fa-briefcase text-4xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">디지털 인바스켓</h1>
+                        <p class="text-sm opacity-90 mt-1">실전 업무 의사결정 시뮬레이터</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="bg-white bg-opacity-20 rounded-xl px-4 py-2 backdrop-blur-sm">
+                        <div class="text-3xl font-bold" id="total-questions">0</div>
+                        <div class="text-xs opacity-90">전체 문항</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Job Category Selection -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">
+                    <i class="fas fa-briefcase mr-2 text-purple-600"></i>직무 선택
+                </h2>
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm text-gray-600">현재:</span>
+                    <span class="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-lg font-semibold" id="current-job-badge">전체</span>
+                </div>
+            </div>
+            
+            <!-- Compact Job Tabs -->
+            <div class="flex flex-wrap gap-2">
+                <button class="job-pill active" onclick="filterByJob('all')" data-job="all">
+                    <i class="fas fa-th mr-1"></i>전체 <span class="count" id="count-all">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('경영/기획')" data-job="경영/기획">
+                    <i class="fas fa-chart-line mr-1"></i>경영/기획 <span class="count" id="count-경영/기획">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('커뮤니케이션')" data-job="커뮤니케이션">
+                    <i class="fas fa-comments mr-1"></i>커뮤니케이션 <span class="count" id="count-커뮤니케이션">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('고객서비스')" data-job="고객서비스">
+                    <i class="fas fa-headset mr-1"></i>고객서비스 <span class="count" id="count-고객서비스">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('인사/조직')" data-job="인사/조직">
+                    <i class="fas fa-users mr-1"></i>인사/조직 <span class="count" id="count-인사/조직">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('재무/회계')" data-job="재무/회계">
+                    <i class="fas fa-calculator mr-1"></i>재무/회계 <span class="count" id="count-재무/회계">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('IT/디지털')" data-job="IT/디지털">
+                    <i class="fas fa-laptop-code mr-1"></i>IT/디지털 <span class="count" id="count-IT/디지털">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('법무/컴플라이언스')" data-job="법무/컴플라이언스">
+                    <i class="fas fa-gavel mr-1"></i>법무/컴플 <span class="count" id="count-법무/컴플라이언스">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('프로젝트관리')" data-job="프로젝트관리">
+                    <i class="fas fa-tasks mr-1"></i>프로젝트 <span class="count" id="count-프로젝트관리">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('위기대응')" data-job="위기대응">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>위기대응 <span class="count" id="count-위기대응">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('마케팅/영업')" data-job="마케팅/영업">
+                    <i class="fas fa-bullhorn mr-1"></i>마케팅/영업 <span class="count" id="count-마케팅/영업">0</span>
+                </button>
+                <button class="job-pill" onclick="filterByJob('생산/운영')" data-job="생산/운영">
+                    <i class="fas fa-industry mr-1"></i>생산/운영 <span class="count" id="count-생산/운영">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Question Cards Grid -->
+        <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-2xl font-bold text-gray-800">
+                <i class="fas fa-layer-group mr-2"></i><span id="current-job-title">전체 문항</span>
+            </h2>
+            <button onclick="loadQuestions()" class="bg-white rounded-lg px-4 py-2 shadow hover:shadow-lg transition">
+                <i class="fas fa-sync-alt mr-2 text-purple-600"></i>새로고침
+            </button>
+        </div>
+
+        <div id="question-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Loading State -->
+            <div class="col-span-full text-center py-20">
+                <div class="floating">
+                    <i class="fas fa-spinner fa-spin text-6xl text-purple-400 mb-4"></i>
+                </div>
+                <p class="text-gray-600">문항을 불러오는 중...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 overflow-y-auto" onclick="closeModal(event)">
+        <div class="min-h-screen px-4 py-8 flex items-center justify-center">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 relative" onclick="event.stopPropagation()">
+                <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <div id="modal-content">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/simulation-marketing-meeting.js"></script>
+</body>
+</html>

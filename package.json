@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "docs": "node scripts/generate-docs-index.js"
+    "docs": "node scripts/generate-docs-index.js && node scripts/build-docs-diagram.mjs",
+    "build:docs-diagram": "node scripts/build-docs-diagram.mjs"
   },
   "dependencies": {
+    "dagre": "^0.8.5",
     "chart.js": "^4.5.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.563.0",
@@ -17,10 +19,13 @@
     "react": "19.2.3",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.3",
+    "reactflow": "^11.11.4",
     "recharts": "^3.7.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "esbuild": "^0.24.0",
+    "@types/dagre": "^0.7.52",
     "@ljharb/tsconfig": "^0.3.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

@@ -33,8 +33,7 @@ const STEPS = [
   { id: 3, title: "적용 문항", short: "적용" },
   { id: 4, title: "성과 문항", short: "성과" },
   { id: 5, title: "디지털 인바스켓", short: "인바스켓" },
-  { id: 6, title: "AI 워크플로우", short: "AI" },
-  { id: 7, title: "결과", short: "결과" },
+  { id: 6, title: "결과", short: "결과" },
 ];
 
 /** 단계별 상세 로직 (KAPP_DIAGNOSIS_QUESTION_LOGIC + KAPP_DIAGNOSIS_DATA_REFERENCE + kapp_origin 동일) */
@@ -82,25 +81,15 @@ const STEP_DETAILS: Record<number, { title: string; what: string; criteria: stri
   },
   5: {
     title: "디지털 인바스켓 (E-tray)",
-    what: "받은 이메일을 처리하는 시뮬레이션. 우선순위 결정 및 문제 해결 능력 측정. 산업만 보고 이메일 세트가 정해집니다.",
-    criteria: "산업 ○(이메일 세트), 직무/직급/연차/진단목표 사용 안 함.",
+    what: "우선순위(긴급·보통·낮음) 문항 3개 + 자동화(AI 워크플로우) 1개. 받은 이메일/업무 시뮬레이션으로 의사결정·AI 활용 능력 측정.",
+    criteria: "직무·산업군·기업규모·직급에 따라 선정된 4문항(긴급·보통·낮음·자동화 각 1문항).",
     logic: [
-      "어떤 이메일: 선택한 산업에 해당하는 이메일 목록 1세트. 예: IT→개발·배포·장애 관련, 금융→여신·리스크·준법 관련.",
-      "기록: (1) 어떤 이메일을 열었는지 (2) 각 이메일 액션(열기/답장/전달/보관) (3) 처리 시작~완료 소요 시간.",
-      "점수: 긴급도 대응, 제한 시간 내 처리 등으로 생산성 점수 계산.",
+      "문항: 우선순위별 3문항 + 자동화 1문항. 자동화는 산업별 AI 워크플로우 시나리오.",
+      "기록: 이메일별 액션·소요시간, AI 워크플로우 선택 옵션·정답 여부.",
+      "점수: 긴급도 대응, 제한 시간 내 처리, AI 활용 품질로 생산성 점수 계산.",
     ],
   },
   6: {
-    title: "AI 워크플로우 시뮬레이션",
-    what: "산업별 정해진 1개 시나리오에서, 업무 상황에 맞는 AI 활용 옵션을 고르는 단계. AI 도구 활용 능력 측정.",
-    criteria: "산업 ○(시나리오 1개), 직무/직급/연차/진단목표 사용 안 함.",
-    logic: [
-      "시나리오: 선택한 산업에 해당하는 AI 워크플로우 시나리오 1개. 예: IT→개발·코드 리뷰, 금융→리스크 리포트·심사.",
-      "기록: (1) 시나리오(workflowId) (2) 선택한 옵션 인덱스 (3) 정답 여부 (4) 옵션 요약(시간 단축, 품질 점수 등).",
-      "점수: 정답 시 만점/가산, 오답 시 감점 또는 선택 옵션 품질 반영.",
-    ],
-  },
-  7: {
     title: "진단 결과",
     what: "영역별·종합 점수, 지식 수준, 강점/개선 영역 표시. 결과 해석·추천에 진단 목표 활용.",
     criteria: "결과 해석·추천 시 산업/직무/직급/연차/진단 목표 모두 참고.",
@@ -166,7 +155,7 @@ function loadPersistedState(): Partial<PersistedState> | null {
     const data = JSON.parse(raw) as unknown;
     if (!data || typeof data !== "object") return null;
     const d = data as Record<string, unknown>;
-    const step = typeof d.step === "number" && d.step >= 0 && d.step <= 7 ? d.step : undefined;
+    const step = typeof d.step === "number" && d.step >= 0 && d.step <= 6 ? d.step : undefined;
     if (step === undefined) return null;
     return {
       step,
@@ -229,6 +218,7 @@ export default function DiagnosisPage() {
   // 디지털 인바스켓 튜토리얼: 첫 진입 시 자동 표시, 닫기 후에는 호버 시에만 표시
   const [inbasketTutorialDismissed, setInbasketTutorialDismissed] = useState(true);
   const [inbasketTutorialHover, setInbasketTutorialHover] = useState(false);
+  const [testEnvTooltipHover, setTestEnvTooltipHover] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
     setInbasketTutorialDismissed(sessionStorage.getItem(INBASKET_TUTORIAL_DISMISSED_KEY) === "1");
@@ -310,8 +300,11 @@ export default function DiagnosisPage() {
   }, [form.industry]);
 
   const inbasketQuestions = getInbasketQuestions();
+
   const selectedInbasketQuestion = useMemo(
-    () => (inbasketSelectedId ? inbasketQuestions.find((q) => q.id === inbasketSelectedId) ?? null : null),
+    () => (inbasketSelectedId && inbasketSelectedId !== "ai-workflow"
+      ? inbasketQuestions.find((q) => q.id === inbasketSelectedId) ?? null
+      : null),
     [inbasketSelectedId, inbasketQuestions]
   );
 
@@ -391,7 +384,29 @@ export default function DiagnosisPage() {
               <div className="min-w-0 flex items-start gap-2">
                 <div>
                   <h1 className="text-lg font-bold text-gray-900 truncate">디지털 인바스켓</h1>
-                  <p className="text-xs text-gray-500 mt-0.5">실전 업무 의사결정 시뮬레이터 · 전체 {inbasketQuestions.length}개 문항</p>
+                  <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-2 flex-wrap">
+                    <span>실전 업무 의사결정 시뮬레이터 · 인당 4문항 (긴급·보통·낮음·자동화 각 1문항)</span>
+                    <span
+                      className="relative inline-flex"
+                      onMouseEnter={() => setTestEnvTooltipHover(true)}
+                      onMouseLeave={() => setTestEnvTooltipHover(false)}
+                    >
+                      <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-800 cursor-help">
+                        테스트 환경
+                      </span>
+                      {testEnvTooltipHover && (
+                        <span className="absolute left-0 top-full z-20 mt-1 w-72 rounded-lg border border-amber-200 bg-amber-50 p-3 text-left shadow-lg">
+                          <p className="text-xs font-semibold text-amber-900 mb-1.5">테스트 환경</p>
+                          <p className="text-[11px] text-amber-800 leading-relaxed">
+                            현재는 <strong>테스트 환경</strong>입니다. 전체 문항과 직무 선택이 노출됩니다.
+                          </p>
+                          <p className="text-[11px] text-amber-800 leading-relaxed mt-2">
+                            실제 학습자 환경에서는 &quot;선정 문항&quot; 헤더로 표시되며, 직무·산업군·기업규모·직급에 따라 선정된 <strong>인당 4문항</strong>만 노출됩니다. 직무 선택 UI는 보이지 않습니다.
+                          </p>
+                        </span>
+                      )}
+                    </span>
+                  </p>
                 </div>
                 <div
                   className="relative shrink-0 pt-0.5"
@@ -423,13 +438,12 @@ export default function DiagnosisPage() {
                         </button>
                       </div>
                       <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-                        디지털 인바스켓은 <strong>실전 업무 의사결정 시뮬레이터</strong>입니다. 이메일·메신저·보고서·일정 등 실제와 비슷한 업무 상황을 체험하며, 우선순위를 정하고 결정하는 역량을 확인할 수 있습니다.
+                        디지털 인바스켓은 <strong>실전 업무 의사결정 시뮬레이터</strong>입니다. 인당 4문항(긴급·보통·낮음·자동화 각 1문항)이 나오며, 직무·산업군·기업규모·직급에 따라 선정된 문항이 표시됩니다.
                       </p>
                       <p className="font-semibold text-gray-800 text-xs mb-2">이용 방법</p>
                       <ul className="text-xs text-gray-600 space-y-2 list-disc list-inside">
-                        <li>상단에서 <strong>직무</strong>를 선택하면 해당 직무 문항만 보입니다.</li>
                         <li>표에서 <strong>상세보기</strong>로 내용을 확인하고, <strong>진행하기</strong>로 시뮬레이션을 시작하세요.</li>
-                        <li>시뮬레이션 안에서 지시에 따라 업무를 처리한 뒤, 하단 <strong>완료하고 다음 단계로</strong>를 누르면 다음 단계로 이동합니다.</li>
+                        <li>시뮬레이션 안에서 지시에 따라 업무를 처리한 뒤, 하단 <strong>완료하고 다음 단계로</strong>를 누르면 목록으로 돌아갑니다.</li>
                       </ul>
                     </div>
                   )}
@@ -465,32 +479,113 @@ export default function DiagnosisPage() {
           </div>
           {/* 단계별 콘텐츠 (가운데·중앙 배치를 위해 flex 컨테이너) */}
           <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
-          {/* 0: 시작 */}
+          {/* 0: 시작 — 4그리드(2×2) + 진단 시작하기 강조 */}
           {step === 0 && (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-              <div className="flex gap-4 mb-8">
-                {KAPP_BADGES.map(({ icon: Icon, label, color }) => (
-                  <div
-                    key={label}
-                    className={`w-14 h-14 rounded-xl ${color} text-white flex items-center justify-center`}
-                  >
-                    <Icon className="w-7 h-7" />
-                  </div>
-                ))}
+            <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
+              <div className="flex-shrink-0 text-center pt-6 pb-4 px-4">
+                <h2 className="text-xl font-bold text-gray-900 mb-1">
+                  맞춤형 역량 진단을 시작합니다
+                </h2>
+                <p className="text-sm text-gray-600">
+                  회사·직무에 맞는 문제로, 약 15분이면 끝나요.
+                </p>
               </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                맞춤형 역량 진단을 시작합니다
-              </h2>
-              <p className="text-sm text-gray-600 max-w-md mb-8">
-                산업·직무·직급에 맞는 문항으로 약 15분 안에 역량 수준을 파악합니다.
-              </p>
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="rounded-lg bg-blue-600 text-white px-8 py-3 font-semibold hover:bg-blue-700 transition-colors"
-              >
-                진단 시작하기
-              </button>
+              <div className="flex-1 min-h-0 grid grid-cols-2 grid-rows-2 gap-4 px-6 pb-4">
+                {/* 1. 측정 영역 (KAPP) */}
+                <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-4 flex flex-col min-h-0">
+                  <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center shrink-0"><BookOpen className="w-4 h-4" /></span>
+                    측정 영역 (KAPP)
+                  </h3>
+                  <ul className="space-y-2.5 text-sm text-gray-700 flex-1 min-h-0">
+                    {[
+                      { Icon: BookOpen, label: "지식 (K)", desc: "직무 수행에 필요한 이론적 지식과 개념의 이해도를 측정합니다.", color: "text-blue-600", bg: "bg-blue-100" },
+                      { Icon: Cog, label: "적용 (A)", desc: "지식을 실제 상황에 적용하여 문제를 해결하는 능력을 평가합니다.", color: "text-emerald-600", bg: "bg-emerald-100" },
+                      { Icon: TrendingUp, label: "성과 (P)", desc: "주어진 자원 내에서 산출물의 완성도와 정확성을 검증합니다.", color: "text-amber-600", bg: "bg-amber-100" },
+                      { Icon: Zap, label: "생산성 (P)", desc: "AI 도구를 활용하여 시간당 산출량을 얼마나 극대화하는지 측정합니다.", color: "text-violet-600", bg: "bg-violet-100" },
+                    ].map(({ Icon, label, desc, color, bg }) => (
+                      <li key={label} className="flex gap-2.5">
+                        <span className={`shrink-0 mt-0.5 w-7 h-7 rounded-md ${bg} ${color} flex items-center justify-center`}><Icon className="w-3.5 h-3.5" /></span>
+                        <span><strong className="text-gray-800">{label}</strong> {desc}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* 2. 문항 구성 */}
+                <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-4 flex flex-col min-h-0">
+                  <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0"><Cog className="w-4 h-4" /></span>
+                    문항 구성
+                  </h3>
+                  <ul className="space-y-2 text-sm text-gray-700 flex-1 min-h-0">
+                    <li><span className="text-gray-500 font-medium">1.</span> 본인 정보 입력</li>
+                    <li><span className="text-gray-500 font-medium">2.</span> 지식 문항 <strong>3문항</strong> (객관식)</li>
+                    <li><span className="text-gray-500 font-medium">3.</span> 적용 문항 <strong>3문항</strong> (객관식)</li>
+                    <li><span className="text-gray-500 font-medium">4.</span> 성과 문항 <strong>3문항</strong> (객관식)</li>
+                    <li><span className="text-gray-500 font-medium">5.</span> 디지털 인바스켓 <strong>4문항</strong>
+                      <span className="text-gray-600 ml-1">(우선순위 3문항 + 자동화 1문항)</span>
+                    </li>
+                  </ul>
+                </div>
+                {/* 3. 디지털 인바스켓이란 */}
+                <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-4 flex flex-col min-h-0">
+                  <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0"><TrendingUp className="w-4 h-4" /></span>
+                    디지털 인바스켓이란
+                  </h3>
+                  <div className="text-sm text-gray-700 leading-relaxed flex-1 min-h-0 space-y-3">
+                    <p>
+                      가상의 업무 환경을 제공하여, 제한 시간 내 <strong className="text-gray-800">정보 추출·우선순위 결정·대안 수립</strong> 과정을 데이터로 기록합니다.
+                    </p>
+                    <p>
+                      단순 지식이 아닌, <strong className="text-gray-800">현업에 즉시 투입 가능한 실제 수행 능력</strong>을 측정하며,
+                    </p>
+                    <p>
+                      산업군·직급·연차에 따라 초정밀 맞춤형 문항이 출제됩니다.
+                    </p>
+                  </div>
+                </div>
+                {/* 4. 이 진단의 차별점 */}
+                <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-4 flex flex-col min-h-0">
+                  <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-violet-500 text-white flex items-center justify-center shrink-0"><Zap className="w-4 h-4" /></span>
+                    이 진단의 차별점
+                  </h3>
+                  <ul className="space-y-2.5 text-sm text-gray-700 flex-1 min-h-0 overflow-y-auto">
+                    <li className="flex gap-2">
+                      <span className="shrink-0 font-medium text-blue-600">적응형</span>
+                      <span>정답/오답에 따라 난이도를 실시간 조정하여, 10~15문항 내에 지식 수준을 정밀하게 파악합니다.</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="shrink-0 font-medium text-emerald-600">맞춤형</span>
+                      <span>산업군·직급·연차에 따른 초정밀 맞춤 문항으로 역량을 정확히 측정합니다.</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="shrink-0 font-medium text-amber-600">AI 분석</span>
+                      <span>산업군 및 직무를 AI가 자동으로 분석하여 문항과 해석에 반영합니다.</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="shrink-0 font-medium text-indigo-600">성장 예측</span>
+                      <span>스킬·역량 데이터와 AI 성장 예측을 연계하여 개인별 성장 포인트를 제시합니다.</span>
+                    </li>
+                    <li className="flex gap-2 select-none">
+                      <span className="shrink-0 font-medium text-teal-600">다차원 데이터 구조</span>
+                      <span className="select-none">근간·전문성·숙련도·시장 지능·AI 고도화 등 다차원 데이터로 역량을 다각도 분석합니다.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              {/* 진단 시작하기 강조 CTA */}
+              <div className="flex-shrink-0 flex flex-col items-center justify-center px-6 pt-2 pb-6">
+                <p className="text-sm text-gray-500 mb-3">준비되셨으면 아래 버튼을 눌러 시작해 주세요</p>
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="w-full max-w-sm rounded-xl bg-blue-600 text-white py-4 px-8 text-base font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  진단 시작하기
+                </button>
+              </div>
             </div>
           )}
 
@@ -813,22 +908,58 @@ export default function DiagnosisPage() {
             </div>
           )}
 
-          {/* 5: 디지털 인바스켓 — 목록 뷰(16종) / 시뮬레이션 뷰(타이머·완료) */}
+          {/* 5: 디지털 인바스켓 — 목록(인당 4문항 + 자동화) / 시뮬레이션 / AI 워크플로우 */}
           {step === 5 && STEP_DETAILS[5] && (
             <>
-              {inbasketView === "simulation" && selectedInbasketQuestion ? (
+              {inbasketView === "simulation" && inbasketSelectedId === "ai-workflow" && aiWorkflow ? (
+                <div className="flex-1 overflow-y-auto p-6">
+                  <div className="max-w-2xl mx-auto">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4">AI 워크플로우 (자동화)</h2>
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="rounded bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-800">
+                          {aiWorkflow.industry}
+                        </span>
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">{aiWorkflow.title}</h3>
+                      <p className="text-sm text-gray-600 whitespace-pre-wrap mb-4">{aiWorkflow.task}</p>
+                      <p className="font-medium text-gray-900 mb-3">선택지:</p>
+                      <ul className="space-y-2">
+                        {aiWorkflow.options.map((opt, i) => (
+                          <li key={opt.id}>
+                            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 p-3 hover:bg-gray-50 has-[:checked]:border-violet-500 has-[:checked]:bg-violet-50/50">
+                              <input
+                                type="radio"
+                                name="ai-workflow"
+                                checked={answers.ai === i}
+                                onChange={() => setAnswers((a) => ({ ...a, ai: i }))}
+                                className="h-4 w-4 text-violet-600"
+                              />
+                              <span className="text-sm font-medium">{opt.choice}</span>
+                              <span className="text-xs text-gray-500 ml-auto">시간 단축 {opt.timeReduction}, 품질 {opt.qualityScore}</span>
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                      {aiWorkflow.explanation && answers.ai !== null && (
+                        <p className="mt-3 text-xs text-gray-500 border-t pt-2">{aiWorkflow.explanation}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : inbasketView === "simulation" && selectedInbasketQuestion ? (
                 <InbasketSimulation
                   question={selectedInbasketQuestion}
                   onBack={handleInbasketBackToList}
                   onComplete={() => {
                     setInbasketView("list");
                     setInbasketSelectedId(null);
-                    setStep(6);
                   }}
                 />
               ) : (
                 <InbasketList
                   questions={inbasketQuestions}
+                  aiWorkflow={aiWorkflow}
                   onStart={(id) => {
                     setInbasketSelectedId(id);
                     setInbasketView("simulation");
@@ -838,69 +969,21 @@ export default function DiagnosisPage() {
             </>
           )}
 
-          {/* 6: AI 워크플로우 — 산업별 시나리오 1개 전부 표시 */}
+          {/* 6: 결과 — 로직 설명만 (실제 점수/저장은 추후 연동) */}
           {step === 6 && STEP_DETAILS[6] && (
             <div className="flex-1 overflow-y-auto p-6">
               <div className="max-w-2xl mx-auto">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">{STEP_DETAILS[6].title}</h2>
-                <div className="rounded-lg bg-gray-50 border border-gray-200 p-3 mb-4 text-sm text-gray-600">
-                  <span className="font-medium text-gray-700">기준: </span>
-                  {STEP_DETAILS[6].criteria}
-                  <span className="block mt-1 text-gray-500">현재 산업: {form.industry || "(미선택 → 기타)"}</span>
-                </div>
-                {!aiWorkflow ? (
-                  <p className="text-gray-500 py-4">해당 산업의 AI 워크플로우 시나리오가 없습니다.</p>
-                ) : (
-                  <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="rounded bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-800">
-                        {aiWorkflow.industry}
-                      </span>
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">{aiWorkflow.title}</h3>
-                    <p className="text-sm text-gray-600 whitespace-pre-wrap mb-4">{aiWorkflow.task}</p>
-                    <p className="font-medium text-gray-900 mb-3">선택지:</p>
-                    <ul className="space-y-2">
-                      {aiWorkflow.options.map((opt, i) => (
-                        <li key={opt.id}>
-                          <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 p-3 hover:bg-gray-50 has-[:checked]:border-violet-500 has-[:checked]:bg-violet-50/50">
-                            <input
-                              type="radio"
-                              name="ai-workflow"
-                              checked={answers.ai === i}
-                              onChange={() => setAnswers((a) => ({ ...a, ai: i }))}
-                              className="h-4 w-4 text-violet-600"
-                            />
-                            <span className="text-sm font-medium">{opt.choice}</span>
-                            <span className="text-xs text-gray-500 ml-auto">시간 단축 {opt.timeReduction}, 품질 {opt.qualityScore}</span>
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
-                    {aiWorkflow.explanation && answers.ai !== null && (
-                      <p className="mt-3 text-xs text-gray-500 border-t pt-2">{aiWorkflow.explanation}</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* 7: 결과 — 로직 설명만 (실제 점수/저장은 추후 연동) */}
-          {step === 7 && STEP_DETAILS[7] && (
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="max-w-2xl mx-auto">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">{STEP_DETAILS[7].title}</h2>
                 <div className="rounded-lg bg-gray-50 border border-gray-200 p-4 mb-4">
                   <h3 className="text-sm font-semibold text-gray-700 mb-2">무엇을 하나요?</h3>
-                  <p className="text-sm text-gray-600">{STEP_DETAILS[7].what}</p>
+                  <p className="text-sm text-gray-600">{STEP_DETAILS[6].what}</p>
                 </div>
                 <div className="rounded-lg bg-blue-50/50 border border-blue-100 p-4 mb-4">
                   <h3 className="text-sm font-semibold text-blue-800 mb-2">문항/시나리오가 정해지는 기준</h3>
-                  <p className="text-sm text-gray-700">{STEP_DETAILS[7].criteria}</p>
+                  <p className="text-sm text-gray-700">{STEP_DETAILS[6].criteria}</p>
                 </div>
                 <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
-                  {STEP_DETAILS[7].logic.map((line, i) => (
+                  {STEP_DETAILS[6].logic.map((line, i) => (
                     <li key={i}>{line}</li>
                   ))}
                 </ul>
@@ -909,7 +992,7 @@ export default function DiagnosisPage() {
             </div>
           )}
           </div>
-          {/* 이전 / 다음: 메인 카드 좌하·우하. 디지털 인바스켓 시뮬레이션 뷰에서는 "목록으로"(step 변경 없음) */}
+          {/* 이전 / 다음. 디지털 인바스켓 시뮬레이션: 목록으로 / AI 워크플로우 시 완료하고 결과 보기 */}
           <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-t border-gray-100">
             {step === 5 && inbasketView === "simulation" ? (
               <button
@@ -935,7 +1018,20 @@ export default function DiagnosisPage() {
                 이전
               </button>
             )}
-            {step < STEPS.length - 1 ? (
+            {step === 5 && inbasketView === "simulation" && inbasketSelectedId === "ai-workflow" ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setInbasketView("list");
+                  setInbasketSelectedId(null);
+                  setStep(6);
+                }}
+                className="flex items-center gap-2 rounded-lg bg-blue-600 text-white px-6 py-2 text-sm font-semibold hover:bg-blue-700"
+              >
+                완료하고 결과 보기
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            ) : step < STEPS.length - 1 ? (
               <button
                 type="button"
                 onClick={goNext}

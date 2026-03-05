@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ServiceFlow, { type FlowScope } from "@/components/diagram/ServiceFlow";
 
 const VALID_SCOPES: FlowScope[] = ["root", "consumer", "admin"];
 
-export default function DiagramPage() {
+function DiagramContent() {
   const searchParams = useSearchParams();
   const raw = searchParams.get("scope");
   const scope: FlowScope =
@@ -18,5 +19,13 @@ export default function DiagramPage() {
       </h1>
       <ServiceFlow scope={scope} flowDataBasePath="/docs/diagram" />
     </div>
+  );
+}
+
+export default function DiagramPage() {
+  return (
+    <Suspense fallback={<div className="p-4 min-h-screen bg-gray-100 flex items-center justify-center text-gray-500">로딩 중...</div>}>
+      <DiagramContent />
+    </Suspense>
   );
 }

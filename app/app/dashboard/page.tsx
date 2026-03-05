@@ -11,6 +11,7 @@ import {
   Route,
   FileText,
   GraduationCap,
+  User,
 } from "lucide-react";
 import {
   Radar,
@@ -29,6 +30,8 @@ import {
 } from "recharts";
 import dashboardData from "@/data/consumer/dashboard.json";
 import careerPathData from "@/data/consumer/careerPathByIndustry.json";
+import dailyTipsData from "@/data/consumer/dailyTips.json";
+import DailyTipWidget from "@/components/dashboard/DailyTipWidget";
 
 type DashboardTab = "my-competency" | "market" | "roadmap";
 
@@ -115,11 +118,25 @@ export default function ConsumerDashboardPage() {
   const careerPath: CareerPathItem | undefined = careerIndustryData?.paths?.[careerPathIndex] ?? careerIndustryData?.paths?.[0];
   const careerLearningPath: LearningPathItem[] = careerIndustryData?.learningPath ?? [];
 
+  const dailyTips = (dailyTipsData as { tips: { category: string; text: string }[] }).tips ?? [];
+
   return (
     <div className="flex flex-col h-full min-h-0 bg-gray-50">
-      <div className="flex-shrink-0 border-b border-gray-200 bg-white px-4 py-3">
-        <h1 className="text-lg font-bold text-gray-900">마이 대시보드</h1>
-        <p className="text-xs text-gray-500 mt-0.5">KAPP 진단 기반 역량 현황</p>
+      <div className="flex-shrink-0 border-b border-gray-200 bg-white px-4 py-3 flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-lg font-bold text-gray-900">마이 대시보드</h1>
+          <p className="text-xs text-gray-500 mt-0.5">KAPP 진단 기반 역량 현황</p>
+        </div>
+        <div className="flex items-center gap-5 flex-shrink-0">
+          {dailyTips.length > 0 && <DailyTipWidget tips={dailyTips} />}
+          <button
+            type="button"
+            className="flex-shrink-0 w-9 h-9 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 transition-colors"
+            aria-label="프로필"
+          >
+            <User className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* 탭: 시장·경쟁력 | 성장 로드맵 (내 역량은 탭 없이 기본) */}

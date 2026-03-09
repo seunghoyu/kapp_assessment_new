@@ -127,6 +127,13 @@ const industryTreeData = industryTree as IndustryNode[];
 const DIAGNOSIS_STORAGE_KEY = "kapp_diagnosis_state";
 const INBASKET_TUTORIAL_DISMISSED_KEY = "kapp_inbasket_tutorial_dismissed";
 
+const COMPANY_TYPE_OPTIONS = [
+  { value: "일반기업", label: "일반기업" },
+  { value: "스타트업", label: "스타트업" },
+  { value: "외국계", label: "외국계" },
+  { value: "공공기관", label: "공공기관" },
+] as const;
+
 type PersistedState = {
   step: number;
   form: {
@@ -134,6 +141,7 @@ type PersistedState = {
     email: string;
     industry: string;
     job: string;
+    companyType: string;
     position: string;
     experienceYears: string;
     company: string;
@@ -189,6 +197,7 @@ const initialForm = {
   email: "",
   industry: "",
   job: "",
+  companyType: "",
   position: "",
   experienceYears: "",
   company: "",
@@ -370,6 +379,7 @@ export default function DiagnosisPage() {
     form.name.trim() &&
     form.industry &&
     form.job &&
+    form.companyType &&
     form.position &&
     form.experienceYears &&
     form.companySize;
@@ -612,7 +622,7 @@ export default function DiagnosisPage() {
           {/* 1: 정보 입력 — 화면 가운데 중앙 배치 (kapp_origin start-card 형태) */}
           {step === 1 && (
             <div className="flex-1 flex items-center justify-center overflow-y-auto p-6">
-              <div className="w-full max-w-2xl mx-auto">
+              <div className="w-full max-w-4xl mx-auto">
                 <div className="text-center mb-6">
                   <div className="w-14 h-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-3">
                     <User className="w-7 h-7" />
@@ -645,42 +655,59 @@ export default function DiagnosisPage() {
                     placeholder="example@company.com"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">산업군 *</label>
-                  <button
-                    type="button"
-                    onClick={() => setIndustrySelectModalOpen(true)}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-left bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-gray-50 transition-colors flex items-center justify-between"
-                  >
-                    <span className={form.industry ? "text-gray-900" : "text-gray-500"}>
-                      {(selectedMajor?.name ?? form.industry) || "산업군 선택"}
-                    </span>
-                    <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
-                  </button>
-                  <IndustrySelectModal
-                    open={industrySelectModalOpen}
-                    onClose={() => setIndustrySelectModalOpen(false)}
-                    majors={industryTreeData}
-                    onSelect={handleIndustrySelect}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">세부 직무 *</label>
-                  <select
-                    value={form.job}
-                    onChange={(e) => setForm((f) => ({ ...f, job: e.target.value }))}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    disabled={!form.industry}
-                  >
-                    <option value="">
-                      {form.industry ? "선택해주세요" : "먼저 산업군을 선택해주세요"}
-                    </option>
-                    {jobList.map((job) => (
-                      <option key={job} value={job}>
-                        {job}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">산업군 *</label>
+                    <button
+                      type="button"
+                      onClick={() => setIndustrySelectModalOpen(true)}
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-left bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-gray-50 transition-colors flex items-center justify-between"
+                    >
+                      <span className={form.industry ? "text-gray-900" : "text-gray-500"}>
+                        {(selectedMajor?.name ?? form.industry) || "산업군 선택"}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+                    </button>
+                    <IndustrySelectModal
+                      open={industrySelectModalOpen}
+                      onClose={() => setIndustrySelectModalOpen(false)}
+                      majors={industryTreeData}
+                      onSelect={handleIndustrySelect}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">세부 직무 *</label>
+                    <select
+                      value={form.job}
+                      onChange={(e) => setForm((f) => ({ ...f, job: e.target.value }))}
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      disabled={!form.industry}
+                    >
+                      <option value="">
+                        {form.industry ? "선택해주세요" : "먼저 산업군을 선택해주세요"}
                       </option>
-                    ))}
-                  </select>
+                      {jobList.map((job) => (
+                        <option key={job} value={job}>
+                          {job}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">기업유형 *</label>
+                    <select
+                      value={form.companyType}
+                      onChange={(e) => setForm((f) => ({ ...f, companyType: e.target.value }))}
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">선택해주세요</option>
+                      {COMPANY_TYPE_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">직급 *</label>

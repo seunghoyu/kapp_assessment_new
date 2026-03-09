@@ -12,6 +12,7 @@ import {
   FileText,
   GraduationCap,
   User,
+  Award,
 } from "lucide-react";
 import {
   Radar,
@@ -32,6 +33,7 @@ import dashboardData from "@/data/consumer/dashboard.json";
 import careerPathData from "@/data/consumer/careerPathByIndustry.json";
 import dailyTipsData from "@/data/consumer/dailyTips.json";
 import DailyTipWidget from "@/components/dashboard/DailyTipWidget";
+import CertificateModal from "./CertificateModal";
 
 type DashboardTab = "my-competency" | "market" | "roadmap";
 
@@ -81,6 +83,7 @@ export default function ConsumerDashboardPage() {
   const router = useRouter();
   const [tab, setTab] = useState<DashboardTab>("my-competency");
   const [showCoursesModal, setShowCoursesModal] = useState(false);
+  const [certModalOpen, setCertModalOpen] = useState(false);
   const [careerIndustry, setCareerIndustry] = useState("IT");
   const [careerPathIndex, setCareerPathIndex] = useState(0);
 
@@ -139,42 +142,54 @@ export default function ConsumerDashboardPage() {
         </div>
       </div>
 
-      {/* 탭: 시장·경쟁력 | 성장 로드맵 (내 역량은 탭 없이 기본) */}
-      <div className="flex-shrink-0 flex border-b border-gray-200 bg-white px-4">
+      {/* 탭: 내 역량 | 시장·경쟁력 | 성장 로드맵 / 우측 인증서 */}
+      <div className="flex-shrink-0 flex border-b border-gray-200 bg-white px-4 items-center justify-between">
+        <div className="flex">
+          <button
+            type="button"
+            onClick={() => setTab("my-competency")}
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              tab === "my-competency"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-600 hover:text-gray-900"
+            }`}
+          >
+            내 역량
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("market")}
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              tab === "market"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-600 hover:text-gray-900"
+            }`}
+          >
+            시장·경쟁력
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("roadmap")}
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              tab === "roadmap"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-600 hover:text-gray-900"
+            }`}
+          >
+            성장 로드맵
+          </button>
+        </div>
         <button
           type="button"
-          onClick={() => setTab("my-competency")}
-          className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-            tab === "my-competency"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-gray-600 hover:text-gray-900"
-          }`}
+          onClick={() => setCertModalOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
         >
-          내 역량
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("market")}
-          className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-            tab === "market"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-gray-600 hover:text-gray-900"
-          }`}
-        >
-          시장·경쟁력
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("roadmap")}
-          className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-            tab === "roadmap"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-gray-600 hover:text-gray-900"
-          }`}
-        >
-          성장 로드맵
+          <Award className="w-5 h-5 text-blue-600" />
+          인증서 다운로드
         </button>
       </div>
+
+      <CertificateModal open={certModalOpen} onClose={() => setCertModalOpen(false)} />
 
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
         <div className="w-full max-w-full space-y-6">

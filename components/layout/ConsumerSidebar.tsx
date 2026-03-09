@@ -7,7 +7,6 @@ import Image from "next/image";
 import {
   ClipboardList,
   LayoutDashboard,
-  Sprout,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -16,7 +15,6 @@ import { ROUTES } from "@/lib/routes";
 const consumerMenuItems = [
   { icon: ClipboardList, label: "KAPP 진단", href: ROUTES.APP_DIAGNOSIS },
   { icon: LayoutDashboard, label: "마이 대시보드", href: ROUTES.APP_MY_DASHBOARD },
-  { icon: Sprout, label: "나의 성장", href: ROUTES.APP_GROWTH },
 ];
 
 export default function ConsumerSidebar() {

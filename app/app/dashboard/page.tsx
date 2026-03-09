@@ -13,6 +13,8 @@ import {
   GraduationCap,
   User,
   Award,
+  Table2,
+  Activity,
 } from "lucide-react";
 import {
   Radar,
@@ -36,6 +38,7 @@ import DailyTipWidget from "@/components/dashboard/DailyTipWidget";
 import CertificateModal from "./CertificateModal";
 
 type DashboardTab = "my-competency" | "market" | "roadmap";
+type CompetencyViewTab = "bar" | "table" | "radar";
 
 type MarketAction = { icon: string; title: string; description: string; priority: string };
 
@@ -86,6 +89,7 @@ export default function ConsumerDashboardPage() {
   const [certModalOpen, setCertModalOpen] = useState(false);
   const [careerIndustry, setCareerIndustry] = useState("IT");
   const [careerPathIndex, setCareerPathIndex] = useState(0);
+  const [competencyViewTab, setCompetencyViewTab] = useState<CompetencyViewTab>("radar");
 
   const ib = industryBenchmark ?? industryBenchmarkFallback;
   const actions = (marketActions && marketActions.length > 0) ? marketActions : marketActionsFallback;
@@ -193,91 +197,138 @@ export default function ConsumerDashboardPage() {
 
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
         <div className="w-full max-w-full space-y-6">
-          {/* ─── 내 역량 (기본) ─── */}
+          {/* ─── 내 역량 (기본): Split View ─── */}
           {tab === "my-competency" && (
-            <>
-              {/* AI 인사이트: 항상 카드뷰 상단 */}
-              <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 w-full min-h-0">
+              {/* 좌측 스플릿: AI 분석 인사이트 — 세로로 3개 카드 (5:5) */}
+              <section className="lg:w-1/2 lg:min-w-0 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                 <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
                   <Brain className="w-5 h-5 text-blue-600" />
                   <h2 className="text-sm font-semibold text-gray-800">AI 분석 인사이트</h2>
                 </div>
-                <div className="p-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {insights.map((item) => (
-                      <div
-                        key={item.id}
-                        className="rounded-lg border border-gray-100 bg-gray-50/50 p-3 text-left"
-                      >
-                        <p className="text-xs font-medium text-gray-500 mb-1">{item.title}</p>
-                        <p className="text-sm text-gray-700">{item.desc}</p>
-                      </div>
-                    ))}
-                  </div>
+                <div className="p-4 flex flex-col gap-3 flex-1 min-h-0">
+                  {insights.map((item) => (
+                    <div
+                      key={item.id}
+                      className="rounded-lg border border-gray-100 bg-gray-50/50 p-3 text-left flex-shrink-0"
+                    >
+                      <p className="text-xs font-medium text-gray-500 mb-1">{item.title}</p>
+                      <p className="text-sm text-gray-700">{item.desc}</p>
+                    </div>
+                  ))}
                 </div>
               </section>
 
-              {/* KAPP 4차원 역량 점수 + 레이더 */}
-              <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden w-full">
-                <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-blue-600" />
-                  <h2 className="text-sm font-semibold text-gray-800">KAPP 4차원 역량 점수</h2>
+              {/* 우측 스플릿: KAPP 4차원 역량 점수 — 탭(아이콘)으로 막대/테이블/레이더 전환 (5:5) */}
+              <section className="lg:w-1/2 lg:min-w-0 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-blue-600" />
+                    <h2 className="text-sm font-semibold text-gray-800">KAPP 4차원 역량 점수</h2>
+                  </div>
+                  <div className="flex items-center gap-1 p-1 rounded-lg bg-gray-100" role="tablist" aria-label="뷰 전환">
+                    <button
+                      type="button"
+                      onClick={() => setCompetencyViewTab("bar")}
+                      className={`p-2 rounded-md transition-colors ${competencyViewTab === "bar" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                      title="막대 그래프"
+                      aria-pressed={competencyViewTab === "bar"}
+                    >
+                      <BarChart3 className="w-5 h-5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCompetencyViewTab("table")}
+                      className={`p-2 rounded-md transition-colors ${competencyViewTab === "table" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                      title="테이블 뷰"
+                      aria-pressed={competencyViewTab === "table"}
+                    >
+                      <Table2 className="w-5 h-5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCompetencyViewTab("radar")}
+                      className={`p-2 rounded-md transition-colors ${competencyViewTab === "radar" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                      title="레이더 차트"
+                      aria-pressed={competencyViewTab === "radar"}
+                    >
+                      <Activity className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
-                <div className="p-4 flex flex-col lg:flex-row gap-6 w-full min-w-0">
-                  <div className="lg:w-1/2 flex items-center justify-center min-h-[280px] w-full">
-                    <ResponsiveContainer width="100%" height={280}>
-                      <RadarChart data={radarData}>
-                        <PolarGrid />
-                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12 }} />
-                        <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 11 }} />
-                        <Tooltip
-                          contentStyle={{ fontSize: 12, borderRadius: 8 }}
-                          formatter={(value, name) => [`${Number(value)}점`, name ?? ""]}
-                          labelFormatter={(label) => `${label}`}
-                        />
-                        <Radar
-                          name="본인"
-                          dataKey="나"
-                          stroke="#2563eb"
-                          fill="#2563eb"
-                          fillOpacity={0.3}
-                          strokeWidth={2}
-                        />
-                        <Radar
-                          name="직급 평균"
-                          dataKey="직급평균"
-                          stroke="#94a3b8"
-                          fill="transparent"
-                          strokeWidth={1.5}
-                          strokeDasharray="4 4"
-                        />
-                        <Legend />
-                      </RadarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="lg:w-1/2 flex-shrink-0 w-full min-w-0 flex items-center">
-                    <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-                      <thead>
-                        <tr className="bg-gray-50 border-b border-gray-200">
-                          <th className="text-left py-3 px-3 font-semibold text-gray-700">역량</th>
-                          <th className="text-right py-3 px-3 font-semibold text-blue-600">본인 점수</th>
-                          <th className="text-right py-3 px-3 font-semibold text-gray-600">직급 평균 점수</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {kappLabels.map(({ key, short }) => (
-                          <tr key={key} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50">
-                            <td className="py-2.5 px-3 font-medium text-gray-800">{short}</td>
-                            <td className="py-2.5 px-3 text-right font-semibold text-blue-600">{scores.my[key]}점</td>
-                            <td className="py-2.5 px-3 text-right text-gray-600">{scores.positionAverage[key]}점</td>
+                <div className="p-4 flex-1 min-h-[280px] flex items-center justify-center">
+                  {competencyViewTab === "bar" && (
+                    <div className="w-full h-full min-h-[260px]">
+                      <ResponsiveContainer width="100%" height={280}>
+                        <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }} barCategoryGap="30%">
+                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                          <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                          <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
+                          <Tooltip formatter={(value, name) => [`${Number(value)}점`, name ?? ""]} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                          <Bar dataKey="나" fill="#2563eb" radius={[4, 4, 0, 0]} name="본인" barSize={24} />
+                          <Bar dataKey="직급평균" fill="#94a3b8" radius={[4, 4, 0, 0]} name="직급 평균" barSize={24} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+                  {competencyViewTab === "table" && (
+                    <div className="w-full overflow-auto">
+                      <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                        <thead>
+                          <tr className="bg-gray-50 border-b border-gray-200">
+                            <th className="text-left py-3 px-3 font-semibold text-gray-700">역량</th>
+                            <th className="text-right py-3 px-3 font-semibold text-blue-600">본인 점수</th>
+                            <th className="text-right py-3 px-3 font-semibold text-gray-600">직급 평균 점수</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody>
+                          {kappLabels.map(({ key, short }) => (
+                            <tr key={key} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50">
+                              <td className="py-2.5 px-3 font-medium text-gray-800">{short}</td>
+                              <td className="py-2.5 px-3 text-right font-semibold text-blue-600">{scores.my[key]}점</td>
+                              <td className="py-2.5 px-3 text-right text-gray-600">{scores.positionAverage[key]}점</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                  {competencyViewTab === "radar" && (
+                    <div className="w-full flex items-center justify-center min-h-[280px]">
+                      <ResponsiveContainer width="100%" height={280}>
+                        <RadarChart data={radarData}>
+                          <PolarGrid />
+                          <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12 }} />
+                          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 11 }} />
+                          <Tooltip
+                            contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                            formatter={(value, name) => [`${Number(value)}점`, name ?? ""]}
+                            labelFormatter={(label) => `${label}`}
+                          />
+                          <Radar
+                            name="본인"
+                            dataKey="나"
+                            stroke="#2563eb"
+                            fill="#2563eb"
+                            fillOpacity={0.3}
+                            strokeWidth={2}
+                          />
+                          <Radar
+                            name="직급 평균"
+                            dataKey="직급평균"
+                            stroke="#94a3b8"
+                            fill="transparent"
+                            strokeWidth={1.5}
+                            strokeDasharray="4 4"
+                          />
+                          <Legend />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
                 </div>
               </section>
-            </>
+            </div>
           )}
 
           {/* ─── 시장·경쟁력 탭 ─── */}

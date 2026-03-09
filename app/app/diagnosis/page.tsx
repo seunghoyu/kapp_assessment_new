@@ -21,9 +21,12 @@ import applicationData from "@/data/kappDiagnosis/applicationQuestions.json";
 import performanceData from "@/data/kappDiagnosis/performanceQuestions.json";
 import etrayData from "@/data/kappDiagnosis/etrayByIndustry.json";
 import aiWorkflowData from "@/data/kappDiagnosis/aiWorkflowByIndustry.json";
+import industryTree from "@/data/Industry/industry_tree.json";
 import { getInbasketQuestions } from "@/lib/inbasketData";
 import InbasketList, { type InbasketQuestion } from "./InbasketList";
 import InbasketSimulation from "./InbasketSimulation";
+import type { IndustryNode } from "./industryTypes";
+import IndustrySelectModal from "./IndustrySelectModal";
 
 /** KAPP 진단 데이터 안내 + 문항 구성 로직 문서 기준 (kapp_origin flow 동일) */
 const STEPS = [
@@ -119,6 +122,8 @@ type AiWorkflow = { id: string; industry: string; title: string; task: string; o
 const ETRAY_INDUSTRY_KEYS = ["IT", "금융", "의료", "마케팅/광고", "기타"];
 const AI_INDUSTRY_KEYS = ["IT", "금융", "의료", "마케팅/광고", "기타"];
 
+const industryTreeData = industryTree as IndustryNode[];
+
 const DIAGNOSIS_STORAGE_KEY = "kapp_diagnosis_state";
 const INBASKET_TUTORIAL_DISMISSED_KEY = "kapp_inbasket_tutorial_dismissed";
 
@@ -208,6 +213,8 @@ export default function DiagnosisPage() {
   const diagnosticGoals = userInfoOptions.diagnosticGoals as OptionItem[];
 
   const [form, setForm] = useState(initialForm);
+  const [selectedMajor, setSelectedMajor] = useState<IndustryNode | null>(null);
+  const [industrySelectModalOpen, setIndustrySelectModalOpen] = useState(false);
   const [selectedEtrayId, setSelectedEtrayId] = useState<string | null>(null);
   const [inbasketView, setInbasketView] = useState<"list" | "simulation">("list");
   const [inbasketSelectedId, setInbasketSelectedId] = useState<string | null>(null);
@@ -231,7 +238,14 @@ export default function DiagnosisPage() {
     const saved = loadPersistedState();
     if (!saved || saved.step === undefined) return;
     setStep(saved.step);
-    if (saved.form) setForm({ ...initialForm, ...saved.form });
+    if (saved.form) {
+      setForm({ ...initialForm, ...saved.form });
+      const industryName = saved.form.industry;
+      if (industryName && industryTreeData.length > 0) {
+        const found = industryTreeData.find((m) => m.name === industryName) ?? null;
+        setSelectedMajor(found);
+      }
+    }
     if (saved.selectedEtrayId !== undefined) setSelectedEtrayId(saved.selectedEtrayId);
     if (saved.inbasketView !== undefined) setInbasketView(saved.inbasketView);
     if (saved.inbasketSelectedId !== undefined) setInbasketSelectedId(saved.inbasketSelectedId);
@@ -316,9 +330,15 @@ export default function DiagnosisPage() {
 
   const industryList = useMemo(() => Object.keys(industryJobData), [industryJobData]);
   const jobList = useMemo(
-    () => (industryJobData[form.industry]?.jobs ?? []) as string[],
+    () => (industryJobData[form.industry]?.jobs ?? industryJobData["기타"]?.jobs ?? []) as string[],
     [industryJobData, form.industry]
   );
+
+  const handleIndustrySelect = useCallback((major: IndustryNode) => {
+    setSelectedMajor(major);
+    setForm((f) => ({ ...f, industry: major.name, job: "" }));
+    setIndustrySelectModalOpen(false);
+  }, []);
 
   /** 문서 기준 userInput 구조 (kappDiagnosisRawData.userInput과 동일) */
   const userInput = useMemo(
@@ -627,20 +647,22 @@ export default function DiagnosisPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">산업군 *</label>
-                  <select
-                    value={form.industry}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, industry: e.target.value, job: "" }))
-                    }
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  <button
+                    type="button"
+                    onClick={() => setIndustrySelectModalOpen(true)}
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-left bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-gray-50 transition-colors flex items-center justify-between"
                   >
-                    <option value="">선택해주세요</option>
-                    {industryList.map((ind) => (
-                      <option key={ind} value={ind}>
-                        {industryJobData[ind]?.icon ?? ""} {ind}
-                      </option>
-                    ))}
-                  </select>
+                    <span className={form.industry ? "text-gray-900" : "text-gray-500"}>
+                      {(selectedMajor?.name ?? form.industry) || "산업군 선택"}
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+                  </button>
+                  <IndustrySelectModal
+                    open={industrySelectModalOpen}
+                    onClose={() => setIndustrySelectModalOpen(false)}
+                    majors={industryTreeData}
+                    onSelect={handleIndustrySelect}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">세부 직무 *</label>

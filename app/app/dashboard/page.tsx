@@ -6,8 +6,6 @@ import {
   Brain,
   BarChart3,
   MapPin,
-  Trophy,
-  Rocket,
   Route,
   FileText,
   GraduationCap,
@@ -37,7 +35,7 @@ import dailyTipsData from "@/data/consumer/dailyTips.json";
 import DailyTipWidget from "@/components/dashboard/DailyTipWidget";
 import CertificateModal from "./CertificateModal";
 
-type DashboardTab = "my-competency" | "market" | "roadmap";
+type DashboardTab = "my-competency" | "roadmap";
 type CompetencyViewTab = "bar" | "table" | "radar";
 
 type MarketAction = { icon: string; title: string; description: string; priority: string };
@@ -90,6 +88,7 @@ export default function ConsumerDashboardPage() {
   const [careerIndustry, setCareerIndustry] = useState("IT");
   const [careerPathIndex, setCareerPathIndex] = useState(0);
   const [competencyViewTab, setCompetencyViewTab] = useState<CompetencyViewTab>("radar");
+  const [marketBenchmarkView, setMarketBenchmarkView] = useState<CompetencyViewTab>("radar");
 
   const ib = industryBenchmark ?? industryBenchmarkFallback;
   const actions = (marketActions && marketActions.length > 0) ? marketActions : marketActionsFallback;
@@ -121,6 +120,15 @@ export default function ConsumerDashboardPage() {
     }));
   }, [kappLabels, ib, scores.my]);
 
+  const industryBarData = useMemo(() => {
+    const bench: Record<string, number> = ib as Record<string, number>;
+    return kappLabels.map(({ key, short }) => ({
+      name: short,
+      "업계 상위 10%": bench[key] ?? 0,
+      "나의 점수": scores.my[key] ?? 0,
+    }));
+  }, [kappLabels, ib, scores.my]);
+
   const careerIndustryData = careerByIndustry[careerIndustry] ?? careerByIndustry["기타"] ?? careerByIndustry["IT"];
   const careerPath: CareerPathItem | undefined = careerIndustryData?.paths?.[careerPathIndex] ?? careerIndustryData?.paths?.[0];
   const careerLearningPath: LearningPathItem[] = careerIndustryData?.learningPath ?? [];
@@ -146,7 +154,7 @@ export default function ConsumerDashboardPage() {
         </div>
       </div>
 
-      {/* 탭: 내 역량 | 시장·경쟁력 | 성장 로드맵 / 우측 인증서 */}
+      {/* 탭: 내 역량 | 성장 로드맵 / 우측 인증서 */}
       <div className="flex-shrink-0 flex border-b border-gray-200 bg-white px-4 items-center justify-between">
         <div className="flex">
           <button
@@ -159,17 +167,6 @@ export default function ConsumerDashboardPage() {
             }`}
           >
             내 역량
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab("market")}
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              tab === "market"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            시장·경쟁력
           </button>
           <button
             type="button"
@@ -197,8 +194,9 @@ export default function ConsumerDashboardPage() {
 
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
         <div className="w-full max-w-full space-y-6">
-          {/* ─── 내 역량 (기본): Split View ─── */}
+          {/* ─── 내 역량: Split View + 시장 포지션 분석 하단 ─── */}
           {tab === "my-competency" && (
+            <div className="space-y-6">
             <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 w-full min-h-0">
               {/* 좌측 스플릿: AI 분석 인사이트 — 세로로 3개 카드 (5:5) */}
               <section className="lg:w-1/2 lg:min-w-0 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col">
@@ -329,151 +327,164 @@ export default function ConsumerDashboardPage() {
                 </div>
               </section>
             </div>
-          )}
 
-          {/* ─── 시장·경쟁력 탭 ─── */}
-          {tab === "market" && (
-            <div className="space-y-6">
-              <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
-                  <h2 className="text-sm font-semibold text-gray-800">시장 포지션 분석</h2>
-                  <p className="text-xs text-gray-500 mt-0.5">업계 대비 나의 위치와 성장 기회</p>
-                </div>
-                <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="rounded-lg border border-gray-200 p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <MapPin className="w-4 h-4 text-blue-600" />
-                      <h3 className="text-sm font-semibold text-gray-800">현재 포지션</h3>
-                    </div>
-                    <p className="text-lg font-bold text-gray-900">{marketPosition.currentLevel}</p>
-                    <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                      {(marketPosition as { currentLevelDesc?: string }).currentLevelDesc ?? `업계 상위 약 ${marketPosition.percentile}%`}
-                    </p>
-                  </div>
-                  <div className="rounded-lg border border-gray-200 p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Trophy className="w-4 h-4 text-amber-500" />
-                      <h3 className="text-sm font-semibold text-gray-800">경쟁력 분석</h3>
-                    </div>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {(marketPosition as { competitivenessDesc?: string }).competitivenessDesc ?? `강점 스킬 ${marketPosition.strengthCount}개, 개선 필요 ${marketPosition.improvementCount}개`}
-                    </p>
-                  </div>
-                  <div className="rounded-lg border border-gray-200 p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Rocket className="w-4 h-4 text-emerald-600" />
-                      <h3 className="text-sm font-semibold text-gray-800">성장 기회</h3>
-                    </div>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {(marketPosition as { opportunityDesc?: string }).opportunityDesc ?? marketPosition.opportunitySummary}
-                    </p>
-                  </div>
-                </div>
-                <div className="px-4 pb-4 flex flex-col lg:flex-row gap-6">
-                  <div className="lg:w-1/2 min-h-[280px] rounded-lg flex flex-col">
-                    <h4 className="text-xs font-semibold text-gray-600 mb-2">산업군 벤치마크 (상위 10% vs 나)</h4>
-                    <p className="text-xs text-gray-500 mb-2">업계 최상위권과의 역량 비교를 통해 개선 포인트를 파악하세요</p>
-                    <div className="flex-1 min-h-[240px]">
-                    <ResponsiveContainer width="100%" height={240}>
-                      <RadarChart data={industryRadarData}>
-                        <PolarGrid />
-                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12 }} />
-                        <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 11 }} />
-                        <Tooltip
-                          contentStyle={{ fontSize: 12, borderRadius: 8 }}
-                          formatter={(value, name) => [`${Number(value)}점`, name ?? ""]}
-                        />
-                        <Radar
-                          name="업계 상위 10%"
-                          dataKey="업계 상위 10%"
-                          stroke="#ef4444"
-                          fill="rgba(239,68,68,0.1)"
-                          strokeWidth={2}
-                          strokeDasharray="5 5"
-                        />
-                        <Radar
-                          name="나의 점수"
-                          dataKey="나의 점수"
-                          stroke="#2563eb"
-                          fill="rgba(37,99,235,0.2)"
-                          strokeWidth={2}
-                        />
-                        <Legend />
-                      </RadarChart>
-                    </ResponsiveContainer>
-                    </div>
-                  </div>
-                  <div className="lg:w-1/2 flex-shrink-0 min-w-0">
-                    <h4 className="text-xs font-semibold text-gray-600 mb-2">상위권 진입을 위한 추천 액션</h4>
-                    <div className="space-y-2">
-                      {actions.map((action, i) => (
-                        <div
-                          key={i}
-                          className={`rounded-lg border p-3 flex items-start gap-3 ${
-                            action.priority === "high" ? "border-red-100 bg-red-50/50" : action.priority === "medium" ? "border-amber-100 bg-amber-50/50" : "border-gray-100 bg-gray-50/50"
-                          }`}
+            {/* 시장 포지션 분석 (내 역량 하단) */}
+            <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+                <h2 className="text-sm font-semibold text-gray-800">시장 포지션 분석</h2>
+                <p className="text-xs text-gray-500 mt-0.5">업계 대비 나의 위치와 성장 기회</p>
+              </div>
+              <div className="p-4 flex flex-col lg:flex-row gap-6">
+                  {/* 좌측 50%: 산업군 벤치마크 — 테이블/막대/레이더 뷰 전환 (아이콘 우측 상단) */}
+                  <div className="lg:w-1/2 min-h-[400px] flex flex-col min-w-0">
+                    <div className="flex-shrink-0 mb-2 flex items-start justify-between gap-2">
+                      <div>
+                        <h4 className="text-xs font-semibold text-gray-600">산업군 벤치마크 (상위 10% vs 나)</h4>
+                        <p className="text-xs text-gray-500 mt-0.5">업계 최상위권과의 역량 비교를 통해 개선 포인트를 파악하세요</p>
+                      </div>
+                      <div className="flex items-center gap-1 p-1 rounded-lg bg-gray-100 shrink-0" role="tablist" aria-label="뷰 전환">
+                        <button
+                          type="button"
+                          onClick={() => setMarketBenchmarkView("table")}
+                          className={`p-2 rounded-md transition-colors ${marketBenchmarkView === "table" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                          title="테이블 뷰"
+                          aria-pressed={marketBenchmarkView === "table"}
                         >
-                          <span className="text-lg flex-shrink-0">{action.icon}</span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900">{action.title}</p>
-                            <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">{action.description}</p>
-                          </div>
-                          <span className={`text-xs px-2 py-0.5 rounded flex-shrink-0 ${action.priority === "high" ? "bg-red-100 text-red-700" : action.priority === "medium" ? "bg-amber-100 text-amber-700" : "bg-gray-200 text-gray-600"}`}>
-                            {action.priority === "high" ? "높음" : action.priority === "medium" ? "중간" : "낮음"}
-                          </span>
+                          <Table2 className="w-5 h-5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setMarketBenchmarkView("bar")}
+                          className={`p-2 rounded-md transition-colors ${marketBenchmarkView === "bar" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                          title="막대 그래프"
+                          aria-pressed={marketBenchmarkView === "bar"}
+                        >
+                          <BarChart3 className="w-5 h-5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setMarketBenchmarkView("radar")}
+                          className={`p-2 rounded-md transition-colors ${marketBenchmarkView === "radar" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                          title="레이더 차트"
+                          aria-pressed={marketBenchmarkView === "radar"}
+                        >
+                          <Activity className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex-1 min-h-[320px] w-full min-w-0 flex flex-col">
+                      {marketBenchmarkView === "table" && (
+                        <div className="flex-1 min-h-0 w-full flex items-center justify-center overflow-auto">
+                          <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden max-w-lg">
+                            <thead>
+                              <tr className="bg-gray-50 border-b border-gray-200">
+                                <th className="text-left py-3 px-3 font-semibold text-gray-700">역량</th>
+                                <th className="text-right py-3 px-3 font-semibold text-red-600">업계 상위 10%</th>
+                                <th className="text-right py-3 px-3 font-semibold text-blue-600">나의 점수</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {kappLabels.map(({ key, short }) => (
+                                <tr key={key} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50">
+                                  <td className="py-2.5 px-3 font-medium text-gray-800">{short}</td>
+                                  <td className="py-2.5 px-3 text-right text-red-600">{(ib as Record<string, number>)[key] ?? 0}점</td>
+                                  <td className="py-2.5 px-3 text-right font-semibold text-blue-600">{scores.my[key]}점</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
                         </div>
-                      ))}
+                      )}
+                      {marketBenchmarkView === "bar" && (
+                        <div className="flex-1 min-h-0 w-full flex items-center justify-center">
+                          <div className="w-[88%] h-[88%] min-h-[260px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart data={industryBarData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }} barCategoryGap="30%">
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                                <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
+                                <Tooltip formatter={(value, name) => [`${Number(value)}점`, name ?? ""]} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                                <Bar dataKey="업계 상위 10%" fill="#ef4444" radius={[4, 4, 0, 0]} name="업계 상위 10%" barSize={24} />
+                                <Bar dataKey="나의 점수" fill="#2563eb" radius={[4, 4, 0, 0]} name="나의 점수" barSize={24} />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      )}
+                      {marketBenchmarkView === "radar" && (
+                        <div className="flex-1 min-h-0 w-full flex items-center justify-center">
+                          <div className="w-[88%] h-[88%] min-h-[260px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <RadarChart data={industryRadarData}>
+                                <PolarGrid />
+                                <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12 }} />
+                                <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 11 }} />
+                                <Tooltip
+                                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                                  formatter={(value, name) => [`${Number(value)}점`, name ?? ""]}
+                                />
+                                <Radar
+                                  name="업계 상위 10%"
+                                  dataKey="업계 상위 10%"
+                                  stroke="#ef4444"
+                                  fill="rgba(239,68,68,0.1)"
+                                  strokeWidth={2}
+                                  strokeDasharray="5 5"
+                                />
+                                <Radar
+                                  name="나의 점수"
+                                  dataKey="나의 점수"
+                                  stroke="#2563eb"
+                                  fill="rgba(37,99,235,0.2)"
+                                  strokeWidth={2}
+                                />
+                                <Legend />
+                              </RadarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              </section>
-              <section className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
-                  <h2 className="text-sm font-semibold text-gray-800">시장 벤치마킹</h2>
-                  <p className="text-xs text-gray-500 mt-0.5">동일 업계 대비 나의 위치</p>
-                </div>
-                <div className="p-4 flex flex-col lg:flex-row gap-6">
-                  <div className="lg:w-1/2 min-h-[240px]">
-                    <ResponsiveContainer width="100%" height={240}>
-                      <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }} barCategoryGap="30%">
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                        <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                        <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
-                        <Tooltip formatter={(value, name) => [`${Number(value)}점`, name ?? ""]} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-                        <Bar dataKey="나" fill="#2563eb" radius={[4, 4, 0, 0]} name="본인" barSize={24} />
-                        <Bar dataKey="직급평균" fill="#94a3b8" radius={[4, 4, 0, 0]} name="직급 평균" barSize={24} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="lg:w-1/2 flex-shrink-0 min-w-0">
-                    <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-                      <thead>
-                        <tr className="bg-gray-50 border-b border-gray-200">
-                          <th className="text-left py-3 px-3 font-semibold text-gray-700">역량</th>
-                          <th className="text-right py-3 px-3 font-semibold text-blue-600">본인</th>
-                          <th className="text-right py-3 px-3 font-semibold text-gray-600">직급 평균</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {kappLabels.map(({ key, short }) => (
-                          <tr key={key} className="border-b border-gray-100 last:border-0">
-                            <td className="py-2 px-3 font-medium text-gray-800">{short}</td>
-                            <td className="py-2 px-3 text-right font-semibold text-blue-600">{scores.my[key]}점</td>
-                            <td className="py-2 px-3 text-right text-gray-600">{scores.positionAverage[key]}점</td>
-                          </tr>
+                  {/* 우측 50%: 현재 포지션 + 상위권 추천 액션 */}
+                  <div className="lg:w-1/2 flex-shrink-0 min-w-0 flex flex-col gap-4">
+                    <div className="rounded-lg border border-gray-200 p-4">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-blue-600" />
+                          <h3 className="text-sm font-semibold text-gray-800">현재 포지션</h3>
+                        </div>
+                        <span className="inline-flex items-center rounded-md bg-blue-100 px-2.5 py-1 text-sm font-semibold text-blue-800 shadow-sm">
+                          {marketBenchmark.percentileRank}
+                        </span>
+                      </div>
+                      <p className="text-lg font-bold text-gray-900">{marketPosition.currentLevel}</p>
+                      <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                        {(marketPosition as { currentLevelDesc?: string }).currentLevelDesc ?? `업계 상위 약 ${marketPosition.percentile}%`}
+                      </p>
+                    </div>
+                    <div className="rounded-lg border border-gray-200 p-4 flex flex-col flex-1 min-h-0">
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2 flex-shrink-0">상위권 진입을 위한 추천 액션</h4>
+                      <div className="space-y-2">
+                        {actions.map((action, i) => (
+                          <div
+                            key={i}
+                            className={`rounded-lg border p-3 flex items-start gap-3 ${
+                              action.priority === "high" ? "border-red-100 bg-red-50/50" : action.priority === "medium" ? "border-amber-100 bg-amber-50/50" : "border-gray-100 bg-gray-50/50"
+                            }`}
+                          >
+                            <span className="text-lg flex-shrink-0">{action.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900">{action.title}</p>
+                              <p className="text-sm text-gray-600 mt-0.5 leading-relaxed">{action.description}</p>
+                            </div>
+                            <span className={`text-xs px-2 py-0.5 rounded flex-shrink-0 ${action.priority === "high" ? "bg-red-100 text-red-700" : action.priority === "medium" ? "bg-amber-100 text-amber-700" : "bg-gray-200 text-gray-600"}`}>
+                              {action.priority === "high" ? "높음" : action.priority === "medium" ? "중간" : "낮음"}
+                            </span>
+                          </div>
                         ))}
-                      </tbody>
-                      <tfoot className="bg-gray-50 border-t-2 border-gray-200">
-                        <tr>
-                          <td className="py-2 px-3 font-medium text-gray-800">평균</td>
-                          <td className="py-2 px-3 text-right font-semibold text-blue-600">{marketBenchmark.myAvgScore}점</td>
-                          <td className="py-2 px-3 text-right text-gray-600">{marketBenchmark.positionAvgScore}점</td>
-                        </tr>
-                        <tr>
-                          <td colSpan={3} className="py-1.5 px-3 text-xs text-gray-500 text-center">{marketBenchmark.percentileRank}</td>
-                        </tr>
-                      </tfoot>
-                    </table>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>

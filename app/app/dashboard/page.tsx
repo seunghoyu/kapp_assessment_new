@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Brain,
@@ -80,15 +80,45 @@ type LearningPathItem = { title: string; duration: string; priority: string };
 const careerByIndustry = (careerPathData as { data: Record<string, { paths: CareerPathItem[]; learningPath: LearningPathItem[] }> }).data;
 const industries = (careerPathData as { industries?: string[] }).industries ?? Object.keys(careerByIndustry);
 
+const MOCK_KAPP_INDUSTRIES = [
+  "농업, 임업 및 어업",
+  "광업",
+  "제조업",
+  "전기, 가스, 증기 및 공기조절 공급업",
+  "수도, 하수 및 폐기물 처리, 원료 재생업",
+  "건설업",
+  "도매 및 소매업",
+  "운수 및 창고업",
+  "숙박 및 음식점업",
+  "정보통신업",
+  "금융 및 보험업",
+  "부동산 임대 및 공급업",
+  "전문, 과학 및 기술 서비스업",
+  "사업시설 관리, 사업 지원 및 임대 서비스업",
+  "공공 행정, 국방 및 사회보장 행정",
+  "교육 서비스업",
+  "보건업 및 사회복지 서비스업",
+  "예술, 스포츠 및 여가 관련 서비스업",
+  "협회 및 단체, 수리 및 기타 개인 서비스업",
+  "가구 내 고용 활동 및 달리 분류되지 않은 자가 소비 생산 활동",
+  "국제 및 외국기관",
+] as const;
+
 export default function ConsumerDashboardPage() {
   const router = useRouter();
   const [tab, setTab] = useState<DashboardTab>("my-competency");
   const [showCoursesModal, setShowCoursesModal] = useState(false);
   const [certModalOpen, setCertModalOpen] = useState(false);
-  const [careerIndustry, setCareerIndustry] = useState("IT");
+  // 가상 프론트 기본 ON (명시적으로 false일 때만 OFF)
+  const isMockFront = process.env.NEXT_PUBLIC_MOCK_FRONT !== "false";
+  const [careerIndustry, setCareerIndustry] = useState<string>(() => {
+    if (isMockFront) return MOCK_KAPP_INDUSTRIES[0] ?? "정보통신업";
+    return "IT";
+  });
   const [careerPathIndex, setCareerPathIndex] = useState(0);
   const [competencyViewTab, setCompetencyViewTab] = useState<CompetencyViewTab>("radar");
   const [marketBenchmarkView, setMarketBenchmarkView] = useState<CompetencyViewTab>("radar");
+  const [selectedMajorIndustryName, setSelectedMajorIndustryName] = useState<string>("");
 
   const ib = industryBenchmark ?? industryBenchmarkFallback;
   const actions = (marketActions && marketActions.length > 0) ? marketActions : marketActionsFallback;
@@ -129,11 +159,62 @@ export default function ConsumerDashboardPage() {
     }));
   }, [kappLabels, ib, scores.my]);
 
+  const industryOptions = useMemo(
+    () => (isMockFront ? [...MOCK_KAPP_INDUSTRIES] : industries),
+    [isMockFront]
+  );
   const careerIndustryData = careerByIndustry[careerIndustry] ?? careerByIndustry["기타"] ?? careerByIndustry["IT"];
+  const jobOptionCount = isMockFront ? 4 : Math.max(1, careerIndustryData?.paths?.length ?? 1);
   const careerPath: CareerPathItem | undefined = careerIndustryData?.paths?.[careerPathIndex] ?? careerIndustryData?.paths?.[0];
   const careerLearningPath: LearningPathItem[] = careerIndustryData?.learningPath ?? [];
 
-  const dailyTips = (dailyTipsData as { tips: { category: string; text: string }[] }).tips ?? [];
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("kapp_diagnosis_state");
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { form?: { industry?: string } };
+      const name = parsed?.form?.industry;
+      if (typeof name === "string") {
+        setSelectedMajorIndustryName(name);
+        if (!isMockFront) setCareerIndustry(name);
+      }
+    } catch {
+      // ignore
+    }
+  }, [isMockFront]);
+
+  // 옵션이 바뀌었는데 현재 값이 유효하지 않으면 첫 옵션으로 보정
+  useEffect(() => {
+    if (!industryOptions.includes(careerIndustry)) {
+      setCareerIndustry(industryOptions[0] ?? careerIndustry);
+      setCareerPathIndex(0);
+    }
+  }, [industryOptions, careerIndustry]);
+
+  useEffect(() => {
+    if (isMockFront) return;
+    const maxIndex = (careerIndustryData?.paths?.length ?? 1) - 1;
+    if (careerPathIndex > maxIndex) setCareerPathIndex(0);
+  }, [isMockFront, careerIndustryData, careerPathIndex]);
+
+  const allTips = (dailyTipsData as { tips?: { category?: string; text: string; industries?: string[] }[] }).tips ?? [];
+  const dailyTips = useMemo(() => {
+    const major = selectedMajorIndustryName.trim();
+    const picked = allTips.filter((t) => {
+      const tags = (t.industries && t.industries.length > 0) ? t.industries : ["공통"];
+      if (!major) return tags.includes("공통");
+      return tags.includes("공통") || tags.includes(major);
+    });
+    const uniq: { category: string; text: string }[] = [];
+    const seen = new Set<string>();
+    for (const t of picked) {
+      const key = t.text.trim();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      uniq.push({ category: t.category ?? "", text: t.text });
+    }
+    return uniq;
+  }, [allTips, selectedMajorIndustryName]);
 
   return (
     <div className="flex flex-col h-full min-h-0 bg-gray-50">
@@ -500,6 +581,9 @@ export default function ConsumerDashboardPage() {
                 <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
                   <Route className="w-5 h-5 text-blue-600" />
                   <h2 className="text-sm font-semibold text-gray-800">커리어 경로 시뮬레이터</h2>
+                  <span className="ml-auto inline-flex items-center rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700">
+                    실제 운영환경: KAPP 진단 산업군 자동 반영
+                  </span>
                 </div>
                 <div className="p-4">
                   <p className="text-sm text-gray-600 mb-4">{roadmap.careerSimulatorDescription}</p>
@@ -510,21 +594,22 @@ export default function ConsumerDashboardPage() {
                       onChange={(e) => { setCareerIndustry(e.target.value); setCareerPathIndex(0); }}
                       className="text-sm border border-gray-200 rounded-lg px-3 py-1.5"
                     >
-                      {industries.map((ind) => (
+                      {industryOptions.map((ind) => (
                         <option key={ind} value={ind}>{ind}</option>
                       ))}
                     </select>
-                    {(careerByIndustry[careerIndustry]?.paths?.length ?? 0) > 1 && (
-                      <select
-                        value={careerPathIndex}
-                        onChange={(e) => setCareerPathIndex(Number(e.target.value))}
-                        className="text-sm border border-gray-200 rounded-lg px-3 py-1.5"
-                      >
-                        {(careerByIndustry[careerIndustry]?.paths ?? []).map((_: unknown, i: number) => (
-                          <option key={i} value={i}>경로 {i + 1}</option>
-                        ))}
-                      </select>
-                    )}
+                    <select
+                      value={careerPathIndex}
+                      onChange={(e) => setCareerPathIndex(Number(e.target.value))}
+                      className="text-sm border border-gray-200 rounded-lg px-3 py-1.5"
+                      disabled={!isMockFront && (careerIndustryData?.paths?.length ?? 0) <= 1}
+                      aria-disabled={!isMockFront && (careerIndustryData?.paths?.length ?? 0) <= 1}
+                      title={!isMockFront && (careerIndustryData?.paths?.length ?? 0) <= 1 ? "선택 가능한 직무가 1개입니다" : "직무 선택"}
+                    >
+                      {Array.from({ length: jobOptionCount }, (_, i) => (
+                        <option key={i} value={i}>직무 {i + 1}</option>
+                      ))}
+                    </select>
                   </div>
                   {careerPath && (
                     <div className="rounded-lg border border-gray-200 overflow-hidden">
@@ -541,7 +626,6 @@ export default function ConsumerDashboardPage() {
                         <div className="flex-1 min-w-[120px] p-4 bg-gray-50/50">
                           <div className="text-xs font-medium text-gray-500 mb-1">{careerPath.milestone1.year}</div>
                           <div className="text-sm font-semibold text-gray-900">{careerPath.milestone1.role}</div>
-                          <div className="text-xs text-gray-500 mt-1">{careerPath.milestone1.probability}% 확률</div>
                           <div className="flex flex-wrap gap-1 mt-2">
                             {(careerPath.milestone1.skills ?? []).map((s, i) => (
                               <span key={i} className="text-xs px-1.5 py-0.5 bg-white rounded border border-gray-200">{s}</span>
@@ -551,7 +635,6 @@ export default function ConsumerDashboardPage() {
                         <div className="flex-1 min-w-[120px] p-4 bg-gray-100/50">
                           <div className="text-xs font-medium text-gray-500 mb-1">{careerPath.milestone2.year}</div>
                           <div className="text-sm font-semibold text-gray-900">{careerPath.milestone2.role}</div>
-                          <div className="text-xs text-gray-500 mt-1">{careerPath.milestone2.probability}% 확률</div>
                           <div className="flex flex-wrap gap-1 mt-2">
                             {(careerPath.milestone2.skills ?? []).map((s, i) => (
                               <span key={i} className="text-xs px-1.5 py-0.5 bg-white rounded border border-gray-200">{s}</span>

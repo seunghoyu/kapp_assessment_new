@@ -210,7 +210,9 @@ export default function ConsumerDashboardPage() {
                       key={item.id}
                       className="rounded-lg border border-gray-100 bg-gray-50/50 p-3 text-left flex-shrink-0"
                     >
-                      <p className="text-xs font-medium text-gray-500 mb-1">{item.title}</p>
+                      <span className="inline-block rounded-md px-2 py-0.5 text-xs font-semibold mb-2 bg-blue-100 text-blue-800">
+                        {item.title}
+                      </span>
                       <p className="text-sm text-gray-700">{item.desc}</p>
                     </div>
                   ))}

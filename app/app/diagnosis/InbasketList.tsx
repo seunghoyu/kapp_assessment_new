@@ -25,6 +25,7 @@ import {
   Play,
   PenLine,
   X,
+  ChevronDown,
 } from "lucide-react";
 
 export type { InbasketQuestion } from "@/lib/inbasketData";
@@ -111,6 +112,8 @@ type Props = {
   questions: InbasketQuestion[];
   aiWorkflow: AiWorkflowRow | null;
   onStart: (questionId: string) => void;
+  completedCount?: number;
+  totalCount?: number;
 };
 
 const AI_WORKFLOW_ID = "ai-workflow";
@@ -127,11 +130,16 @@ const TEST_ENV_TOOLTIP = (
   </>
 );
 
-export default function InbasketList({ questions, aiWorkflow, onStart }: Props) {
+export default function InbasketList({ questions, aiWorkflow, onStart, completedCount = 0, totalCount }: Props) {
   const [jobFilter, setJobFilter] = useState("전체");
   const [modalQuestion, setModalQuestion] = useState<InbasketQuestion | null>(null);
   const [aiWorkflowModalOpen, setAiWorkflowModalOpen] = useState(false);
   const [testEnvTooltipOpen, setTestEnvTooltipOpen] = useState(false);
+  const [testEnvExpanded, setTestEnvExpanded] = useState(false);
+
+  const total = totalCount ?? questions.length + (aiWorkflow ? 1 : 0);
+  const completed = Math.min(completedCount, total);
+  const progressPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   const filtered = useMemo(() => {
     if (jobFilter === "전체") return questions;
@@ -151,22 +159,40 @@ export default function InbasketList({ questions, aiWorkflow, onStart }: Props) 
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-gray-50">
-      {/* 메인: 직무 선택 + 문항 그리드 (제목은 진단 페이지 단계 바 좌측에 표시됨) */}
       <div className="flex-1 min-h-0 overflow-y-auto p-4">
         <div className="rounded-xl bg-white border border-gray-300 shadow-sm overflow-hidden flex flex-col h-full min-h-0">
-          {/* 직무 선택 섹션 — 테스트 환경에서만 노출, 실제 환경에서는 "선정 문항" 헤더로 대체 */}
-          <div className="flex-shrink-0 px-4 py-3 border-b border-gray-200 bg-gray-50/50 flex items-center gap-2 flex-wrap">
-            <LayoutGrid className="w-5 h-5 text-blue-600 shrink-0" />
-            <h2 className="text-sm font-semibold text-gray-800">직무 선택</h2>
-            <span className="text-xs text-gray-500">현재: {jobFilter}</span>
+          {/* 헤더: 전체 문항(좌) | 진행률 + 게이지 + 테스트 환경(우, 게이지는 테스트 환경 바로 좌측) */}
+          <div className="flex-shrink-0 px-4 py-3 border-b border-gray-200 bg-gray-50/50 flex items-center gap-3 flex-wrap">
+            <LayoutGrid className="w-5 h-5 text-blue-600 shrink-0" aria-hidden />
+            <h2 className="text-sm font-semibold text-gray-800 shrink-0">전체 문항</h2>
+            <div className="ml-auto flex items-center gap-2 shrink-0">
+              <span className="text-[11px] text-gray-500">진행률</span>
+              <div className="w-24 sm:w-32 h-2 rounded-full bg-gray-200 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-blue-600 transition-all duration-300"
+                  style={{ width: `${progressPercent}%` }}
+                  role="progressbar"
+                  aria-valuenow={completed}
+                  aria-valuemin={0}
+                  aria-valuemax={total}
+                  aria-label="디지털 인바스켓 진행률"
+                />
+              </div>
+              <span className="text-xs text-gray-500 w-8 text-right">{completed}/{total}</span>
+            </div>
             <span
-              className="relative ml-auto inline-flex"
+              className="relative inline-flex shrink-0"
               onMouseEnter={() => setTestEnvTooltipOpen(true)}
               onMouseLeave={() => setTestEnvTooltipOpen(false)}
             >
-              <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-800 cursor-help">
+              <button
+                type="button"
+                onClick={() => setTestEnvExpanded((v) => !v)}
+                className="inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-medium text-amber-800 hover:bg-amber-100"
+              >
                 테스트 환경
-              </span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${testEnvExpanded ? "rotate-180" : ""}`} />
+              </button>
               {testEnvTooltipOpen && (
                 <span className="absolute right-0 top-full z-30 mt-1 w-72 rounded-lg border border-amber-200 bg-amber-50 p-3 text-left shadow-lg">
                   {TEST_ENV_TOOLTIP}
@@ -174,39 +200,31 @@ export default function InbasketList({ questions, aiWorkflow, onStart }: Props) 
               )}
             </span>
           </div>
-          <div className="flex-shrink-0 p-4 flex flex-wrap gap-2">
-            {JOB_PILLS.map((p) => {
-              const Icon = p.icon;
-              const count = jobCounts[p.id] ?? 0;
-              const active = jobFilter === p.id;
-              return (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setJobFilter(p.id)}
-                  className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                    active
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
-                  }`}
-                >
-                  <Icon className="h-3.5 w-3.5 mr-1 shrink-0" />
-                  {p.shortLabel ?? p.label}
-                  <span className={`ml-1 px-1.5 py-0.5 rounded text-[10px] ${active ? "bg-white/20" : "bg-gray-100 text-gray-500"}`}>
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
 
-          {/* 문항 그리드 섹션 헤더 */}
-          <div className="flex-shrink-0 px-4 py-2 border-b border-gray-100 bg-gray-50/30 flex items-center gap-2">
-            <Layers className="w-4 h-4 text-blue-600 shrink-0" />
-            <h2 className="text-sm font-semibold text-gray-800">{currentJobTitle}</h2>
-          </div>
+          {/* 테스트 환경 펼침 시: 직무 선택 드롭다운 */}
+          {testEnvExpanded && (
+            <div className="flex-shrink-0 px-4 py-2 border-b border-gray-100 bg-gray-50/30 flex items-center gap-2">
+              <label htmlFor="inbasket-job-filter" className="text-xs font-medium text-gray-600 shrink-0">직무 필터</label>
+              <select
+                id="inbasket-job-filter"
+                value={jobFilter}
+                onChange={(e) => setJobFilter(e.target.value)}
+                className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white min-w-[140px]"
+              >
+                {JOB_PILLS.map((p) => {
+                  const count = jobCounts[p.id] ?? 0;
+                  return (
+                    <option key={p.id} value={p.id}>
+                      {p.shortLabel ?? p.label} ({count})
+                    </option>
+                  );
+                })}
+              </select>
+              <span className="text-xs text-gray-500">현재: {jobFilter}</span>
+            </div>
+          )}
 
-          {/* 문항 테이블 — 우선순위 텍스트, 날짜 없음, 카테고리 강조, 액션 상세보기/진행하기, 행 높이 여유 */}
+          {/* 테이블 헤더 — 바로 아래 배치 */}
           <div className="flex-1 overflow-y-auto min-h-0">
             {filtered.length === 0 ? (
               <div className="text-center py-16">
@@ -217,12 +235,12 @@ export default function InbasketList({ questions, aiWorkflow, onStart }: Props) 
               <table className="w-full border-collapse table-fixed">
                 <thead className="sticky top-0 z-10 bg-gray-50 border-b border-gray-300">
                   <tr>
-                    <th className="text-left py-3 pl-4 pr-2 text-sm font-semibold text-gray-600 w-[10%]">분류</th>
-                    <th className="text-left py-3 px-2 text-sm font-semibold text-gray-600 w-[28%]">제목</th>
-                    <th className="text-left py-3 pl-2 pr-2 text-sm font-semibold text-gray-600 w-[14%]">발신자</th>
-                    <th className="text-left py-3 pl-2 pr-2 text-sm font-semibold text-gray-600 w-[14%]">카테고리</th>
-                    <th className="text-left py-3 pl-2 pr-4 text-sm font-semibold text-gray-600 w-[22%]">내용</th>
-                    <th className="text-left py-3 pl-4 pr-4 text-sm font-semibold text-gray-600 w-[12%]">액션</th>
+                    <th className="text-left py-2 pl-4 pr-2 text-sm font-semibold text-gray-600 w-[10%]">분류</th>
+                    <th className="text-left py-2 px-2 text-sm font-semibold text-gray-600 w-[28%]">제목</th>
+                    <th className="text-left py-2 pl-2 pr-2 text-sm font-semibold text-gray-600 w-[14%]">발신자</th>
+                    <th className="text-left py-2 pl-2 pr-2 text-sm font-semibold text-gray-600 w-[14%]">카테고리</th>
+                    <th className="text-left py-2 pl-2 pr-4 text-sm font-semibold text-gray-600 w-[22%]">내용</th>
+                    <th className="text-left py-2 pl-4 pr-4 text-sm font-semibold text-gray-600 w-[12%]">액션</th>
                   </tr>
                 </thead>
                 <tbody>

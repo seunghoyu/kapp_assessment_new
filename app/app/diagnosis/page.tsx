@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback, Fragment, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   BookOpen,
   Cog,
@@ -14,6 +15,8 @@ import {
   BarChart3,
   HelpCircle,
   X,
+  LayoutDashboard,
+  Loader2,
 } from "lucide-react";
 import userInfoOptions from "@/data/kappDiagnosis/userInfoOptions.json";
 import knowledgeData from "@/data/kappDiagnosis/knowledgeQuestions.json";
@@ -127,6 +130,20 @@ const industryTreeData = industryTree as IndustryNode[];
 const DIAGNOSIS_STORAGE_KEY = "kapp_diagnosis_state";
 const INBASKET_TUTORIAL_DISMISSED_KEY = "kapp_inbasket_tutorial_dismissed";
 
+/**
+ * 진단 완료 후 AI 분석 로딩 메시지 (시간 기준으로만 순환)
+ * - 전환 기준: MESSAGE_INTERVAL_MS(2.2초)마다 다음 문구로 변경. 실제 엔진 진행률과 무관.
+ * - 추후 엔진 연동 시: setTimeout 대신 API 호출 후 .then(() => { setAnalysisLoading(false); setStep(6); }) 로
+ *   로딩 종료만 엔진 완료 시점에 맞추면 됨. 메시지 순환은 그대로 시간 기준 유지 가능.
+ */
+const ANALYSIS_LOADING_MESSAGES = [
+  "진단 응답을 수집하고 있습니다.",
+  "AI 엔진이 역량 프로파일을 분석합니다.",
+  "지식·적용·성과·생산성 영역을 종합하고 있습니다.",
+  "마이 대시보드 결과를 준비하고 있습니다.",
+  "잠시만 기다려 주세요.",
+];
+
 const COMPANY_TYPE_OPTIONS = [
   { value: "일반기업", label: "일반기업" },
   { value: "스타트업", label: "스타트업" },
@@ -214,6 +231,7 @@ const initialAnswers = {
 };
 
 export default function DiagnosisPage() {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const industryJobData = userInfoOptions.industryJobData as IndustryJobData;
   const positionLevels = userInfoOptions.positionLevels as OptionItem[];
@@ -235,10 +253,46 @@ export default function DiagnosisPage() {
   const [inbasketTutorialDismissed, setInbasketTutorialDismissed] = useState(true);
   const [inbasketTutorialHover, setInbasketTutorialHover] = useState(false);
   const [testEnvTooltipHover, setTestEnvTooltipHover] = useState(false);
+
+  // 진단 → 결과 전환 시 AI 분석 로딩 (메시지는 시간 기준 순환, 추후 엔진 완료 시점에 연동 가능)
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const analysisLoadingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const analysisLoadingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     setInbasketTutorialDismissed(sessionStorage.getItem(INBASKET_TUTORIAL_DISMISSED_KEY) === "1");
   }, []);
+
+  // 분석 로딩 중: 메시지 시간 기준 순환 (엔진 진행률과 무관, 추후 API 완료 시점으로 교체 가능)
+  useEffect(() => {
+    if (!analysisLoading) {
+      if (analysisLoadingIntervalRef.current) {
+        clearInterval(analysisLoadingIntervalRef.current);
+        analysisLoadingIntervalRef.current = null;
+      }
+      if (analysisLoadingTimerRef.current) {
+        clearTimeout(analysisLoadingTimerRef.current);
+        analysisLoadingTimerRef.current = null;
+      }
+      return;
+    }
+    setLoadingMessageIndex(0);
+    const MESSAGE_INTERVAL_MS = 2200;
+    const LOADING_DURATION_MS = 4500;
+    analysisLoadingIntervalRef.current = setInterval(() => {
+      setLoadingMessageIndex((i) => (i + 1) % ANALYSIS_LOADING_MESSAGES.length);
+    }, MESSAGE_INTERVAL_MS);
+    analysisLoadingTimerRef.current = setTimeout(() => {
+      setAnalysisLoading(false);
+      setStep(6);
+    }, LOADING_DURATION_MS);
+    return () => {
+      if (analysisLoadingIntervalRef.current) clearInterval(analysisLoadingIntervalRef.current);
+      if (analysisLoadingTimerRef.current) clearTimeout(analysisLoadingTimerRef.current);
+    };
+  }, [analysisLoading]);
 
   // GET 요청/새로고침 시 복원: sessionStorage에서 진단 진행 상태 복원
   useEffect(() => {
@@ -331,6 +385,14 @@ export default function DiagnosisPage() {
     [inbasketSelectedId, inbasketQuestions]
   );
 
+  const inbasketProgress = useMemo(() => {
+    const total = inbasketQuestions.length + (aiWorkflow ? 1 : 0);
+    const completed =
+      inbasketQuestions.filter((q) => answers.etray[q.id] != null && String(answers.etray[q.id]).trim() !== "").length +
+      (answers.ai != null ? 1 : 0);
+    return { completed, total };
+  }, [inbasketQuestions, aiWorkflow, answers.etray, answers.ai]);
+
   /** 디지털 인바스켓 시뮬레이션 → 목록으로 돌아가기. step은 변경하지 않음(5 유지). */
   const handleInbasketBackToList = useCallback(() => {
     setInbasketView("list");
@@ -396,8 +458,8 @@ export default function DiagnosisPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-0px)] max-h-[100vh] overflow-hidden bg-gray-50">
-      {/* 상단: 제목만 (진행현황은 메인 카드 우측 상단으로 이동) */}
-      <div className="flex-shrink-0 border-b border-gray-200 bg-white px-4 py-3">
+      {/* 상단 헤더 — 로딩·스크롤 시에도 고정 유지 */}
+      <div className="sticky top-0 z-20 flex-shrink-0 border-b border-gray-200 bg-white px-4 py-3">
         <div className="min-w-0">
           <h1 className="text-lg font-bold text-gray-900 truncate">KAPP 지능형 역량 진단</h1>
           <p className="text-xs text-gray-500 mt-0.5">
@@ -406,6 +468,18 @@ export default function DiagnosisPage() {
         </div>
       </div>
 
+      {/* 메인 영역만 로딩 오버레이 적용 (사이드바·헤더는 그대로 노출) */}
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative">
+        {analysisLoading && (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm" aria-live="polite" aria-busy="true">
+            <Loader2 className="w-12 h-12 text-blue-600 animate-spin shrink-0" aria-hidden />
+            <p className="mt-4 text-sm font-medium text-gray-700 min-h-[1.5rem] text-center px-4">
+              {ANALYSIS_LOADING_MESSAGES[loadingMessageIndex % ANALYSIS_LOADING_MESSAGES.length]}
+            </p>
+            <p className="mt-2 text-xs text-gray-500">로딩이 완료되면 마이 대시보드에서 분석 결과를 확인할 수 있습니다.</p>
+          </div>
+        )}
+
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden p-6">
         <div className="flex-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col min-h-0">
           {/* 진행현황: step 5일 때 좌측에 디지털 인바스켓 제목 + 툴팁 아이콘, 우측에 단계 버튼 */}
@@ -413,43 +487,20 @@ export default function DiagnosisPage() {
             {step === 5 ? (
               <div className="min-w-0 flex items-start gap-2">
                 <div>
-                  <h1 className="text-lg font-bold text-gray-900 truncate">디지털 인바스켓</h1>
-                  <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-2 flex-wrap">
-                    <span>실전 업무 의사결정 시뮬레이터 · 인당 4문항 (긴급·보통·낮음·자동화 각 1문항)</span>
+                  <div className="inline-flex items-center gap-1.5">
+                    <h1 className="text-lg font-bold text-gray-900 shrink-0">디지털 인바스켓</h1>
                     <span
-                      className="relative inline-flex"
-                      onMouseEnter={() => setTestEnvTooltipHover(true)}
-                      onMouseLeave={() => setTestEnvTooltipHover(false)}
+                      className="relative shrink-0"
+                      onMouseEnter={() => setInbasketTutorialHover(true)}
+                      onMouseLeave={() => setInbasketTutorialHover(false)}
                     >
-                      <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-800 cursor-help">
-                        테스트 환경
-                      </span>
-                      {testEnvTooltipHover && (
-                        <span className="absolute left-0 top-full z-20 mt-1 w-72 rounded-lg border border-amber-200 bg-amber-50 p-3 text-left shadow-lg">
-                          <p className="text-xs font-semibold text-amber-900 mb-1.5">테스트 환경</p>
-                          <p className="text-[11px] text-amber-800 leading-relaxed">
-                            현재는 <strong>테스트 환경</strong>입니다. 전체 문항과 직무 선택이 노출됩니다.
-                          </p>
-                          <p className="text-[11px] text-amber-800 leading-relaxed mt-2">
-                            실제 학습자 환경에서는 &quot;선정 문항&quot; 헤더로 표시되며, 직무·산업군·기업규모·직급에 따라 선정된 <strong>인당 4문항</strong>만 노출됩니다. 직무 선택 UI는 보이지 않습니다.
-                          </p>
-                        </span>
-                      )}
-                    </span>
-                  </p>
-                </div>
-                <div
-                  className="relative shrink-0 pt-0.5"
-                  onMouseEnter={() => setInbasketTutorialHover(true)}
-                  onMouseLeave={() => setInbasketTutorialHover(false)}
-                >
-                  <button
-                    type="button"
-                    className="p-1.5 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                    aria-label="디지털 인바스켓 이용 안내"
-                  >
-                    <HelpCircle className="h-5 w-5" />
-                  </button>
+                      <button
+                        type="button"
+                        className="p-1.5 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                        aria-label="디지털 인바스켓 이용 안내"
+                      >
+                        <HelpCircle className="h-5 w-5" />
+                      </button>
                   {(inbasketTutorialDismissed ? inbasketTutorialHover : true) && (
                     <div className="absolute left-0 top-full mt-1 z-20 w-96 rounded-xl border border-gray-200 bg-white shadow-lg p-4 text-left">
                       <div className="flex items-start justify-between gap-2 mb-3">
@@ -477,6 +528,31 @@ export default function DiagnosisPage() {
                       </ul>
                     </div>
                   )}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-2 flex-wrap">
+                    <span>실전 업무 의사결정 시뮬레이터 · 인당 4문항 (긴급·보통·낮음·자동화 각 1문항)</span>
+                    <span
+                      className="relative inline-flex"
+                      onMouseEnter={() => setTestEnvTooltipHover(true)}
+                      onMouseLeave={() => setTestEnvTooltipHover(false)}
+                    >
+                      <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-800 cursor-help">
+                        테스트 환경
+                      </span>
+                      {testEnvTooltipHover && (
+                        <div className="absolute left-0 top-full z-20 mt-1 w-72 rounded-lg border border-amber-200 bg-amber-50 p-3 text-left shadow-lg">
+                          <p className="text-xs font-semibold text-amber-900 mb-1.5">테스트 환경</p>
+                          <p className="text-[11px] text-amber-800 leading-relaxed">
+                            현재는 <strong>테스트 환경</strong>입니다. 전체 문항과 직무 선택이 노출됩니다.
+                          </p>
+                          <p className="text-[11px] text-amber-800 leading-relaxed mt-2">
+                            실제 학습자 환경에서는 &quot;선정 문항&quot; 헤더로 표시되며, 직무·산업군·기업규모·직급에 따라 선정된 <strong>인당 4문항</strong>만 노출됩니다. 직무 선택 UI는 보이지 않습니다.
+                          </p>
+                        </div>
+                      )}
+                    </span>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -1001,6 +1077,8 @@ export default function DiagnosisPage() {
                   question={selectedInbasketQuestion}
                   onBack={handleInbasketBackToList}
                   onComplete={() => {
+                    const qId = selectedInbasketQuestion.id;
+                    setAnswers((a) => ({ ...a, etray: { ...a.etray, [qId]: "completed" } }));
                     setInbasketView("list");
                     setInbasketSelectedId(null);
                   }}
@@ -1013,31 +1091,24 @@ export default function DiagnosisPage() {
                     setInbasketSelectedId(id);
                     setInbasketView("simulation");
                   }}
+                  completedCount={inbasketProgress.completed}
+                  totalCount={inbasketProgress.total}
                 />
               )}
             </>
           )}
 
-          {/* 6: 결과 — 로직 설명만 (실제 점수/저장은 추후 연동) */}
-          {step === 6 && STEP_DETAILS[6] && (
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="max-w-2xl mx-auto">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">{STEP_DETAILS[6].title}</h2>
-                <div className="rounded-lg bg-gray-50 border border-gray-200 p-4 mb-4">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2">무엇을 하나요?</h3>
-                  <p className="text-sm text-gray-600">{STEP_DETAILS[6].what}</p>
-                </div>
-                <div className="rounded-lg bg-blue-50/50 border border-blue-100 p-4 mb-4">
-                  <h3 className="text-sm font-semibold text-blue-800 mb-2">문항/시나리오가 정해지는 기준</h3>
-                  <p className="text-sm text-gray-700">{STEP_DETAILS[6].criteria}</p>
-                </div>
-                <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
-                  {STEP_DETAILS[6].logic.map((line, i) => (
-                    <li key={i}>{line}</li>
-                  ))}
-                </ul>
-                <p className="text-sm text-gray-500 mt-4">영역별·종합 점수, 강점/개선 영역 표시는 추후 연동됩니다. 현재는 입력·문항 답이 상태로 저장되어 있습니다.</p>
-              </div>
+          {/* 6: 결과 — 결과 확인하기 버튼만 표시 */}
+          {step === 6 && (
+            <div className="flex-1 flex items-center justify-center p-6">
+              <button
+                type="button"
+                onClick={() => router.push("/app/dashboard")}
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+              >
+                <LayoutDashboard className="w-5 h-5" />
+                결과 확인하기
+              </button>
             </div>
           )}
           </div>
@@ -1073,7 +1144,7 @@ export default function DiagnosisPage() {
                 onClick={() => {
                   setInbasketView("list");
                   setInbasketSelectedId(null);
-                  setStep(6);
+                  setAnalysisLoading(true);
                 }}
                 className="flex items-center gap-2 rounded-lg bg-blue-600 text-white px-6 py-2 text-sm font-semibold hover:bg-blue-700"
               >
@@ -1083,7 +1154,10 @@ export default function DiagnosisPage() {
             ) : step < STEPS.length - 1 ? (
               <button
                 type="button"
-                onClick={goNext}
+                onClick={() => {
+                  if (step === 5) setAnalysisLoading(true);
+                  else goNext();
+                }}
                 disabled={false}
                 className="flex items-center gap-2 rounded-lg bg-blue-600 text-white px-6 py-2 text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
               >
@@ -1095,6 +1169,7 @@ export default function DiagnosisPage() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

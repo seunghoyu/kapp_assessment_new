@@ -10,6 +10,8 @@ type Props = {
   majorName: string;
   /** 해당 대분류의 children (중분류 배열) */
   middleNodes: IndustryNode[];
+  /** 대분류 선택 확정 콜백 (어느 레벨에서 선택해도 대분류 기준) */
+  onConfirmMajor?: () => void;
 };
 
 export default function IndustryClassificationModal({
@@ -17,16 +19,19 @@ export default function IndustryClassificationModal({
   onClose,
   majorName,
   middleNodes,
+  onConfirmMajor,
 }: Props) {
   const [selectedMiddle, setSelectedMiddle] = useState<IndustryNode | null>(null);
   const [selectedSmall, setSelectedSmall] = useState<IndustryNode | null>(null);
   const [selectedDetail, setSelectedDetail] = useState<IndustryNode | null>(null);
+  const [selectedSubDetail, setSelectedSubDetail] = useState<IndustryNode | null>(null);
 
   useEffect(() => {
     if (open) {
       setSelectedMiddle(null);
       setSelectedSmall(null);
       setSelectedDetail(null);
+      setSelectedSubDetail(null);
     }
   }, [open]);
 
@@ -34,6 +39,9 @@ export default function IndustryClassificationModal({
   const smalls = selectedMiddle?.children ?? [];
   const details = selectedSmall?.children ?? [];
   const subDetails = selectedDetail?.children ?? [];
+
+  const hasSelection =
+    !!selectedMiddle || !!selectedSmall || !!selectedDetail || !!selectedSubDetail;
 
   const maxRows = Math.max(
     middles.length,
@@ -73,6 +81,18 @@ export default function IndustryClassificationModal({
               >
                 <ChevronLeft className="w-4 h-4" />
                 대분류 선택
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onConfirmMajor) {
+                    onConfirmMajor();
+                  }
+                }}
+                disabled={!hasSelection || !onConfirmMajor}
+                className="rounded-md bg-blue-500 text-white text-sm font-medium px-3 py-2 hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                선택
               </button>
               <button
                 type="button"
@@ -118,6 +138,7 @@ export default function IndustryClassificationModal({
                             setSelectedMiddle(middles[i]);
                             setSelectedSmall(null);
                             setSelectedDetail(null);
+                            setSelectedSubDetail(null);
                           }}
                           className={`w-full text-left text-sm py-2 px-2 rounded -mx-2 ${
                             selectedMiddle?.code === middles[i].code
@@ -139,6 +160,7 @@ export default function IndustryClassificationModal({
                           onClick={() => {
                             setSelectedSmall(smalls[i]);
                             setSelectedDetail(null);
+                            setSelectedSubDetail(null);
                           }}
                           className={`w-full text-left text-sm py-2 px-2 rounded -mx-2 ${
                             selectedSmall?.code === smalls[i].code
@@ -157,7 +179,10 @@ export default function IndustryClassificationModal({
                       {details[i] ? (
                         <button
                           type="button"
-                          onClick={() => setSelectedDetail(details[i])}
+                          onClick={() => {
+                            setSelectedDetail(details[i]);
+                            setSelectedSubDetail(null);
+                          }}
                           className={`w-full text-left text-sm py-2 px-2 rounded -mx-2 ${
                             selectedDetail?.code === details[i].code
                               ? "bg-blue-50 text-blue-800 font-medium"
@@ -173,9 +198,17 @@ export default function IndustryClassificationModal({
                     {/* 세세분류 */}
                     <td className="align-top px-4 py-2">
                       {subDetails[i] ? (
-                        <span className="block text-sm py-2 px-2 text-gray-900">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSubDetail(subDetails[i])}
+                          className={`w-full text-left text-sm py-2 px-2 rounded -mx-2 ${
+                            selectedSubDetail?.code === subDetails[i].code
+                              ? "bg-blue-50 text-blue-800 font-medium"
+                              : "text-gray-900 hover:bg-gray-50"
+                          }`}
+                        >
                           {subDetails[i].name}
-                        </span>
+                        </button>
                       ) : (
                         <span className="block py-2 px-2 text-gray-500 text-sm">—</span>
                       )}

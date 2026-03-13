@@ -405,9 +405,9 @@ export default function DiagnosisPage() {
     [industryJobData, form.industry]
   );
 
-  const handleIndustrySelect = useCallback((major: IndustryNode) => {
+  const handleIndustrySelect = useCallback((major: IndustryNode, jobName: string) => {
     setSelectedMajor(major);
-    setForm((f) => ({ ...f, industry: major.name, job: "" }));
+    setForm((f) => ({ ...f, industry: major.name, job: jobName }));
     setIndustrySelectModalOpen(false);
   }, []);
 
@@ -753,21 +753,18 @@ export default function DiagnosisPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">세부 직무 *</label>
-                    <select
+                    <input
+                      type="text"
                       value={form.job}
-                      onChange={(e) => setForm((f) => ({ ...f, job: e.target.value }))}
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      readOnly
                       disabled={!form.industry}
-                    >
-                      <option value="">
-                        {form.industry ? "선택해주세요" : "먼저 산업군을 선택해주세요"}
-                      </option>
-                      {jobList.map((job) => (
-                        <option key={job} value={job}>
-                          {job}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder={
+                        form.industry
+                          ? "산업군 모달에서 직무·직업을 선택해주세요"
+                          : "먼저 산업군을 선택해주세요"
+                      }
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-400"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">기업유형 *</label>

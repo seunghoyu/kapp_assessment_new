@@ -93,7 +93,8 @@ Root (진입점)
       │    │    │      유통/리테일: MD, 바이어, 매장 관리자, 물류 담당자, E-커머스 운영, 유통 기획
       │    │    │      마케팅/광고: 디지털 마케터, 퍼포먼스 마케터, 브랜드 매니저, 콘텐츠 마케터, 광고 AE, 소셜미디어 매니저
       │    │    │      호텔/관광: 호텔리어, 여행 상품 기획자, 관광 컨설턴트, F&B 매니저, 이벤트 플래너
-      │    │    │      법률/회계: 변호사, 노무사, 세무사, 회계사, 법무팀, 재무 분석가
+      │    │    │     
+       법률/회계: 변호사, 노무사, 세무사, 회계사, 법무팀, 재무 분석가
       │    │    │      기타: 인사/HR, 총무, 경영 기획, 영업, 고객 서비스, 일반 관리
       │    │    │
       │    │    │    [직급] 드롭다운 (8개)
@@ -156,28 +157,135 @@ Root (진입점)
       │    └─ (상태: sessionStorage DIAGNOSIS_STORAGE_KEY 저장/복원)
       │
       ├─ /app/dashboard (마이 대시보드)
-      │    ├─ [데이터 노드] 대시보드 역량·인사이트·시장 데이터
-      │    │    [개발] dashboard.json. 키: kappLabels, scores, insights, marketPosition, marketBenchmark, industryBenchmark, marketActions, recommendedActions, roadmap.
-      │    ├─ [데이터 노드] 산업별 커리어 경로 — 3년/5년 후 마일스톤, 확률 문구 없음
-      │    │    [개발] careerPathByIndustry.json. 구조: industries[], data[산업].paths, data[산업].learningPath. 마일스톤 year: 3년 후/5년 후.
+      │    ├─ [데이터 소스] 마이 대시보드에서 사용하는 JSON — 경로 및 데이터 의미
+      │    │
+      │    │    ■ dashboard.json
+      │    │    경로: data/consumer/dashboard.json (import: @/data/consumer/dashboard.json)
+      │    │    용도: 진단 결과 연동 전 기본 표시용 더미. 탭 "내 역량" 전반.
+      │    │    데이터 내용:
+      │    │      kappLabels — KAPP 4차원 역량 라벨(지식·적용·성과·생산성). 진단 step 2(지식)·step 3(적용)·step 4(성과)·step 5(인바스켓/생산성) 영역과 1:1 대응.
+      │    │      scores.my — 사용자 역량 점수(knowledge, application, performance, productivity). 진단 문항·인바스켓 결과 종합 점수.
+      │    │      scores.positionAverage — 동일 직급 평균 점수.
+      │    │      insights — AI 분석 인사이트 카드(전반적 성과, 강점, 성장 기회). 진단 결과 해석 문구.
+      │    │      marketPosition — 시장 포지션(현재 레벨, 백분위, 강점/개선/평균 개수, 기회 요약).
+      │    │      marketBenchmark, industryBenchmark — 직급·산업군별 벤치마크 점수(KAPP 4차원 기준).
+      │    │      marketActions, recommendedActions — 시장 대응·추천 액션. 진단 결과 기반 제안.
+      │    │      roadmap — 커리어 시뮬레이터·IDP 설명 문구 및 idpItems.
+      │    │
+      │    │    ■ careerPathByIndustry.json
+      │    │    경로: data/consumer/careerPathByIndustry.json (import: @/data/consumer/careerPathByIndustry.json)
+      │    │    용도: 탭 "성장 로드맵" — 산업별 커리어 경로 시뮬레이터. 3년/5년 후 마일스톤, 확률 문구 미표시.
+      │    │    데이터 내용:
+      │    │      industries — 산업군 목록(운영 시 진단 step 1 산업 선택값과 연동 가능).
+      │    │      data[산업].paths — 현재 역할·스킬, milestone1(3년 후), milestone2(5년 후) 역할·스킬. 직무별 경로.
+      │    │      data[산업].learningPath — 추천 학습 경로(제목, 기간, 우선순위). KAPP 문항과 직접 매핑 없음.
+      │    │
+      │    │    ■ dailyTips.json
+      │    │    경로: data/consumer/dailyTips.json (import: @/data/consumer/dailyTips.json)
+      │    │    용도: 데일리 팁 위젯(오늘의 1% 효율 챌린지). 대시보드 우측 등에 표시.
+      │    │    데이터 내용:
+      │    │      tips[] — { category, text }. 업무 효율·자동화·AI 활용 등 한 줄 팁. KAPP 진단 문항과 무관한 공통 콘텐츠.
+      │    │
+      │    │    ■ growth.json
+      │    │    경로: data/consumer/growth.json (import: @/data/consumer/growth.json, CertificateModal에서 사용)
+      │    │    용도: 인증서 다운로드 모달 — 수혜자명, 직급, KAPP 4차원 점수, 등급, 발급일, 인증서 제목 등.
+      │    │    데이터 내용:
+      │    │      certificate — 진단 결과와 동일한 KAPP 4차원(knowledge, application, performance, productivity) 점수·등급·발급 정보. 대시보드 scores와 동일 체계.
+      │    │      (dailyTip, defaultStats, careerGoals 등은 나의 성장 페이지용.)
+      │    │
       │    ├─ [탭] 내 역량 | 성장 로드맵 (2개만) + [버튼] 인증서 다운로드
+      │    │    □ 데이터: 탭 전환·인증서 버튼은 대시보드 page 내부 state(tab, certModalOpen). 인증서 모달 내용은 growth.json → certificate.
+      │    │    □ 동작: "내 역량" 클릭 → tab=my-competency, "성장 로드맵" 클릭 → tab=roadmap. "인증서 다운로드" 클릭 → certModalOpen=true → CertificateModal 표시.
+      │    │    □ CSS: app/app/dashboard/page.tsx 내 Tailwind. 탭은 border-b-2로 선택 탭 강조.
+      │    │
       │    ├─ tab=내 역량
-      │    │    ├─ [섹션] AI 분석 인사이트 (카드)
-      │    │    ├─ [섹션] KAPP 4차원 역량 점수 (막대/테이블/레이더 뷰 전환)
-      │    │    └─ [섹션] 시장 포지션 분석 (산업군 벤치마크, 현재 포지션, 추천 액션)
+      │    │    ├─ [섹션] AI 분석 인사이트 (카드 3장) — 구조도용 요약
+      │    │    │    □ 데이터 어디서: data/consumer/dashboard.json (import: @/data/consumer/dashboard.json). insights 배열 사용.
+      │    │    │    □ 데이터 의미: 진단 결과(step 2~5 종합)에 대한 AI 해석 문구. 전반적 성과·강점·성장 기회 등. type 예: positive, strength, improve.
+      │    │    │    □ 몇 개·순서: insights.length개(기본 3장). 배열 순서대로 세로 나열. 카드별 제목(title) + 설명(desc).
+      │    │    │    □ 길이·크기: lg:w-1/2(내 역량 영역의 좌측 50%). 카드는 flex-shrink-0, gap-3으로 세로 배치. 헤더 하단 p-4, min-h-0.
+      │    │    │    □ CSS: dashboard/page.tsx 내 Tailwind. 카드 rounded-lg border border-gray-100 bg-gray-50/50 p-3. 아이콘 Brain(lucide-react).
+      │    │    │
+      │    │    ├─ [섹션] KAPP 4차원 역량 점수 (막대/테이블/레이더 뷰 전환) — 구조도용 요약
+      │    │    │    □ 데이터 어디서: data/consumer/dashboard.json. kappLabels, scores.my, scores.positionAverage 사용.
+      │    │    │    □ 데이터 의미: KAPP 4차원(지식·적용·성과·생산성) 본인 점수 vs 직급 평균. 진단 step 2·3·4·5 영역과 1:1 대응.
+      │    │    │    □ 뷰 전환 버튼(막대/테이블/레이더) — 어떻게 동작하는지: 상단 탭 3개(막대·테이블·레이더 아이콘). 클릭 시 setCompetencyViewTab("bar"|"table"|"radar"). 선택된 탭만 흰 배경+파란색, 나머지 회색. 해당 뷰만 렌더(BarChart / table / RadarChart).
+      │    │    │    □ 몇 개: 4개 역량(고정). 막대·테이블은 4행, 레이더는 4축.
+      │    │    │    □ 길이·크기: lg:w-1/2(우측 50%). 차트 영역 min-h-[280px], ResponsiveContainer height={280}. Recharts 라이브러리로 차트 크기 제어.
+      │    │    │    □ CSS: Tailwind(dashboard/page.tsx) + Recharts 내부 스타일. 탭 영역 p-1 rounded-lg bg-gray-100.
+      │    │    │
+      │    │    └─ [섹션] 시장 포지션 분석 (산업군 벤치마크 + 현재 포지션 + 추천 액션) — 구조도용 요약
+      │    │         □ 데이터 어디서: data/consumer/dashboard.json. industryBenchmark, scores.my, kappLabels, marketPosition, marketBenchmark, marketActions(없으면 fallback) 사용.
+      │    │         □ 데이터 의미: 업계 상위 10% 벤치마크 vs 나의 4차원 점수. 현재 포지션 레벨·백분위·설명. 상위권 진입을 위한 추천 액션(아이콘·제목·설명·우선순위).
+      │    │         □ 산업군 벤치마크 뷰 전환(테이블/막대/레이더): setMarketBenchmarkView로 전환. 동작은 KAPP 4차원 섹션과 동일 패턴. 좌측 50% 영역.
+      │    │         □ 현재 포지션·추천 액션: 우측 50%. marketPosition.currentLevel, percentileRank, currentLevelDesc 표시. marketActions 배열만큼 카드 나열(priority에 따라 테두리/배경 색 다름: high=빨강, medium=amber, 그외=gray).
+      │    │         □ 길이·크기: 시장 포지션 섹션 전체 하단 풀폭. 내부 lg:flex-row로 좌 50%·우 50%. 좌측 min-h-[400px], 차트 min-h-[320px].
+      │    │         □ CSS: dashboard/page.tsx Tailwind. MapPin 아이콘. 액션 카드 border-red-100/amber-100/gray-100 등.
+      │    │
       │    ├─ tab=성장 로드맵
-      │    │    ├─ [섹션] 커리어 경로 시뮬레이터
-      │    │    │    ├─ [라벨] "운영: KAPP 진단 산업군 자동 반영" (보라 배지)
-      │    │    │    ├─ [select] 산업군 — 가상프론트 21개 / 운영 시 진단 산업군
-      │    │    │    │    [개발] 가상: MOCK_KAPP_INDUSTRIES(21개). 운영: 진단에서 선택한 산업 반영. careerPathByIndustry.industries 또는 동일 소스.
-      │    │    │    ├─ [select] 직무 1~4 — 가상 4개 고정 / 운영 시 경로 데이터 수에 따름
-      │    │    │    │    [개발] 가상: 직무 1~4 더미. 운영: data[산업].paths 길이에 따라 옵션 개수.
-      │    │    │    ├─ [카드] 현재 | 3년 후 | 5년 후 (역할·스킬)
-      │    │    │    ├─ [목록] 추천 학습 경로
-      │    │    │    └─ [버튼] 추천 강의 둘러보기 → 모달
-      │    │    ├─ [섹션] AI 생성 개인 개발 계획 (IDP)
-      │    │    └─ [모달] 추천 강의 둘러보기 → /app/education
-      │    └─ (데일리팁 위젯 등)
+      │    │    ├─ [섹션] 커리어 경로 시뮬레이터 — 구조도용 요약
+      │    │    │    □ 데이터 어디서: data/consumer/careerPathByIndustry.json (import: @/data/consumer/careerPathByIndustry.json). industries, data[산업].paths, data[산업].learningPath. 설명 문구는 dashboard.json → roadmap.careerSimulatorDescription.
+      │    │    │    □ 데이터 의미: 산업별 직무 경로(현재 역할·스킬 → 3년 후 → 5년 후). 추천 학습 경로(제목·기간·우선순위). KAPP 문항과 직접 매핑 없음.
+      │    │    │    □ 산업군 select — 어떻게 동작: 가상프론트면 MOCK_KAPP_INDUSTRIES 21개 옵션. 운영이면 careerPathByIndustry.industries 또는 진단 step 1 산업. onChange 시 setCareerIndustry, setCareerPathIndex(0). 선택한 산업의 paths/learningPath로 카드·목록 갱신.
+      │    │    │    □ 직무 select(직무 1~4): paths.length만큼 옵션(가상은 4개). value=careerPathIndex. 변경 시 setCareerPathIndex. 선택 인덱스로 paths[careerPathIndex]가 현재/3년/5년 카드와 learningPath 목록에 반영.
+      │    │    │    □ 카드(현재 | 3년 후 | 5년 후): paths[careerPathIndex].current, milestone1, milestone2. 역할(role)+스킬(skills) 태그로 표시. 순서 고정.
+      │    │    │    □ [추천 강의 둘러보기] 버튼: 클릭 시 setShowCoursesModal(true). 모달에서 "강의 둘러보기" 클릭 시 /app/education으로 이동 후 모달 닫기.
+      │    │    │    □ 몇 개: 산업당 paths 개수만큼 직무 옵션. learningPath 배열 길이만큼 추천 학습 항목. 카드는 3칸 고정(현재·3년·5년).
+      │    │    │    □ 길이·크기: 섹션 rounded-xl border. 카드 영역 flex flex-wrap divide-x, min-w-[120px] per 칸. 학습 경로 목록 space-y-2.
+      │    │    │    □ CSS: dashboard/page.tsx Tailwind. 보라 배지 bg-purple-100 text-purple-700. Route, GraduationCap 아이콘.
+      │    │    │
+      │    │    ├─ [섹션] AI 생성 개인 개발 계획 (IDP) — 구조도용 요약
+      │    │    │    □ 데이터 어디서: data/consumer/dashboard.json. roadmap.idpDescription, roadmap.idpItems.
+      │    │    │    □ 데이터 의미: 진단 스킬 갭 기반 맞춤형 성장 로드맵 문구. 설명 1줄 + 불릿 목록(idpItems).
+      │    │    │    □ 몇 개·순서: idpItems 배열 길이만큼. 순서대로 • 항목으로 나열.
+      │    │    │    □ 길이·크기: 섹션 하단. p-4, space-y-2. FileText 아이콘.
+      │    │    │    □ CSS: dashboard/page.tsx Tailwind. border border-gray-100 bg-gray-50/50.
+      │    │    │
+      │    │    └─ [모달] 추천 강의 둘러보기
+      │    │         □ 동작: "추천 강의 둘러보기" 클릭 → showCoursesModal=true. 모달 안 "취소" → setShowCoursesModal(false). "강의 둘러보기" → router.push("/app/education"), 모달 닫기.
+      │    │         □ CSS: fixed inset-0 z-50, bg-black/50. 모달 박스 bg-white rounded-xl max-w-sm. 별도 CSS 파일 없음, page 내 인라인.
+      │    │
+      │    ├─ [데일리 팁 위젯] (오늘의 1% 효율 챌린지) — 구조도용 요약
+      │    │    위치: 마이 대시보드 상단 헤더 우측(제목·프로필 버튼 사이).
+      │    │
+      │    │    □ 데이터 어디서 가져오는지 (경로)
+      │    │      data/consumer/dailyTips.json (import: @/data/consumer/dailyTips.json). 대시보드에서 import 후, 선택 산업이 있으면 "공통" 또는 해당 산업 태그 팁만 필터해 DailyTipWidget에 전달.
+      │    │
+      │    │    □ 데이터 의미
+      │    │      오늘의 1% 효율 챌린지용 한 줄 팁. 마이 대시보드 우측 위젯. ~입니다 톤, 자동화·실용 위주. (JSON description 기준)
+      │    │
+      │    │    □ 체크 표시(적용 완료 버튼) — 어떻게 동작하는지
+      │    │      · 우측 체크 버튼(Check 아이콘): "적용 완료" 액션. 클릭 전엔 연한 노란 테두리, 클릭 후엔 초록(emerald)으로 변경.
+      │    │      · 클릭 시: applied=true 처리 → 450ms(AUTO_NEXT_MS) 후 자동으로 다음 팁으로 전환. 전환 시 applied=false로 리셋, 다음 팁이 슬라이드 인 애니메이션으로 표시.
+      │    │      · 같은 팁에서 한 번만 반응(이미 applied면 클릭 무시). 순환: 마지막 팁 다음은 다시 첫 번째 팁.
+      │    │
+      │    │    □ 몇 개 나오는지, 순서
+      │    │      · 개수: JSON tips 배열 기준 31개. 대시보드에서 산업 필터(공통 + 선택 산업) 적용 후 전달된 배열 길이만큼 표시 가능. 팁이 0개면 위젯 자체 미표시.
+      │    │      · 순서: 배열 인덱스 순서대로. 0 → 1 → … → (length-1) → 0 순환. 체크 버튼 누를 때마다 다음 하나씩.
+      │    │
+      │    │    □ 길이(크기) 어떻게 조정되는지
+      │    │      · 위젯 전체: min-w-[280px], w-max, max-w-[620px] — 최소 너비 280px, 내용에 따라 늘어나고(w-max) 최대 620px. 가로는 이 범위 안에서 유동.
+      │    │      · 팁 텍스트 영역: flex-1 + min-w-0 + overflow-hidden — 남는 공간을 채우되 넘치면 숨김. 텍스트는 whitespace-nowrap + truncate로 한 줄만 표시, 넘치면 말줄임(…). 전체 문장은 title 속성으로 툴팁.
+      │    │      · 아이콘(번개)·체크 버튼: w-8 h-8(32px) 고정, flex-shrink-0 으로 줄어들지 않음.
+      │    │
+      │    │    □ CSS 어디서 가져오는지 (경로·적용 방식)
+      │    │      · 별도 CSS 파일 없음. 모든 스타일은 컴포넌트 한 파일에서 처리.
+      │    │      · Tailwind: className으로 적용. 프로젝트 전역 Tailwind 설정(tailwind.config 등)에서 빌드 시 주입. 위젯의 레이아웃·색·간격·반응은 전부 Tailwind 클래스.
+      │    │      · 키프레임 애니메이션: 컴포넌트 내 <style>{ `@keyframes daily-tip-slide { … }` }</style> 로 인라인 정의. 팁 전환 시 슬라이드 인 효과.
+      │    │      · 인라인 style: 전환되는 팁 div에 style={{ animation: "daily-tip-slide 0.25s ease-out" }} 로 위 키프레임 연결.
+      │    │      · 요약: 경로는 components/dashboard/DailyTipWidget.tsx 한 곳. Tailwind(전역 설정) + 같은 파일 내 <style> + JSX style.
+      │    │
+      │    │    컴포넌트: components/dashboard/DailyTipWidget.tsx. UI: 제목 "오늘의 1% 효율 챌린지" + 한 줄 팁 텍스트(말줄임) + [적용 완료] 체크 버튼.
+      │    │
+      │    └─ [인증서 모달] (CertificateModal) — 구조도용 요약
+      │         □ 데이터 어디서: data/consumer/growth.json (import: @/data/consumer/growth.json). certificate 객체 사용. CertificateModal.tsx에서 직접 import.
+      │         □ 데이터 의미: 진단 결과와 동일한 KAPP 4차원 점수·등급·발급 정보. 수혜자명, 직급, 발급일, 인증서 제목·부제, 발급기관 등. 대시보드 scores와 동일 체계.
+      │         □ [닫기(X)] 버튼: 우측 상단. 클릭 시 onClose() → certModalOpen=false. 배경(absolute inset-0 bg-black/50) 클릭해도 onClose.
+      │         □ [PDF 다운로드] 버튼: 모달 하단 고정. 클릭 시 인증서 영역을 PDF로 저장(또는 다운로드 트리거). 동작 구현은 CertificateModal 내부 참고.
+      │         □ 몇 개: certificate 1건. 4차원 점수 4개를 막대 차트·텍스트로 표시.
+      │         □ 길이·크기: 모달 프레임 width calc(210mm + 2rem)(A4 기준), maxWidth calc(100vw - 2rem). max-h-[calc(100vh-2rem)]. 내부 A4 영역 스크롤.
+      │         □ CSS: app/app/dashboard/CertificateModal.tsx. Tailwind + 인라인 style(width 210mm). Recharts BarChart. 별도 CSS 파일 없음.
+      │
       │
       ├─ /app/education (교육 큐레이션)
       │    └─ 제목 + "진단 결과 기반 맞춤형 교육 추천 (추후 구현 예정)"

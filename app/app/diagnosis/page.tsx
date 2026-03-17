@@ -7,6 +7,7 @@ import {
   Cog,
   TrendingUp,
   Zap,
+  Check,
   ChevronLeft,
   ChevronRight,
   Mailbox,
@@ -1136,14 +1137,34 @@ export default function DiagnosisPage() {
           {/* 6: 결과 — 결과 확인하기 버튼만 표시 */}
           {step === 6 && (
             <div className="flex-1 flex items-center justify-center p-6">
-              <button
-                type="button"
-                onClick={() => router.push("/app/dashboard")}
-                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-              >
-                <LayoutDashboard className="w-5 h-5" />
-                결과 확인하기
-              </button>
+              <div className="w-full max-w-[600px] flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                  <Check className="w-8 h-8 md:w-10 md:h-10" />
+                </div>
+                <p className="mt-6 text-lg text-gray-700 leading-relaxed">
+                  이제 결과를 확인하고
+                  <br />
+                  성장 전략을 확인하세요.
+                </p>
+                <div className="mt-8 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/app/dashboard")}
+                    className="rounded-lg bg-blue-600 text-white px-5 py-3 font-semibold hover:bg-blue-700 transition-colors"
+                  >
+                    결과 확인하기
+                  </button>
+                  <button
+                    type="button"
+                    disabled
+                    className="rounded-lg border border-gray-300 text-gray-700 bg-white px-5 py-3 font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                    aria-disabled="true"
+                    title="준비 중"
+                  >
+                    종합분석 리포트 다운로드
+                  </button>
+                </div>
+              </div>
             </div>
           )}
           </div>

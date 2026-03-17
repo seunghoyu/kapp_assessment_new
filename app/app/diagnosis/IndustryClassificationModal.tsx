@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, ChevronLeft } from "lucide-react";
 import type { IndustryNode } from "./industryTypes";
 
@@ -53,11 +54,11 @@ export default function IndustryClassificationModal({
 
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" aria-hidden onClick={onClose} />
+  const modalContent = (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-2 sm:p-4">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" aria-hidden onClick={onClose} />
       <div
-        className="relative flex flex-col w-[90vw] max-w-6xl h-[90vh] rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden"
+        className="relative flex flex-col w-[96vw] max-w-[80rem] h-[92vh] min-h-[32rem] rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden"
         role="dialog"
         aria-modal="true"
         aria-labelledby="industry-classification-title"
@@ -233,4 +234,6 @@ export default function IndustryClassificationModal({
       </div>
     </div>
   );
+
+  return typeof document !== "undefined" ? createPortal(modalContent, document.body) : null;
 }

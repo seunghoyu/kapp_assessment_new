@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import type { IndustryNode } from "./industryTypes";
 import IndustryIcon from "./IndustryIcon";
@@ -111,16 +112,15 @@ export default function IndustrySelectModal({
 
   const isIndustryStep = step === "industry";
 
-  return (
-    <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-2">
-        <div className="absolute inset-0 bg-black/50" aria-hidden onClick={onClose} />
-        <div
-          className="relative flex flex-col w-[95vw] max-w-[90rem] h-[90vh] rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="industry-select-title"
-        >
+  const modalContent = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" aria-hidden onClick={onClose} />
+      <div
+        className="relative flex flex-col w-[98vw] max-w-[95rem] h-[92vh] min-h-[32rem] rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="industry-select-title"
+      >
           {/* 상단 헤더 */}
           <div className="flex-shrink-0 border-b border-gray-200 bg-white px-6 py-3">
             <div className="flex items-start justify-between gap-4">
@@ -285,7 +285,11 @@ export default function IndustrySelectModal({
           </div>
         </div>
       </div>
+  );
 
+  return (
+    <>
+      {typeof document !== "undefined" && createPortal(modalContent, document.body)}
       <IndustryClassificationModal
         open={classificationMajor !== null}
         onClose={handleCloseClassification}

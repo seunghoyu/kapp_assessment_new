@@ -36,8 +36,8 @@ body {
   animation: page-fade-in 0.25s ease-out both;
 }
 
-/* 진단 단계 전환: 시작 → 정보 등 슬라이드 인 */
-@keyframes diagnosis-step-slide-in {
+/* 진단 단계 전환: 다음 → 우측에서 슬라이드 인 */
+@keyframes diagnosis-step-slide-in-right {
   from {
     opacity: 0;
     transform: translateX(20%);
@@ -48,6 +48,22 @@ body {
   }
 }
 
-.diagnosis-step-enter {
-  animation: diagnosis-step-slide-in 0.35s ease-out both;
+/* 진단 단계 전환: 이전 → 좌측에서 슬라이드 인 */
+@keyframes diagnosis-step-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.diagnosis-step-enter-right {
+  animation: diagnosis-step-slide-in-right 0.35s ease-out both;
+}
+
+.diagnosis-step-enter-left {
+  animation: diagnosis-step-slide-in-left 0.35s ease-out both;
 }

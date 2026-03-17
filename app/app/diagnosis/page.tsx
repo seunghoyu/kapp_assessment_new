@@ -235,6 +235,10 @@ export default function DiagnosisPage() {
   const [step, setStep] = useState(0);
   /** 단계 전환 방향: 다음 → 우측 슬라이드, 이전 → 좌측 슬라이드 */
   const [stepTransitionDir, setStepTransitionDir] = useState<"left" | "right" | null>(null);
+  /** 카드형 문항 UI: step 내 현재 문항 인덱스 */
+  const [knowledgeIndex, setKnowledgeIndex] = useState(0);
+  const [applicationIndex, setApplicationIndex] = useState(0);
+  const [performanceIndex, setPerformanceIndex] = useState(0);
   const industryJobData = userInfoOptions.industryJobData as IndustryJobData;
   const positionLevels = userInfoOptions.positionLevels as OptionItem[];
   const experienceYears = userInfoOptions.experienceYears as OptionItem[];
@@ -463,6 +467,13 @@ export default function DiagnosisPage() {
     setStepTransitionDir("left");
     setStep((s) => Math.max(0, s - 1));
   };
+
+  // step 변경 시: 해당 step의 카드 인덱스 초기화
+  useEffect(() => {
+    if (step === 2) setKnowledgeIndex(0);
+    if (step === 3) setApplicationIndex(0);
+    if (step === 4) setPerformanceIndex(0);
+  }, [step]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-0px)] max-h-[100vh] overflow-hidden bg-gray-50">
@@ -804,160 +815,256 @@ export default function DiagnosisPage() {
 
           {/* 2: 지식 문항 — 업종·직무별 문항 전부 표시 (가상 데이터) */}
           {step === 2 && STEP_DETAILS[2] && (
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="max-w-2xl mx-auto">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">{STEP_DETAILS[2].title}</h2>
-                <div className="rounded-lg bg-gray-50 border border-gray-200 p-3 mb-4 text-sm text-gray-600">
-                  <span className="font-medium text-gray-700">기준: </span>
-                  {STEP_DETAILS[2].criteria}
+            <div className="flex-1 min-h-0 flex items-center justify-center px-6 py-8">
+              {filteredKnowledge.length === 0 ? (
+                <div className="w-full max-w-[900px]">
+                  <p className="text-gray-500">선택한 산업·직무에 해당하는 지식 문항이 없습니다. 정보 입력에서 산업·직무를 선택한 뒤 진행해 주세요.</p>
                 </div>
-                {filteredKnowledge.length === 0 ? (
-                  <p className="text-gray-500 py-4">선택한 산업·직무에 해당하는 지식 문항이 없습니다. 정보 입력에서 산업·직무를 선택한 뒤 진행해 주세요.</p>
-                ) : (
-                  <div className="space-y-6">
-                    {filteredKnowledge.map((q, idx) => (
-                      <div key={q.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                        <div className="flex items-center gap-2 mb-2">
+              ) : (
+                (() => {
+                  const q = filteredKnowledge[Math.min(knowledgeIndex, filteredKnowledge.length - 1)];
+                  const selected = answers.knowledge[knowledgeIndex];
+                  const canProceed = selected !== undefined;
+                  return (
+                    <div className="w-full max-w-[900px] px-2 sm:px-6">
+                      <div className="flex items-center justify-between gap-4 mb-6">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
                             {q.industry || "공통"}{q.job ? ` · ${q.job}` : ""} · {q.difficulty}
                           </span>
+                          <span className="text-xs text-gray-500">
+                            {knowledgeIndex + 1} / {filteredKnowledge.length}
+                          </span>
                         </div>
-                        <p className="font-medium text-gray-900 mb-3">{idx + 1}. {q.question}</p>
-                        <ul className="space-y-2">
-                          {q.options.map((opt, i) => (
-                            <li key={i}>
-                              <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 p-2 hover:bg-gray-50 has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/50">
-                                <input
-                                  type="radio"
-                                  name={`knowledge-${q.id}`}
-                                  checked={(answers.knowledge[idx] ?? null) === i}
-                                  onChange={() => {
-                                    setAnswers((a) => {
-                                      const next = [...a.knowledge];
-                                      next[idx] = i;
-                                      return { ...a, knowledge: next };
-                                    });
-                                  }}
-                                  className="h-4 w-4 text-blue-600"
-                                />
-                                <span className="text-sm">{opt}</span>
-                              </label>
-                            </li>
-                          ))}
-                        </ul>
-                        {q.explanation && answers.knowledge[idx] !== undefined && (
-                          <p className="mt-3 text-xs text-gray-500 border-t pt-2">{q.explanation}</p>
-                        )}
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+
+                      <p className="text-xl md:text-2xl font-semibold text-gray-900 leading-relaxed mb-6">
+                        {knowledgeIndex + 1}. {q.question}
+                      </p>
+
+                      <div className="h-px bg-gray-200 mb-6" aria-hidden />
+
+                      <div className="space-y-3">
+                        {q.options.map((opt, i) => {
+                          const isSelected = selected === i;
+                          return (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => {
+                                setAnswers((a) => {
+                                  const next = [...a.knowledge];
+                                  next[knowledgeIndex] = i;
+                                  return { ...a, knowledge: next };
+                                });
+                              }}
+                              className={`w-full text-left rounded-lg border p-5 transition-colors ${
+                                isSelected
+                                  ? "border-blue-500 bg-blue-50"
+                                  : "border-gray-200 hover:border-blue-400 hover:bg-gray-50"
+                              }`}
+                            >
+                              <span className="text-base text-gray-900">{opt}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="mt-8 flex justify-end">
+                        <button
+                          type="button"
+                          disabled={!canProceed}
+                          onClick={() => {
+                            if (knowledgeIndex < filteredKnowledge.length - 1) {
+                              setStepTransitionDir("right");
+                              setKnowledgeIndex((i) => i + 1);
+                            } else {
+                              goNext();
+                            }
+                          }}
+                          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all disabled:opacity-40 disabled:pointer-events-none"
+                        >
+                          다음
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
             </div>
           )}
 
           {/* 3: 적용 문항 — 업종·직무·직급별 시나리오 전부 표시 */}
           {step === 3 && STEP_DETAILS[3] && (
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="max-w-2xl mx-auto">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">{STEP_DETAILS[3].title}</h2>
-                <div className="rounded-lg bg-gray-50 border border-gray-200 p-3 mb-4 text-sm text-gray-600">
-                  <span className="font-medium text-gray-700">기준: </span>
-                  {STEP_DETAILS[3].criteria}
+            <div className="flex-1 min-h-0 flex items-center justify-center px-6 py-8">
+              {filteredApplication.length === 0 ? (
+                <div className="w-full max-w-[900px]">
+                  <p className="text-gray-500">선택한 산업·직무·직급에 해당하는 적용 문항이 없습니다.</p>
                 </div>
-                {filteredApplication.length === 0 ? (
-                  <p className="text-gray-500 py-4">선택한 산업·직무·직급에 해당하는 적용 문항이 없습니다.</p>
-                ) : (
-                  <div className="space-y-6">
-                    {filteredApplication.map((q, idx) => (
-                      <div key={q.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                        <div className="flex items-center gap-2 mb-2">
+              ) : (
+                (() => {
+                  const q = filteredApplication[Math.min(applicationIndex, filteredApplication.length - 1)];
+                  const selected = answers.application[applicationIndex];
+                  const canProceed = selected !== undefined;
+                  return (
+                    <div className="w-full max-w-[900px] px-2 sm:px-6">
+                      <div className="flex items-center justify-between gap-4 mb-6">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
                             {q.industry || "공통"}{q.job ? ` · ${q.job}` : ""}{q.position ? ` · ${q.position}` : ""}
                           </span>
+                          <span className="text-xs text-gray-500">
+                            {applicationIndex + 1} / {filteredApplication.length}
+                          </span>
                         </div>
-                        <h3 className="font-semibold text-gray-900 mb-2">{q.title}</h3>
-                        <p className="text-sm text-gray-600 whitespace-pre-wrap mb-3">{q.scenario}</p>
-                        <p className="font-medium text-gray-900 mb-3">{q.question}</p>
-                        <ul className="space-y-2">
-                          {q.options.map((opt, i) => (
-                            <li key={i}>
-                              <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 p-2 hover:bg-gray-50 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/50">
-                                <input
-                                  type="radio"
-                                  name={`application-${q.id}`}
-                                  checked={(answers.application[idx] ?? null) === i}
-                                  onChange={() => {
-                                    setAnswers((a) => {
-                                      const next = [...a.application];
-                                      next[idx] = i;
-                                      return { ...a, application: next };
-                                    });
-                                  }}
-                                  className="h-4 w-4 text-emerald-600"
-                                />
-                                <span className="text-sm">{opt.label}</span>
-                              </label>
-                            </li>
-                          ))}
-                        </ul>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+
+                      <p className="text-xl md:text-2xl font-semibold text-gray-900 leading-relaxed">
+                        {applicationIndex + 1}. {q.title}
+                      </p>
+                      <p className="mt-4 text-sm md:text-base text-gray-600 whitespace-pre-wrap leading-relaxed">
+                        {q.scenario}
+                      </p>
+                      <p className="mt-6 text-base md:text-lg font-semibold text-gray-900 leading-relaxed">
+                        {q.question}
+                      </p>
+
+                      <div className="h-px bg-gray-200 mt-6" aria-hidden />
+
+                      <div className="mt-6 space-y-3">
+                        {q.options.map((opt, i) => {
+                          const isSelected = selected === i;
+                          return (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => {
+                                setAnswers((a) => {
+                                  const next = [...a.application];
+                                  next[applicationIndex] = i;
+                                  return { ...a, application: next };
+                                });
+                              }}
+                              className={`w-full text-left rounded-lg border p-5 transition-colors ${
+                                isSelected
+                                  ? "border-blue-500 bg-blue-50"
+                                  : "border-gray-200 hover:border-blue-400 hover:bg-gray-50"
+                              }`}
+                            >
+                              <span className="text-base text-gray-900">{opt.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="mt-8 flex justify-end">
+                        <button
+                          type="button"
+                          disabled={!canProceed}
+                          onClick={() => {
+                            if (applicationIndex < filteredApplication.length - 1) {
+                              setStepTransitionDir("right");
+                              setApplicationIndex((i) => i + 1);
+                            } else {
+                              goNext();
+                            }
+                          }}
+                          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all disabled:opacity-40 disabled:pointer-events-none"
+                        >
+                          다음
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
             </div>
           )}
 
           {/* 4: 성과 문항 — 업종·직무별 전부 표시 */}
           {step === 4 && STEP_DETAILS[4] && (
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="max-w-2xl mx-auto">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">{STEP_DETAILS[4].title}</h2>
-                <div className="rounded-lg bg-gray-50 border border-gray-200 p-3 mb-4 text-sm text-gray-600">
-                  <span className="font-medium text-gray-700">기준: </span>
-                  {STEP_DETAILS[4].criteria}
+            <div className="flex-1 min-h-0 flex items-center justify-center px-6 py-8">
+              {filteredPerformance.length === 0 ? (
+                <div className="w-full max-w-[900px]">
+                  <p className="text-gray-500">선택한 산업·직무에 해당하는 성과 문항이 없습니다.</p>
                 </div>
-                {filteredPerformance.length === 0 ? (
-                  <p className="text-gray-500 py-4">선택한 산업·직무에 해당하는 성과 문항이 없습니다.</p>
-                ) : (
-                  <div className="space-y-6">
-                    {filteredPerformance.map((q, idx) => (
-                      <div key={q.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                        <div className="flex items-center gap-2 mb-2">
+              ) : (
+                (() => {
+                  const q = filteredPerformance[Math.min(performanceIndex, filteredPerformance.length - 1)];
+                  const selected = answers.performance[performanceIndex];
+                  const canProceed = selected !== undefined;
+                  return (
+                    <div className="w-full max-w-[900px] px-2 sm:px-6">
+                      <div className="flex items-center justify-between gap-4 mb-6">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
                             {q.industry || "공통"}{q.job ? ` · ${q.job}` : ""}
                           </span>
+                          <span className="text-xs text-gray-500">
+                            {performanceIndex + 1} / {filteredPerformance.length}
+                          </span>
                         </div>
-                        <h3 className="font-semibold text-gray-900 mb-2">{q.title}</h3>
-                        <p className="font-medium text-gray-900 mb-3">{q.question}</p>
-                        <ul className="space-y-2">
-                          {q.options.map((opt, i) => (
-                            <li key={i}>
-                              <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 p-2 hover:bg-gray-50 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50/50">
-                                <input
-                                  type="radio"
-                                  name={`performance-${q.id}`}
-                                  checked={(answers.performance[idx] ?? null) === i}
-                                  onChange={() => {
-                                    setAnswers((a) => {
-                                      const next = [...a.performance];
-                                      next[idx] = i;
-                                      return { ...a, performance: next };
-                                    });
-                                  }}
-                                  className="h-4 w-4 text-amber-600"
-                                />
-                                <span className="text-sm">{opt.label}</span>
-                              </label>
-                            </li>
-                          ))}
-                        </ul>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+
+                      <p className="text-xl md:text-2xl font-semibold text-gray-900 leading-relaxed">
+                        {performanceIndex + 1}. {q.title}
+                      </p>
+                      <p className="mt-6 text-base md:text-lg font-semibold text-gray-900 leading-relaxed">
+                        {q.question}
+                      </p>
+
+                      <div className="h-px bg-gray-200 mt-6" aria-hidden />
+
+                      <div className="mt-6 space-y-3">
+                        {q.options.map((opt, i) => {
+                          const isSelected = selected === i;
+                          return (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => {
+                                setAnswers((a) => {
+                                  const next = [...a.performance];
+                                  next[performanceIndex] = i;
+                                  return { ...a, performance: next };
+                                });
+                              }}
+                              className={`w-full text-left rounded-lg border p-5 transition-colors ${
+                                isSelected
+                                  ? "border-blue-500 bg-blue-50"
+                                  : "border-gray-200 hover:border-blue-400 hover:bg-gray-50"
+                              }`}
+                            >
+                              <span className="text-base text-gray-900">{opt.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="mt-8 flex justify-end">
+                        <button
+                          type="button"
+                          disabled={!canProceed}
+                          onClick={() => {
+                            if (performanceIndex < filteredPerformance.length - 1) {
+                              setStepTransitionDir("right");
+                              setPerformanceIndex((i) => i + 1);
+                            } else {
+                              goNext();
+                            }
+                          }}
+                          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all disabled:opacity-40 disabled:pointer-events-none"
+                        >
+                          다음
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
             </div>
           )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -19,7 +19,14 @@ const consumerMenuItems = [
 
 export default function ConsumerSidebar() {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
+
+  // /app Hero 페이지 최초 진입 시 사이드바 collapsed 유지
+  useEffect(() => {
+    if (pathname === ROUTES.APP) {
+      setIsCollapsed(true);
+    }
+  }, [pathname]);
 
   return (
     <aside

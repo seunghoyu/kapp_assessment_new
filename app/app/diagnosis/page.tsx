@@ -488,10 +488,27 @@ export default function DiagnosisPage() {
           </div>
         )}
 
-      <div className="flex-1 min-h-0 flex flex-col overflow-hidden p-6">
-        <div className="flex-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col min-h-0">
-          {/* 진행현황: step 5일 때 좌측에 디지털 인바스켓 제목 + 툴팁 아이콘, 우측에 단계 버튼 */}
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden p-6 relative">
+        <div className="flex-1 rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col min-h-0 relative">
+          {/* 상단: 이전(아이콘) 좌측 + step 5일 때 제목/툴팁 + 단계 버튼 우측 */}
           <div className="flex-shrink-0 flex justify-between items-center gap-4 px-4 py-2 border-b border-gray-100">
+            <div className="flex items-center gap-2 min-w-0">
+              {step > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (step === 5 && inbasketView === "simulation") {
+                      handleInbasketBackToList();
+                    } else {
+                      goPrev();
+                    }
+                  }}
+                  className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors shrink-0"
+                  aria-label={step === 5 && inbasketView === "simulation" ? "목록으로" : "이전"}
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              )}
             {step === 5 ? (
               <div className="min-w-0 flex items-start gap-2">
                 <div>
@@ -563,9 +580,8 @@ export default function DiagnosisPage() {
                   </div>
                 </div>
               </div>
-            ) : (
-              <div />
-            )}
+            ) : null}
+            </div>
             <div className="flex items-center justify-end gap-0.5 flex-wrap shrink-0">
             {STEPS.map((s, i) => (
               <Fragment key={s.id}>
@@ -777,7 +793,7 @@ export default function DiagnosisPage() {
                       ))}
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 flex items-center gap-1.5 pt-2">
+                  <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.1">
                     <span className="inline-block w-4 h-4 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] shrink-0">i</span>
                     입력하신 정보는 맞춤형 진단에만 활용되며, 암호화되어 안전하게 보호됩니다.
                   </p>
@@ -1024,63 +1040,19 @@ export default function DiagnosisPage() {
             </div>
           )}
           </div>
-          {/* 이전 / 다음. step 0(시작)에서는 미표시 — 카드뉴스 + 진단 시작하기만 노출 */}
-          {step !== 0 && (
-          <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-t border-gray-100">
-            {step === 5 && inbasketView === "simulation" ? (
+
+          {/* 메인(흰 카드) 영역 기준 우측 하단 고정 CTA — 정보(step 1)에서만 */}
+          {step === 1 && (
+            <div className="absolute bottom-6 right-6 z-10">
               <button
                 type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleInbasketBackToList();
-                }}
-                className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
-              >
-                <ChevronLeft className="w-5 h-5" />
-                목록으로
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={goPrev}
-                disabled={step === 0}
-                className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:pointer-events-none"
-              >
-                <ChevronLeft className="w-5 h-5" />
-                이전
-              </button>
-            )}
-            {step === 5 && inbasketView === "simulation" && inbasketSelectedId === "ai-workflow" ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setInbasketView("list");
-                  setInbasketSelectedId(null);
-                  setAnalysisLoading(true);
-                }}
-                className="flex items-center gap-2 rounded-lg bg-blue-600 text-white px-6 py-2 text-sm font-semibold hover:bg-blue-700"
-              >
-                완료하고 결과 보기
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            ) : step < STEPS.length - 1 ? (
-              <button
-                type="button"
-                onClick={() => {
-                  if (step === 5) setAnalysisLoading(true);
-                  else goNext();
-                }}
-                disabled={false}
-                className="flex items-center gap-2 rounded-lg bg-blue-600 text-white px-6 py-2 text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                onClick={goNext}
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all"
               >
                 다음
                 <ChevronRight className="w-5 h-5" />
               </button>
-            ) : (
-              <div className="w-20" />
-            )}
-          </div>
+            </div>
           )}
         </div>
       </div>

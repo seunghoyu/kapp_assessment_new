@@ -31,6 +31,8 @@ import InbasketSimulation from "./InbasketSimulation";
 import type { IndustryNode } from "./industryTypes";
 import IndustrySelectModal from "./IndustrySelectModal";
 import DiagnosisStartStep from "./DiagnosisStartStep";
+import { ROUTES } from "@/lib/routes";
+import { serializeReportRequest } from "@/lib/report/report-data";
 
 /** KAPP 진단 데이터 안내 + 문항 구성 로직 문서 기준 (kapp_origin flow 동일) */
 const STEPS = [
@@ -1156,10 +1158,17 @@ export default function DiagnosisPage() {
                   </button>
                   <button
                     type="button"
-                    disabled
-                    className="rounded-lg border border-gray-300 text-gray-700 bg-white px-5 py-3 font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:pointer-events-none"
-                    aria-disabled="true"
-                    title="준비 중"
+                    onClick={() => {
+                      const payload = serializeReportRequest({
+                        name: form.name,
+                        industry: form.industry,
+                        job: form.job,
+                      });
+                      const previewUrl = `${ROUTES.REPORT_PREVIEW}?payload=${encodeURIComponent(payload)}`;
+                      window.open(previewUrl, "_blank", "noopener,noreferrer");
+                    }}
+                    className="rounded-lg border border-blue-200 text-blue-700 bg-white px-5 py-3 font-semibold hover:bg-blue-50 transition-colors"
+                    title="새 창으로 리포트 미리보기"
                   >
                     종합분석 리포트 다운로드
                   </button>

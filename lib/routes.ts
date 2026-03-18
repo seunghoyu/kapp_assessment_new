@@ -9,4 +9,6 @@ export const ROUTES = {
   APP_MY_DASHBOARD: "/app/dashboard",
   APP_EDUCATION: "/app/education",
   APP_GROWTH: "/app/growth",
+  REPORT_PREVIEW: "/report/preview",
+  REPORT_PDF_API: "/api/report/pdf",
 } as const;

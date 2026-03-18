@@ -63,7 +63,7 @@ async function createPdfResponse(request: NextRequest) {
     });
 
     const filename = createPdfFileName(report);
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(Buffer.from(pdfBuffer), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",

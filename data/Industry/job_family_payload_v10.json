@@ -1,0 +1,2357 @@
+[
+  {
+    "job_family_id": "JF_STR_01",
+    "family_group_id": "FG_STRATEGY",
+    "major_category_num": 1,
+    "major_category_label": "기획·전략",
+    "major_category_icon": "📊",
+    "job_family_name_ko": "경영기획·사업기획",
+    "typical_roles": [
+      "경영기획자",
+      "사업기획자",
+      "전략기획담당",
+      "경영기획팀장",
+      "사업개발담당",
+      "신사업기획자"
+    ]
+  },
+  {
+    "job_family_id": "JF_STR_02",
+    "family_group_id": "FG_STRATEGY",
+    "major_category_num": 1,
+    "major_category_label": "기획·전략",
+    "major_category_icon": "📊",
+    "job_family_name_ko": "경영컨설팅·자문",
+    "typical_roles": [
+      "경영컨설턴트",
+      "전략컨설턴트",
+      "비즈니스어드바이저",
+      "경영자문위원",
+      "기업진단전문가"
+    ]
+  },
+  {
+    "job_family_id": "JF_STR_03",
+    "family_group_id": "FG_STRATEGY",
+    "major_category_num": 1,
+    "major_category_label": "기획·전략",
+    "major_category_icon": "📊",
+    "job_family_name_ko": "PM·PMO·애자일",
+    "typical_roles": [
+      "프로젝트매니저",
+      "PMO담당",
+      "애자일코치",
+      "스크럼마스터",
+      "PjM",
+      "프로그램매니저"
+    ]
+  },
+  {
+    "job_family_id": "JF_STR_04",
+    "family_group_id": "FG_STRATEGY",
+    "major_category_num": 1,
+    "major_category_label": "기획·전략",
+    "major_category_icon": "📊",
+    "job_family_name_ko": "상품기획·PO·서비스기획",
+    "typical_roles": [
+      "상품기획자",
+      "Product Owner",
+      "서비스기획자",
+      "PM(ProductManager)",
+      "기획PM",
+      "플랫폼기획자",
+      "웹기획자",
+      "앱기획자"
+    ]
+  },
+  {
+    "job_family_id": "JF_STR_05",
+    "family_group_id": "FG_STRATEGY",
+    "major_category_num": 1,
+    "major_category_label": "기획·전략",
+    "major_category_icon": "📊",
+    "job_family_name_ko": "경영지원·일반관리",
+    "typical_roles": [
+      "경영지원담당",
+      "사업관리담당",
+      "임원비서",
+      "경영총괄지원",
+      "사무국장",
+      "CEO",
+      "COO",
+      "CTO",
+      "대표이사",
+      "공동창업자"
+    ]
+  },
+  {
+    "job_family_id": "JF_MKT_01",
+    "family_group_id": "FG_MARKETING",
+    "major_category_num": 2,
+    "major_category_label": "마케팅·홍보·조사",
+    "major_category_icon": "📣",
+    "job_family_name_ko": "브랜드마케팅",
+    "typical_roles": [
+      "브랜드마케터",
+      "브랜드매니저",
+      "캠페인기획자",
+      "ATL마케터",
+      "마케팅매니저",
+      "브랜드전략담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_MKT_02",
+    "family_group_id": "FG_MARKETING",
+    "major_category_num": 2,
+    "major_category_label": "마케팅·홍보·조사",
+    "major_category_icon": "📣",
+    "job_family_name_ko": "디지털·퍼포먼스마케팅",
+    "typical_roles": [
+      "퍼포먼스마케터",
+      "디지털마케터",
+      "검색광고담당",
+      "SA/DA운영자",
+      "미디어바잉담당",
+      "광고운영담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_MKT_03",
+    "family_group_id": "FG_MARKETING",
+    "major_category_num": 2,
+    "major_category_label": "마케팅·홍보·조사",
+    "major_category_icon": "📣",
+    "job_family_name_ko": "콘텐츠마케팅",
+    "typical_roles": [
+      "콘텐츠마케터",
+      "SNS마케터",
+      "콘텐츠에디터",
+      "소셜미디어담당",
+      "콘텐츠크리에이터",
+      "블로그마케터"
+    ]
+  },
+  {
+    "job_family_id": "JF_MKT_04",
+    "family_group_id": "FG_MARKETING",
+    "major_category_num": 2,
+    "major_category_label": "마케팅·홍보·조사",
+    "major_category_icon": "📣",
+    "job_family_name_ko": "CRM·그로스마케팅",
+    "typical_roles": [
+      "CRM마케터",
+      "그로스해커",
+      "리텐션마케터",
+      "MAU담당",
+      "그로스매니저",
+      "CRM전략담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_MKT_05",
+    "family_group_id": "FG_MARKETING",
+    "major_category_num": 2,
+    "major_category_label": "마케팅·홍보·조사",
+    "major_category_icon": "📣",
+    "job_family_name_ko": "온라인마케팅·이커머스마케팅",
+    "typical_roles": [
+      "온라인마케터",
+      "이커머스마케터",
+      "채널매니저",
+      "플랫폼마케터",
+      "D2C마케터",
+      "채널관리자"
+    ]
+  },
+  {
+    "job_family_id": "JF_MKT_06",
+    "family_group_id": "FG_MARKETING",
+    "major_category_num": 2,
+    "major_category_label": "마케팅·홍보·조사",
+    "major_category_icon": "📣",
+    "job_family_name_ko": "PR·홍보·대외협력",
+    "typical_roles": [
+      "PR매니저",
+      "홍보담당",
+      "언론홍보담당",
+      "대외협력담당",
+      "IR홍보담당",
+      "위기커뮤니케이션담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_MKT_07",
+    "family_group_id": "FG_MARKETING",
+    "major_category_num": 2,
+    "major_category_label": "마케팅·홍보·조사",
+    "major_category_icon": "📣",
+    "job_family_name_ko": "광고기획·AE",
+    "typical_roles": [
+      "AE(광고기획)",
+      "광고기획자",
+      "마케팅기획자",
+      "크리에이티브디렉터",
+      "카피라이터",
+      "CD(CreativeDirector)"
+    ]
+  },
+  {
+    "job_family_id": "JF_MKT_08",
+    "family_group_id": "FG_MARKETING",
+    "major_category_num": 2,
+    "major_category_label": "마케팅·홍보·조사",
+    "major_category_icon": "📣",
+    "job_family_name_ko": "시장조사·리서치·인사이트",
+    "typical_roles": [
+      "마케팅리서처",
+      "시장조사담당",
+      "소비자인사이트분석가",
+      "리서치매니저",
+      "트렌드분석가"
+    ]
+  },
+  {
+    "job_family_id": "JF_MKT_09",
+    "family_group_id": "FG_MARKETING",
+    "major_category_num": 2,
+    "major_category_label": "마케팅·홍보·조사",
+    "major_category_icon": "📣",
+    "job_family_name_ko": "MD·상품관리·바잉",
+    "typical_roles": [
+      "MD(머천다이저)",
+      "바이어",
+      "상품관리자",
+      "VMD",
+      "카테고리매니저",
+      "바잉담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_FIN_01",
+    "family_group_id": "FG_FINANCE_GEN",
+    "major_category_num": 3,
+    "major_category_label": "회계·세무·재무",
+    "major_category_icon": "💰",
+    "job_family_name_ko": "재무기획·FP&A·IR",
+    "typical_roles": [
+      "재무담당",
+      "FP&A담당",
+      "IR담당",
+      "재무기획자",
+      "CFO스태프",
+      "자본시장담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_FIN_02",
+    "family_group_id": "FG_FINANCE_GEN",
+    "major_category_num": 3,
+    "major_category_label": "회계·세무·재무",
+    "major_category_icon": "💰",
+    "job_family_name_ko": "회계·경리",
+    "typical_roles": [
+      "회계사",
+      "경리담당",
+      "원가분석가",
+      "결산담당",
+      "재무회계담당",
+      "공인회계사(CPA)"
+    ]
+  },
+  {
+    "job_family_id": "JF_FIN_03",
+    "family_group_id": "FG_FINANCE_GEN",
+    "major_category_num": 3,
+    "major_category_label": "회계·세무·재무",
+    "major_category_icon": "💰",
+    "job_family_name_ko": "세무·감사",
+    "typical_roles": [
+      "세무사",
+      "세무담당",
+      "내부감사",
+      "관세사",
+      "세무조정담당",
+      "조세전략담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_FIN_04",
+    "family_group_id": "FG_FINANCE_GEN",
+    "major_category_num": 3,
+    "major_category_label": "회계·세무·재무",
+    "major_category_icon": "💰",
+    "job_family_name_ko": "자금·예산관리",
+    "typical_roles": [
+      "자금담당",
+      "예산관리담당",
+      "자금운용담당",
+      "현금흐름관리",
+      "재무운용담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_HR_01",
+    "family_group_id": "FG_HR",
+    "major_category_num": 4,
+    "major_category_label": "인사·노무·HRD",
+    "major_category_icon": "👥",
+    "job_family_name_ko": "인사기획·HR제너럴리스트",
+    "typical_roles": [
+      "HR담당",
+      "인사기획자",
+      "HR제너럴리스트",
+      "인사팀장",
+      "HR매니저",
+      "인사관리담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_HR_02",
+    "family_group_id": "FG_HR",
+    "major_category_num": 4,
+    "major_category_label": "인사·노무·HRD",
+    "major_category_icon": "👥",
+    "job_family_name_ko": "채용·리크루팅",
+    "typical_roles": [
+      "채용담당",
+      "리크루터",
+      "TA(TalentAcquisition)",
+      "헤드헌터",
+      "인재확보담당",
+      "채용매니저"
+    ]
+  },
+  {
+    "job_family_id": "JF_HR_03",
+    "family_group_id": "FG_HR",
+    "major_category_num": 4,
+    "major_category_label": "인사·노무·HRD",
+    "major_category_icon": "👥",
+    "job_family_name_ko": "평가·보상·HRBP",
+    "typical_roles": [
+      "평가보상담당",
+      "C&B매니저",
+      "HRBP",
+      "급여담당",
+      "성과관리담당",
+      "보상전략담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_HR_04",
+    "family_group_id": "FG_HR",
+    "major_category_num": 4,
+    "major_category_label": "인사·노무·HRD",
+    "major_category_icon": "👥",
+    "job_family_name_ko": "조직개발·OD·조직문화",
+    "typical_roles": [
+      "조직개발담당",
+      "OD컨설턴트",
+      "조직문화담당",
+      "변화관리담당",
+      "조직설계담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_HR_05",
+    "family_group_id": "FG_HR",
+    "major_category_num": 4,
+    "major_category_label": "인사·노무·HRD",
+    "major_category_icon": "👥",
+    "job_family_name_ko": "HRD·교육기획·러닝디자인",
+    "typical_roles": [
+      "HRD담당",
+      "교육기획자",
+      "러닝디자이너",
+      "사내강사",
+      "L&D매니저",
+      "역량개발담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_HR_06",
+    "family_group_id": "FG_HR",
+    "major_category_num": 4,
+    "major_category_label": "인사·노무·HRD",
+    "major_category_icon": "👥",
+    "job_family_name_ko": "노무관리·노사관계",
+    "typical_roles": [
+      "노무담당",
+      "노무사",
+      "노사관계담당",
+      "산재관리담당",
+      "근로계약관리",
+      "CLA담당",
+      "직업상담사"
+    ]
+  },
+  {
+    "job_family_id": "JF_ADM_01",
+    "family_group_id": "FG_ADMIN_LEGAL",
+    "major_category_num": 5,
+    "major_category_label": "총무·법무·사무",
+    "major_category_icon": "🗂️",
+    "job_family_name_ko": "총무·행정·비서",
+    "typical_roles": [
+      "사무담당자",
+      "경영지원담당",
+      "총무담당",
+      "행정지원담당",
+      "비서",
+      "사무보조",
+      "총무팀장",
+      "시설담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_ADM_02",
+    "family_group_id": "FG_ADMIN_LEGAL",
+    "major_category_num": 5,
+    "major_category_label": "총무·법무·사무",
+    "major_category_icon": "🗂️",
+    "job_family_name_ko": "기업법무·계약관리",
+    "typical_roles": [
+      "기업법무담당",
+      "계약관리담당",
+      "법무팀원",
+      "계약검토담당",
+      "법무매니저"
+    ]
+  },
+  {
+    "job_family_id": "JF_ADM_03",
+    "family_group_id": "FG_ADMIN_LEGAL",
+    "major_category_num": 5,
+    "major_category_label": "총무·법무·사무",
+    "major_category_icon": "🗂️",
+    "job_family_name_ko": "컴플라이언스·리스크관리",
+    "typical_roles": [
+      "준법감시인",
+      "컴플라이언스담당",
+      "리스크매니저",
+      "내부통제담당",
+      "GRC담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_ADM_04",
+    "family_group_id": "FG_ADMIN_LEGAL",
+    "major_category_num": 5,
+    "major_category_label": "총무·법무·사무",
+    "major_category_icon": "🗂️",
+    "job_family_name_ko": "변호사·법무사·변리사",
+    "typical_roles": [
+      "변호사",
+      "법무사",
+      "변리사",
+      "노무사(전문직)",
+      "사내변호사",
+      "기업변호사"
+    ]
+  },
+  {
+    "job_family_id": "JF_ADM_05",
+    "family_group_id": "FG_ADMIN_LEGAL",
+    "major_category_num": 5,
+    "major_category_label": "총무·법무·사무",
+    "major_category_icon": "🗂️",
+    "job_family_name_ko": "공공행정·정책",
+    "typical_roles": [
+      "공무원",
+      "행정직",
+      "정책기획담당",
+      "사무관",
+      "주무관"
+    ]
+  },
+  {
+    "job_family_id": "JF_ADM_06",
+    "family_group_id": "FG_ADMIN_LEGAL",
+    "major_category_num": 5,
+    "major_category_label": "총무·법무·사무",
+    "major_category_icon": "🗂️",
+    "job_family_name_ko": "특허·지식재산(IP)",
+    "typical_roles": [
+      "변리사(IP전담)",
+      "IP담당",
+      "특허엔지니어",
+      "지식재산담당",
+      "특허출원담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_DEV_01",
+    "family_group_id": "FG_IT_DEV",
+    "major_category_num": 6,
+    "major_category_label": "IT·개발",
+    "major_category_icon": "💻",
+    "job_family_name_ko": "백엔드개발",
+    "typical_roles": [
+      "백엔드개발자",
+      "서버개발자",
+      "Java개발자",
+      "Python개발자",
+      "Node.js개발자",
+      "Spring개발자"
+    ]
+  },
+  {
+    "job_family_id": "JF_DEV_02",
+    "family_group_id": "FG_IT_DEV",
+    "major_category_num": 6,
+    "major_category_label": "IT·개발",
+    "major_category_icon": "💻",
+    "job_family_name_ko": "프론트엔드개발",
+    "typical_roles": [
+      "프론트엔드개발자",
+      "웹개발자",
+      "React개발자",
+      "Vue개발자",
+      "UI개발자",
+      "Angular개발자"
+    ]
+  },
+  {
+    "job_family_id": "JF_DEV_03",
+    "family_group_id": "FG_IT_DEV",
+    "major_category_num": 6,
+    "major_category_label": "IT·개발",
+    "major_category_icon": "💻",
+    "job_family_name_ko": "풀스택·웹개발",
+    "typical_roles": [
+      "소프트웨어개발자",
+      "풀스택개발자",
+      "웹개발자",
+      "웹퍼블리셔",
+      "풀스택엔지니어"
+    ]
+  },
+  {
+    "job_family_id": "JF_DEV_04",
+    "family_group_id": "FG_IT_DEV",
+    "major_category_num": 6,
+    "major_category_label": "IT·개발",
+    "major_category_icon": "💻",
+    "job_family_name_ko": "앱·모바일개발",
+    "typical_roles": [
+      "앱개발자",
+      "iOS개발자",
+      "Android개발자",
+      "Flutter개발자",
+      "React Native개발자",
+      "모바일엔지니어"
+    ]
+  },
+  {
+    "job_family_id": "JF_DEV_05",
+    "family_group_id": "FG_IT_DEV",
+    "major_category_num": 6,
+    "major_category_label": "IT·개발",
+    "major_category_icon": "💻",
+    "job_family_name_ko": "게임개발",
+    "typical_roles": [
+      "게임개발자",
+      "게임클라이언트개발자",
+      "게임서버개발자",
+      "Unity개발자",
+      "Unreal개발자",
+      "TD(TechnicalDirector)"
+    ]
+  },
+  {
+    "job_family_id": "JF_DEV_06",
+    "family_group_id": "FG_IT_DEV",
+    "major_category_num": 6,
+    "major_category_label": "IT·개발",
+    "major_category_icon": "💻",
+    "job_family_name_ko": "임베디드·펌웨어",
+    "typical_roles": [
+      "임베디드개발자",
+      "펌웨어개발자",
+      "HW개발자",
+      "BSP개발자",
+      "RTOS개발자"
+    ]
+  },
+  {
+    "job_family_id": "JF_DEV_07",
+    "family_group_id": "FG_IT_DEV",
+    "major_category_num": 6,
+    "major_category_label": "IT·개발",
+    "major_category_icon": "💻",
+    "job_family_name_ko": "QA·테스트엔지니어",
+    "typical_roles": [
+      "QA엔지니어",
+      "테스터",
+      "SDET",
+      "자동화QA",
+      "테스트엔지니어",
+      "QA매니저"
+    ]
+  },
+  {
+    "job_family_id": "JF_DEV_08",
+    "family_group_id": "FG_IT_DEV",
+    "major_category_num": 6,
+    "major_category_label": "IT·개발",
+    "major_category_icon": "💻",
+    "job_family_name_ko": "IT컨설팅·SI·ERP",
+    "typical_roles": [
+      "IT컨설턴트",
+      "SI엔지니어",
+      "SAP컨설턴트",
+      "ERP구축담당",
+      "Oracle컨설턴트",
+      "Salesforce개발자"
+    ]
+  },
+  {
+    "job_family_id": "JF_DEV_09",
+    "family_group_id": "FG_IT_DEV",
+    "major_category_num": 6,
+    "major_category_label": "IT·개발",
+    "major_category_icon": "💻",
+    "job_family_name_ko": "블록체인·Web3",
+    "typical_roles": [
+      "블록체인개발자",
+      "스마트컨트랙트개발자",
+      "Web3개발자",
+      "DApp개발자",
+      "Solidity개발자"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_01",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "AI·ML엔지니어·MLOps",
+    "typical_roles": [
+      "AI엔지니어",
+      "ML엔지니어",
+      "MLOps엔지니어",
+      "LLMOps엔지니어",
+      "머신러닝엔지니어"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_02",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "AI·ML연구원",
+    "typical_roles": [
+      "AI연구원",
+      "딥러닝연구원",
+      "NLP연구원",
+      "CV연구원",
+      "음성AI연구원",
+      "생성AI연구원"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_03",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "데이터사이언티스트",
+    "typical_roles": [
+      "데이터사이언티스트",
+      "ML분석가",
+      "통계모델러",
+      "예측모델담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_04",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "데이터분석가·BI·DBA",
+    "typical_roles": [
+      "데이터분석가",
+      "BI엔지니어",
+      "DBA",
+      "SQL분석가",
+      "데이터애널리스트",
+      "인사이트분석가"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_05",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "데이터엔지니어",
+    "typical_roles": [
+      "데이터엔지니어",
+      "ETL개발자",
+      "Spark엔지니어",
+      "파이프라인엔지니어",
+      "Kafka엔지니어"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_06",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "AI서비스개발·LLM응용",
+    "typical_roles": [
+      "AI서비스개발자",
+      "LLM응용개발자",
+      "AI Agent개발자",
+      "RAG개발자",
+      "ChatBot개발자"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_07",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "클라우드·DevOps·인프라",
+    "typical_roles": [
+      "클라우드엔지니어",
+      "DevOps엔지니어",
+      "SRE(사이트신뢰성엔지니어)",
+      "인프라엔지니어",
+      "AWS엔지니어",
+      "GCP엔지니어"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_08",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "시스템·네트워크엔지니어",
+    "typical_roles": [
+      "시스템엔지니어",
+      "네트워크엔지니어",
+      "서버관리자",
+      "네트워크관리자",
+      "시스템운영담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_09",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "정보보안·보안엔지니어",
+    "typical_roles": [
+      "정보보안엔지니어",
+      "보안담당",
+      "침해대응담당",
+      "모의해킹전문가",
+      "ISMS담당",
+      "보안아키텍트",
+      "AI보안전문가"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_10",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "IT지원·헬프데스크",
+    "typical_roles": [
+      "IT지원담당",
+      "헬프데스크",
+      "전산담당",
+      "IT운영담당",
+      "기술지원"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_11",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "AI기획·DX전략",
+    "typical_roles": [
+      "AI기획자",
+      "DX전략담당",
+      "AI사업전략담당",
+      "AI컨설턴트",
+      "디지털전환기획자"
+    ]
+  },
+  {
+    "job_family_id": "JF_AI_12",
+    "family_group_id": "FG_AI_DATA",
+    "major_category_num": 7,
+    "major_category_label": "AI·데이터·인프라",
+    "major_category_icon": "🤖",
+    "job_family_name_ko": "프롬프트엔지니어·AI활용",
+    "typical_roles": [
+      "프롬프트엔지니어",
+      "AI활용전문가",
+      "AI튜터",
+      "데이터라벨러",
+      "AI윤리담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_DES_01",
+    "family_group_id": "FG_DESIGN",
+    "major_category_num": 8,
+    "major_category_label": "디자인",
+    "major_category_icon": "🎨",
+    "job_family_name_ko": "UX·UI·프로덕트디자인",
+    "typical_roles": [
+      "UX디자이너",
+      "UI디자이너",
+      "프로덕트디자이너",
+      "서비스디자이너",
+      "인터랙션디자이너",
+      "UX리서처",
+      "웹디자이너"
+    ]
+  },
+  {
+    "job_family_id": "JF_DES_02",
+    "family_group_id": "FG_DESIGN",
+    "major_category_num": 8,
+    "major_category_label": "디자인",
+    "major_category_icon": "🎨",
+    "job_family_name_ko": "그래픽·시각·편집디자인",
+    "typical_roles": [
+      "그래픽디자이너",
+      "시각디자이너",
+      "편집디자이너",
+      "북디자이너",
+      "타이포그래퍼"
+    ]
+  },
+  {
+    "job_family_id": "JF_DES_03",
+    "family_group_id": "FG_DESIGN",
+    "major_category_num": 8,
+    "major_category_label": "디자인",
+    "major_category_icon": "🎨",
+    "job_family_name_ko": "브랜드·광고디자인",
+    "typical_roles": [
+      "브랜드디자이너",
+      "광고디자이너",
+      "아트디렉터",
+      "비주얼아이덴티티디자이너"
+    ]
+  },
+  {
+    "job_family_id": "JF_DES_04",
+    "family_group_id": "FG_DESIGN",
+    "major_category_num": 8,
+    "major_category_label": "디자인",
+    "major_category_icon": "🎨",
+    "job_family_name_ko": "영상·모션·3D디자인",
+    "typical_roles": [
+      "영상디자이너",
+      "모션그래픽디자이너",
+      "3D디자이너",
+      "VFX아티스트",
+      "컴포지터"
+    ]
+  },
+  {
+    "job_family_id": "JF_DES_05",
+    "family_group_id": "FG_DESIGN",
+    "major_category_num": 8,
+    "major_category_label": "디자인",
+    "major_category_icon": "🎨",
+    "job_family_name_ko": "패션·텍스타일디자인",
+    "typical_roles": [
+      "패션디자이너",
+      "텍스타일디자이너",
+      "의상디자이너",
+      "액세서리디자이너"
+    ]
+  },
+  {
+    "job_family_id": "JF_DES_06",
+    "family_group_id": "FG_DESIGN",
+    "major_category_num": 8,
+    "major_category_label": "디자인",
+    "major_category_icon": "🎨",
+    "job_family_name_ko": "제품·산업디자인",
+    "typical_roles": [
+      "제품디자이너",
+      "산업디자이너",
+      "ID(IndustrialDesigner)",
+      "패키지디자이너"
+    ]
+  },
+  {
+    "job_family_id": "JF_DES_07",
+    "family_group_id": "FG_DESIGN",
+    "major_category_num": 8,
+    "major_category_label": "디자인",
+    "major_category_icon": "🎨",
+    "job_family_name_ko": "공간·인테리어·환경디자인",
+    "typical_roles": [
+      "실내디자이너",
+      "공간디자이너",
+      "인테리어기획자",
+      "디스플레이디자이너",
+      "환경디자이너"
+    ]
+  },
+  {
+    "job_family_id": "JF_DES_08",
+    "family_group_id": "FG_DESIGN",
+    "major_category_num": 8,
+    "major_category_label": "디자인",
+    "major_category_icon": "🎨",
+    "job_family_name_ko": "일러스트·캐릭터·웹툰",
+    "typical_roles": [
+      "일러스트레이터",
+      "캐릭터디자이너",
+      "웹툰작가",
+      "콘셉트아티스트"
+    ]
+  },
+  {
+    "job_family_id": "JF_SAL_01",
+    "family_group_id": "FG_SALES",
+    "major_category_num": 9,
+    "major_category_label": "영업·판매·무역",
+    "major_category_icon": "💼",
+    "job_family_name_ko": "B2B영업·법인영업",
+    "typical_roles": [
+      "제품영업",
+      "서비스영업",
+      "B2B영업담당",
+      "법인영업담당",
+      "기업영업매니저",
+      "세일즈매니저",
+      "영업팀장",
+      "금융영업담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_SAL_02",
+    "family_group_id": "FG_SALES",
+    "major_category_num": 9,
+    "major_category_label": "영업·판매·무역",
+    "major_category_icon": "💼",
+    "job_family_name_ko": "기술영업·IT영업",
+    "typical_roles": [
+      "기술영업담당",
+      "IT영업담당",
+      "솔루션영업",
+      "프리세일즈엔지니어",
+      "테크니컬세일즈"
+    ]
+  },
+  {
+    "job_family_id": "JF_SAL_03",
+    "family_group_id": "FG_SALES",
+    "major_category_num": 9,
+    "major_category_label": "영업·판매·무역",
+    "major_category_icon": "💼",
+    "job_family_name_ko": "해외영업·무역·수출입",
+    "typical_roles": [
+      "해외영업담당",
+      "무역담당",
+      "수출입담당",
+      "글로벌세일즈",
+      "국제영업담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_SAL_04",
+    "family_group_id": "FG_SALES",
+    "major_category_num": 9,
+    "major_category_label": "영업·판매·무역",
+    "major_category_icon": "💼",
+    "job_family_name_ko": "B2C·리테일영업",
+    "typical_roles": [
+      "B2C영업담당",
+      "리테일영업",
+      "채널영업",
+      "대리점관리",
+      "프랜차이즈관리자",
+      "법인영업"
+    ]
+  },
+  {
+    "job_family_id": "JF_SAL_05",
+    "family_group_id": "FG_SALES",
+    "major_category_num": 9,
+    "major_category_label": "영업·판매·무역",
+    "major_category_icon": "💼",
+    "job_family_name_ko": "광고·미디어영업",
+    "typical_roles": [
+      "광고영업담당",
+      "미디어영업",
+      "스폰서십매니저",
+      "광고솔루션영업"
+    ]
+  },
+  {
+    "job_family_id": "JF_SAL_06",
+    "family_group_id": "FG_SALES",
+    "major_category_num": 9,
+    "major_category_label": "영업·판매·무역",
+    "major_category_icon": "💼",
+    "job_family_name_ko": "영업관리·영업지원",
+    "typical_roles": [
+      "영업관리",
+      "영업지원",
+      "영업기획",
+      "영업관리담당",
+      "영업지원담당",
+      "세일즈옵스",
+      "영업기획자",
+      "CRM운영담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_CS_01",
+    "family_group_id": "FG_CS",
+    "major_category_num": 10,
+    "major_category_label": "고객상담·TM",
+    "major_category_icon": "🎧",
+    "job_family_name_ko": "고객성공·어카운트매니저",
+    "typical_roles": [
+      "고객성공매니저(CSM)",
+      "어카운트매니저(AM)",
+      "고객담당자",
+      "키어카운트매니저"
+    ]
+  },
+  {
+    "job_family_id": "JF_CS_02",
+    "family_group_id": "FG_CS",
+    "major_category_num": 10,
+    "major_category_label": "고객상담·TM",
+    "major_category_icon": "🎧",
+    "job_family_name_ko": "인바운드상담·고객센터",
+    "typical_roles": [
+      "인바운드상담원",
+      "고객센터상담원",
+      "CS담당",
+      "콜센터상담원",
+      "채팅상담원"
+    ]
+  },
+  {
+    "job_family_id": "JF_CS_03",
+    "family_group_id": "FG_CS",
+    "major_category_num": 10,
+    "major_category_label": "고객상담·TM",
+    "major_category_icon": "🎧",
+    "job_family_name_ko": "아웃바운드·TM",
+    "typical_roles": [
+      "아웃바운드상담원",
+      "텔레마케터(TM)",
+      "전화영업담당",
+      "콜영업"
+    ]
+  },
+  {
+    "job_family_id": "JF_CS_04",
+    "family_group_id": "FG_CS",
+    "major_category_num": 10,
+    "major_category_label": "고객상담·TM",
+    "major_category_icon": "🎧",
+    "job_family_name_ko": "고객센터운영·QA",
+    "typical_roles": [
+      "고객센터관리자",
+      "QA매니저",
+      "콜센터운영관리자",
+      "CS팀장",
+      "WFM담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_OPS_01",
+    "family_group_id": "FG_SCM",
+    "major_category_num": 11,
+    "major_category_label": "구매·자재·물류",
+    "major_category_icon": "📦",
+    "job_family_name_ko": "구매·조달·바잉",
+    "typical_roles": [
+      "구매관리자",
+      "구매담당",
+      "조달담당",
+      "바이어(구매)",
+      "소싱담당",
+      "구매팀장",
+      "전략구매담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_OPS_02",
+    "family_group_id": "FG_SCM",
+    "major_category_num": 11,
+    "major_category_label": "구매·자재·물류",
+    "major_category_icon": "📦",
+    "job_family_name_ko": "자재관리·재고관리",
+    "typical_roles": [
+      "자재관리자",
+      "자재관리담당",
+      "재고관리담당",
+      "창고관리담당",
+      "물류현장담당",
+      "WMS운영"
+    ]
+  },
+  {
+    "job_family_id": "JF_OPS_03",
+    "family_group_id": "FG_SCM",
+    "major_category_num": 11,
+    "major_category_label": "구매·자재·물류",
+    "major_category_icon": "📦",
+    "job_family_name_ko": "SCM·물류기획",
+    "typical_roles": [
+      "SCM매니저",
+      "물류기획담당",
+      "공급망관리담당",
+      "물류운영담당",
+      "3PL관리",
+      "유통관리자",
+      "물류관리자"
+    ]
+  },
+  {
+    "job_family_id": "JF_OPS_04",
+    "family_group_id": "FG_SCM",
+    "major_category_num": 11,
+    "major_category_label": "구매·자재·물류",
+    "major_category_icon": "📦",
+    "job_family_name_ko": "이커머스운영·플랫폼운영",
+    "typical_roles": [
+      "이커머스운영담당",
+      "플랫폼운영담당",
+      "커머스MD",
+      "온라인운영매니저"
+    ]
+  },
+  {
+    "job_family_id": "JF_OPS_05",
+    "family_group_id": "FG_SCM",
+    "major_category_num": 11,
+    "major_category_label": "구매·자재·물류",
+    "major_category_icon": "📦",
+    "job_family_name_ko": "시설·자산관리",
+    "typical_roles": [
+      "시설관리자",
+      "시설관리담당",
+      "자산관리담당",
+      "CAFM운영",
+      "부동산운영담당",
+      "빌딩관리자"
+    ]
+  },
+  {
+    "job_family_id": "JF_OPS_06",
+    "family_group_id": "FG_SCM",
+    "major_category_num": 11,
+    "major_category_label": "구매·자재·물류",
+    "major_category_icon": "📦",
+    "job_family_name_ko": "운전·배송·물류현장직",
+    "typical_roles": [
+      "납품·배송기사",
+      "배달기사",
+      "수행기사·운전기사",
+      "화물기사",
+      "중장비기사",
+      "버스기사",
+      "택시기사",
+      "지게차기사",
+      "퀵서비스기사",
+      "탑차기사",
+      "조종사·기관사"
+    ]
+  },
+  {
+    "job_family_id": "JF_OPS_07",
+    "family_group_id": "FG_SCM",
+    "major_category_num": 11,
+    "major_category_label": "구매·자재·물류",
+    "major_category_icon": "📦",
+    "job_family_name_ko": "수출입·통관",
+    "typical_roles": [
+      "통관담당",
+      "수출입담당",
+      "무역사무원",
+      "포워더",
+      "관세사(무역)",
+      "수출입물류담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_PMD_01",
+    "family_group_id": "FG_PRODUCT_MD",
+    "major_category_num": 12,
+    "major_category_label": "상품기획·MD",
+    "major_category_icon": "🛍️",
+    "job_family_name_ko": "상품기획·카테고리매니저",
+    "typical_roles": [
+      "상품기획자",
+      "카테고리매니저",
+      "MD담당(기획)",
+      "품목기획자"
+    ]
+  },
+  {
+    "job_family_id": "JF_PMD_02",
+    "family_group_id": "FG_PRODUCT_MD",
+    "major_category_num": 12,
+    "major_category_label": "상품기획·MD",
+    "major_category_icon": "🛍️",
+    "job_family_name_ko": "MD·바이어·소싱",
+    "typical_roles": [
+      "MD(머천다이저)",
+      "바이어(패션/유통)",
+      "소싱담당",
+      "구매MD"
+    ]
+  },
+  {
+    "job_family_id": "JF_PMD_03",
+    "family_group_id": "FG_PRODUCT_MD",
+    "major_category_num": 12,
+    "major_category_label": "상품기획·MD",
+    "major_category_icon": "🛍️",
+    "job_family_name_ko": "VMD·비주얼머천다이징",
+    "typical_roles": [
+      "VMD(비주얼머천다이저)",
+      "매장기획담당",
+      "디스플레이기획"
+    ]
+  },
+  {
+    "job_family_id": "JF_PMD_04",
+    "family_group_id": "FG_PRODUCT_MD",
+    "major_category_num": 12,
+    "major_category_label": "상품기획·MD",
+    "major_category_icon": "🛍️",
+    "job_family_name_ko": "이커머스MD·온라인MD",
+    "typical_roles": [
+      "온라인MD",
+      "이커머스MD",
+      "셀러매니저",
+      "마켓플레이스MD"
+    ]
+  },
+  {
+    "job_family_id": "JF_MFG_01",
+    "family_group_id": "FG_PRODUCTION",
+    "major_category_num": 13,
+    "major_category_label": "생산·품질·안전",
+    "major_category_icon": "🏭",
+    "job_family_name_ko": "생산관리·공정엔지니어",
+    "typical_roles": [
+      "생산직종사자",
+      "생산관리자",
+      "공정엔지니어",
+      "제조기술담당",
+      "생산기술엔지니어",
+      "공장관리자",
+      "포장·가공담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_MFG_02",
+    "family_group_id": "FG_PRODUCTION",
+    "major_category_num": 13,
+    "major_category_label": "생산·품질·안전",
+    "major_category_icon": "🏭",
+    "job_family_name_ko": "품질관리·QC·품질보증",
+    "typical_roles": [
+      "품질관리자",
+      "QC엔지니어",
+      "품질보증담당",
+      "검사담당",
+      "QA(생산)",
+      "6시그마담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_MFG_03",
+    "family_group_id": "FG_PRODUCTION",
+    "major_category_num": 13,
+    "major_category_label": "생산·품질·안전",
+    "major_category_icon": "🏭",
+    "job_family_name_ko": "안전관리·EHS·환경",
+    "typical_roles": [
+      "안전관리자",
+      "EHS담당",
+      "환경관리자",
+      "보건관리자",
+      "산업안전담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_MFG_04",
+    "family_group_id": "FG_PRODUCTION",
+    "major_category_num": 13,
+    "major_category_label": "생산·품질·안전",
+    "major_category_icon": "🏭",
+    "job_family_name_ko": "설비·유지보수·기계정비",
+    "typical_roles": [
+      "설비엔지니어",
+      "유지보수담당",
+      "기계정비기사",
+      "PM엔지니어",
+      "설비보전담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_MFG_05",
+    "family_group_id": "FG_PRODUCTION",
+    "major_category_num": 13,
+    "major_category_label": "생산·품질·안전",
+    "major_category_icon": "🏭",
+    "job_family_name_ko": "전기·전자·반도체엔지니어",
+    "typical_roles": [
+      "전기엔지니어",
+      "전자설계엔지니어",
+      "반도체엔지니어",
+      "PCB설계엔지니어",
+      "회로설계담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_MFG_06",
+    "family_group_id": "FG_PRODUCTION",
+    "major_category_num": 13,
+    "major_category_label": "생산·품질·안전",
+    "major_category_icon": "🏭",
+    "job_family_name_ko": "기계·자동화·로봇엔지니어",
+    "typical_roles": [
+      "기계엔지니어",
+      "자동화엔지니어",
+      "로봇엔지니어",
+      "CAD설계엔지니어",
+      "메카트로닉스",
+      "AI로봇엔지니어"
+    ]
+  },
+  {
+    "job_family_id": "JF_MFG_07",
+    "family_group_id": "FG_PRODUCTION",
+    "major_category_num": 13,
+    "major_category_label": "생산·품질·안전",
+    "major_category_icon": "🏭",
+    "job_family_name_ko": "화학·소재·환경엔지니어",
+    "typical_roles": [
+      "화학엔지니어",
+      "소재엔지니어",
+      "환경엔지니어",
+      "공정개발엔지니어",
+      "고분자엔지니어"
+    ]
+  },
+  {
+    "job_family_id": "JF_MFG_08",
+    "family_group_id": "FG_PRODUCTION",
+    "major_category_num": 13,
+    "major_category_label": "생산·품질·안전",
+    "major_category_icon": "🏭",
+    "job_family_name_ko": "통신·RF·하드웨어엔지니어",
+    "typical_roles": [
+      "통신엔지니어",
+      "RF엔지니어",
+      "하드웨어엔지니어",
+      "필드엔지니어",
+      "안테나엔지니어"
+    ]
+  },
+  {
+    "job_family_id": "JF_MFG_09",
+    "family_group_id": "FG_PRODUCTION",
+    "major_category_num": 13,
+    "major_category_label": "생산·품질·안전",
+    "major_category_icon": "🏭",
+    "job_family_name_ko": "기계설계·CAD·엔지니어링",
+    "typical_roles": [
+      "기계설계엔지니어",
+      "CAD설계담당",
+      "3D설계엔지니어",
+      "메카니컬엔지니어",
+      "구조해석담당",
+      "CAD/CAM담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_MFG_10",
+    "family_group_id": "FG_PRODUCTION",
+    "major_category_num": 13,
+    "major_category_label": "생산·품질·안전",
+    "major_category_icon": "🏭",
+    "job_family_name_ko": "플랜트·에너지엔지니어",
+    "typical_roles": [
+      "플랜트엔지니어",
+      "에너지엔지니어",
+      "화공플랜트담당",
+      "피핑엔지니어",
+      "프로세스엔지니어"
+    ]
+  },
+  {
+    "job_family_id": "JF_CON_01",
+    "family_group_id": "FG_CONSTRUCTION",
+    "major_category_num": 14,
+    "major_category_label": "건설·건축",
+    "major_category_icon": "🏗️",
+    "job_family_name_ko": "건축설계·건축기사·감리",
+    "typical_roles": [
+      "건축가",
+      "건축기사",
+      "건축설계담당",
+      "감리원",
+      "건축구조기사"
+    ]
+  },
+  {
+    "job_family_id": "JF_CON_02",
+    "family_group_id": "FG_CONSTRUCTION",
+    "major_category_num": 14,
+    "major_category_label": "건설·건축",
+    "major_category_icon": "🏗️",
+    "job_family_name_ko": "토목·시공·현장관리",
+    "typical_roles": [
+      "토목기사",
+      "시공기사",
+      "현장관리자",
+      "공무",
+      "공무(현장)",
+      "토목설계기사",
+      "현장보조"
+    ]
+  },
+  {
+    "job_family_id": "JF_CON_03",
+    "family_group_id": "FG_CONSTRUCTION",
+    "major_category_num": 14,
+    "major_category_label": "건설·건축",
+    "major_category_icon": "🏗️",
+    "job_family_name_ko": "전기·소방·설비공사",
+    "typical_roles": [
+      "소방설비기사",
+      "전기기사",
+      "소방설비담당",
+      "설비공사담당",
+      "배관기사",
+      "전기설계담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_CON_04",
+    "family_group_id": "FG_CONSTRUCTION",
+    "major_category_num": 14,
+    "major_category_label": "건설·건축",
+    "major_category_icon": "🏗️",
+    "job_family_name_ko": "건설안전·환경기사",
+    "typical_roles": [
+      "건설안전관리자",
+      "환경기사",
+      "비파괴검사기사",
+      "건설안전기사"
+    ]
+  },
+  {
+    "job_family_id": "JF_CON_05",
+    "family_group_id": "FG_CONSTRUCTION",
+    "major_category_num": 14,
+    "major_category_label": "건설·건축",
+    "major_category_icon": "🏗️",
+    "job_family_name_ko": "인테리어·공간기획",
+    "typical_roles": [
+      "실내건축기사",
+      "인테리어기획자",
+      "공간기획자",
+      "인테리어설계담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_CON_06",
+    "family_group_id": "FG_CONSTRUCTION",
+    "major_category_num": 14,
+    "major_category_label": "건설·건축",
+    "major_category_icon": "🏗️",
+    "job_family_name_ko": "도시계획·조경·부동산",
+    "typical_roles": [
+      "도시설계담당",
+      "조경기사",
+      "조경설계담당",
+      "공인중개사",
+      "감정평가사",
+      "환경기사",
+      "비파괴검사원",
+      "분양매니저"
+    ]
+  },
+  {
+    "job_family_id": "JF_SVC_01",
+    "family_group_id": "FG_SERVICE",
+    "major_category_num": 15,
+    "major_category_label": "서비스·식음료",
+    "major_category_icon": "🍽️",
+    "job_family_name_ko": "호텔·항공·여행",
+    "typical_roles": [
+      "호텔리어",
+      "승무원(항공)",
+      "여행에이전트",
+      "여행가이드",
+      "객실담당",
+      "프론트담당",
+      "호텔종사자",
+      "승무원"
+    ]
+  },
+  {
+    "job_family_id": "JF_SVC_02",
+    "family_group_id": "FG_SERVICE",
+    "major_category_num": 15,
+    "major_category_label": "서비스·식음료",
+    "major_category_icon": "🍽️",
+    "job_family_name_ko": "식·음료·F&B",
+    "typical_roles": [
+      "요리사",
+      "조리사",
+      "셰프·주방장",
+      "제과제빵사",
+      "바리스타",
+      "카페·레스토랑매니저",
+      "홀서버",
+      "주방보조",
+      "소믈리에·바텐더",
+      "영양사",
+      "푸드스타일리스트",
+      "식품연구원(현장)"
+    ]
+  },
+  {
+    "job_family_id": "JF_SVC_03",
+    "family_group_id": "FG_SERVICE",
+    "major_category_num": 15,
+    "major_category_label": "서비스·식음료",
+    "major_category_icon": "🍽️",
+    "job_family_name_ko": "뷰티·미용·웰니스",
+    "typical_roles": [
+      "헤어디자이너",
+      "피부관리사",
+      "네일아티스트",
+      "뷰티테라피스트",
+      "메이크업아티스트",
+      "뷰티·미용사",
+      "애견미용사",
+      "애견훈련사",
+      "스타일리스트"
+    ]
+  },
+  {
+    "job_family_id": "JF_SVC_04",
+    "family_group_id": "FG_SERVICE",
+    "major_category_num": 15,
+    "major_category_label": "서비스·식음료",
+    "major_category_icon": "🍽️",
+    "job_family_name_ko": "경호·경비·시설보안",
+    "typical_roles": [
+      "경호원",
+      "경비원",
+      "시설보안요원",
+      "청원경찰"
+    ]
+  },
+  {
+    "job_family_id": "JF_SVC_05",
+    "family_group_id": "FG_SERVICE",
+    "major_category_num": 15,
+    "major_category_label": "서비스·식음료",
+    "major_category_icon": "🍽️",
+    "job_family_name_ko": "스포츠·레저·트레이너",
+    "typical_roles": [
+      "스포츠강사",
+      "퍼스널트레이너(PT)",
+      "스포츠에이전트",
+      "체육지도자"
+    ]
+  },
+  {
+    "job_family_id": "JF_SVC_06",
+    "family_group_id": "FG_SERVICE",
+    "major_category_num": 15,
+    "major_category_label": "서비스·식음료",
+    "major_category_icon": "🍽️",
+    "job_family_name_ko": "기능·숙련기술직",
+    "typical_roles": [
+      "정비기사",
+      "설치·수리기사",
+      "전기공",
+      "배관공",
+      "용접공",
+      "냉동설비기사",
+      "도장공",
+      "기계수리기사",
+      "용접사"
+    ]
+  },
+  {
+    "job_family_id": "JF_SVC_07",
+    "family_group_id": "FG_SERVICE",
+    "major_category_num": 15,
+    "major_category_label": "서비스·식음료",
+    "major_category_icon": "🍽️",
+    "job_family_name_ko": "공공·사회서비스현장직",
+    "typical_roles": [
+      "환경미화원",
+      "장례지도사",
+      "주차관리원",
+      "사회서비스현장직",
+      "가사도우미",
+      "플로리스트",
+      "주차·주유원"
+    ]
+  },
+  {
+    "job_family_id": "JF_SVC_08",
+    "family_group_id": "FG_SERVICE",
+    "major_category_num": 15,
+    "major_category_label": "서비스·식음료",
+    "major_category_icon": "🍽️",
+    "job_family_name_ko": "매장관리·점장·리테일운영",
+    "typical_roles": [
+      "매장관리자",
+      "점장",
+      "샵매니저",
+      "리테일운영담당",
+      "스토어매니저",
+      "매장슈퍼바이저"
+    ]
+  },
+  {
+    "job_family_id": "JF_SVC_09",
+    "family_group_id": "FG_SERVICE",
+    "major_category_num": 15,
+    "major_category_label": "서비스·식음료",
+    "major_category_icon": "🍽️",
+    "job_family_name_ko": "고객서비스·판매직",
+    "typical_roles": [
+      "판매사원",
+      "고객서비스담당",
+      "리테일어소시에이트",
+      "매장직원",
+      "판매원",
+      "안내데스크담당",
+      "리셉셔니스트",
+      "운영보조"
+    ]
+  },
+  {
+    "job_family_id": "JF_SVC_10",
+    "family_group_id": "FG_SERVICE",
+    "major_category_num": 15,
+    "major_category_label": "서비스·식음료",
+    "major_category_icon": "🍽️",
+    "job_family_name_ko": "이벤트·웨딩·플래너",
+    "typical_roles": [
+      "이벤트플래너",
+      "웨딩플래너",
+      "행사기획자",
+      "MC",
+      "쇼호스트",
+      "이벤트운영"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_01",
+    "family_group_id": "FG_MEDIA",
+    "major_category_num": 16,
+    "major_category_label": "미디어·문화·스포츠",
+    "major_category_icon": "🎬",
+    "job_family_name_ko": "PD·감독·연출",
+    "typical_roles": [
+      "PD",
+      "방송연출담당",
+      "영화감독",
+      "크리에이티브디렉터",
+      "방송작가PD",
+      "스태프",
+      "배급담당",
+      "제작자"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_02",
+    "family_group_id": "FG_MEDIA",
+    "major_category_num": 16,
+    "major_category_label": "미디어·문화·스포츠",
+    "major_category_icon": "🎬",
+    "job_family_name_ko": "영상편집·촬영·포토",
+    "typical_roles": [
+      "영상편집자",
+      "촬영감독",
+      "포토그래퍼",
+      "VFX아티스트",
+      "컴포지터"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_03",
+    "family_group_id": "FG_MEDIA",
+    "major_category_num": 16,
+    "major_category_label": "미디어·문화·스포츠",
+    "major_category_icon": "🎬",
+    "job_family_name_ko": "작가·카피라이터·기자",
+    "typical_roles": [
+      "카피라이터",
+      "작가",
+      "콘텐츠에디터",
+      "기자",
+      "아나운서",
+      "기획작가",
+      "출판편집자",
+      "리포터·성우",
+      "출판·편집자"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_04",
+    "family_group_id": "FG_MEDIA",
+    "major_category_num": 16,
+    "major_category_label": "미디어·문화·스포츠",
+    "major_category_icon": "🎬",
+    "job_family_name_ko": "크리에이터·인플루언서",
+    "typical_roles": [
+      "유튜버",
+      "크리에이터",
+      "인플루언서",
+      "스트리머",
+      "콘텐츠크리에이터",
+      "MC",
+      "쇼호스트",
+      "모델",
+      "연예인매니저",
+      "AI콘텐츠크리에이터"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_05",
+    "family_group_id": "FG_MEDIA",
+    "major_category_num": 16,
+    "major_category_label": "미디어·문화·스포츠",
+    "major_category_icon": "🎬",
+    "job_family_name_ko": "사운드·음악·공연기획",
+    "typical_roles": [
+      "사운드엔지니어",
+      "작곡가",
+      "음반기획자",
+      "공연기획자",
+      "음악PD"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_06",
+    "family_group_id": "FG_MEDIA",
+    "major_category_num": 16,
+    "major_category_label": "미디어·문화·스포츠",
+    "major_category_icon": "🎬",
+    "job_family_name_ko": "번역·통역",
+    "typical_roles": [
+      "통번역사",
+      "번역가",
+      "현지화담당",
+      "동시통역사",
+      "언어전문가"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_07",
+    "family_group_id": "FG_MEDIA",
+    "major_category_num": 16,
+    "major_category_label": "미디어·문화·스포츠",
+    "major_category_icon": "🎬",
+    "job_family_name_ko": "큐레이터·전시기획·사서",
+    "typical_roles": [
+      "큐레이터",
+      "전시기획자",
+      "사서",
+      "아카이비스트",
+      "문화기획자"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_08",
+    "family_group_id": "FG_MEDIA",
+    "major_category_num": 16,
+    "major_category_label": "미디어·문화·스포츠",
+    "major_category_icon": "🎬",
+    "job_family_name_ko": "스포츠행정·에이전트",
+    "typical_roles": [
+      "스포츠에이전트",
+      "스포츠행정담당",
+      "경기운영담당",
+      "리그운영담당",
+      "구단운영담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_01",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "금융사무·은행텔러",
+    "typical_roles": [
+      "은행원",
+      "텔러(Teller)",
+      "금융사무원",
+      "창구직원",
+      "출납담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_02",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "금융상품영업·PB",
+    "typical_roles": [
+      "금융영업담당",
+      "PB(프라이빗뱅커)",
+      "WM(Wealth Manager)",
+      "자산관리사",
+      "재무설계사(CFP)"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_03",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "대출·여신심사",
+    "typical_roles": [
+      "대출상담사",
+      "여신심사담당",
+      "신용심사담당",
+      "담보심사담당",
+      "모기지담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_04",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "보험상담·보험사무",
+    "typical_roles": [
+      "보험상담사",
+      "보험사무원",
+      "언더라이터(보험)",
+      "계약심사담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_05",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "보험상품개발·계리",
+    "typical_roles": [
+      "보험상품개발자",
+      "보험기획담당",
+      "계리사(보조)",
+      "상품전략담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_06",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "보험설계사",
+    "typical_roles": [
+      "보험설계사",
+      "GA보험설계사",
+      "재무설계사(FP)",
+      "보험컨설턴트"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_07",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "손해사정·클레임",
+    "typical_roles": [
+      "손해사정사",
+      "클레임담당",
+      "보상담당",
+      "배상담당",
+      "사고조사담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_08",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "심사역·신용분석·IB",
+    "typical_roles": [
+      "심사담당",
+      "심사역",
+      "신용분석가",
+      "IB담당",
+      "기업금융담당",
+      "인수합병담당",
+      "구조화금융"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_09",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "애널리스트·리서치",
+    "typical_roles": [
+      "주식애널리스트",
+      "채권애널리스트",
+      "리서치담당",
+      "투자분석가",
+      "섹터애널리스트"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_10",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "딜러·트레이더",
+    "typical_roles": [
+      "외환딜러",
+      "주식트레이더",
+      "파생상품트레이더",
+      "외환관리담당",
+      "FX담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_11",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "펀드매니저·자산운용",
+    "typical_roles": [
+      "펀드매니저",
+      "자산운용역",
+      "포트폴리오매니저",
+      "운용전략담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_12",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "계리사",
+    "typical_roles": [
+      "계리사",
+      "보험수리담당",
+      "보험계리사",
+      "계리분석담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_13",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "리스크·금융컴플라이언스",
+    "typical_roles": [
+      "리스크관리담당",
+      "금융컴플라이언스",
+      "내부통제담당",
+      "리스크애널리스트"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_14",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "핀테크·디지털금융기획",
+    "typical_roles": [
+      "핀테크기획자",
+      "디지털금융담당",
+      "금융IT기획자",
+      "오픈뱅킹담당",
+      "마이데이터담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_BNK_15",
+    "family_group_id": "FG_FINANCE_FIN",
+    "major_category_num": 17,
+    "major_category_label": "금융·보험",
+    "major_category_icon": "🏦",
+    "job_family_name_ko": "부동산투자·신탁",
+    "typical_roles": [
+      "부동산투자담당",
+      "신탁업무담당",
+      "REITs담당",
+      "자산관리(부동산)"
+    ]
+  },
+  {
+    "job_family_id": "JF_RND_01",
+    "family_group_id": "FG_RND",
+    "major_category_num": 18,
+    "major_category_label": "연구·R&D",
+    "major_category_icon": "🔬",
+    "job_family_name_ko": "자연과학·생명과학R&D",
+    "typical_roles": [
+      "R&D연구원",
+      "생명과학연구원",
+      "신소재연구원",
+      "화학연구원",
+      "재료공학연구원"
+    ]
+  },
+  {
+    "job_family_id": "JF_RND_02",
+    "family_group_id": "FG_RND",
+    "major_category_num": 18,
+    "major_category_label": "연구·R&D",
+    "major_category_icon": "🔬",
+    "job_family_name_ko": "바이오·제약·임상연구",
+    "typical_roles": [
+      "바이오연구원",
+      "제약연구원",
+      "임상연구원(CRA)",
+      "RA담당",
+      "규제담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_RND_03",
+    "family_group_id": "FG_RND",
+    "major_category_num": 18,
+    "major_category_label": "연구·R&D",
+    "major_category_icon": "🔬",
+    "job_family_name_ko": "식품과학·영양·식품개발",
+    "typical_roles": [
+      "식품연구원",
+      "영양사",
+      "식품공학담당",
+      "식품개발담당",
+      "조리과학연구원"
+    ]
+  },
+  {
+    "job_family_id": "JF_RND_04",
+    "family_group_id": "FG_RND",
+    "major_category_num": 18,
+    "major_category_label": "연구·R&D",
+    "major_category_icon": "🔬",
+    "job_family_name_ko": "의료기기·헬스케어R&D",
+    "typical_roles": [
+      "의료기기개발자",
+      "헬스케어R&D담당",
+      "임상공학기사",
+      "의공학연구원"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_H01",
+    "family_group_id": "FG_HEALTHCARE",
+    "major_category_num": 19,
+    "major_category_label": "의료·복지",
+    "major_category_icon": "🏥",
+    "job_family_name_ko": "의사·한의사·약사",
+    "typical_roles": [
+      "의사",
+      "한의사",
+      "약사",
+      "수의사",
+      "치과의사",
+      "한약사",
+      "수의테크니션"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_H02",
+    "family_group_id": "FG_HEALTHCARE",
+    "major_category_num": 19,
+    "major_category_label": "의료·복지",
+    "major_category_icon": "🏥",
+    "job_family_name_ko": "간호사·간호조무사",
+    "typical_roles": [
+      "간호사",
+      "간호조무사",
+      "수술실간호사",
+      "중환자실간호사",
+      "가정간호사"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_H03",
+    "family_group_id": "FG_HEALTHCARE",
+    "major_category_num": 19,
+    "major_category_label": "의료·복지",
+    "major_category_icon": "🏥",
+    "job_family_name_ko": "의료기사·방사선·물리치료",
+    "typical_roles": [
+      "임상병리사",
+      "방사선사",
+      "물리치료사",
+      "작업치료사",
+      "의료기사"
+    ]
+  },
+  {
+    "job_family_id": "JF_MED_H04",
+    "family_group_id": "FG_HEALTHCARE",
+    "major_category_num": 19,
+    "major_category_label": "의료·복지",
+    "major_category_icon": "🏥",
+    "job_family_name_ko": "병원행정·의료코디",
+    "typical_roles": [
+      "병원코디네이터",
+      "원무행정담당",
+      "의무기록사",
+      "원무과직원",
+      "의료·약무보조",
+      "기타의료종사자"
+    ]
+  },
+  {
+    "job_family_id": "JF_SOC_01",
+    "family_group_id": "FG_HEALTHCARE",
+    "major_category_num": 19,
+    "major_category_label": "의료·복지",
+    "major_category_icon": "🏥",
+    "job_family_name_ko": "사회복지사·요양보호사",
+    "typical_roles": [
+      "사회복지사",
+      "요양보호사",
+      "케어매니저",
+      "생활지원사",
+      "재활담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_SOC_02",
+    "family_group_id": "FG_HEALTHCARE",
+    "major_category_num": 19,
+    "major_category_label": "의료·복지",
+    "major_category_icon": "🏥",
+    "job_family_name_ko": "상담사·심리치료사",
+    "typical_roles": [
+      "상담사",
+      "심리치료사",
+      "직업상담사",
+      "EAP상담사",
+      "정신건강사회복지사"
+    ]
+  },
+  {
+    "job_family_id": "JF_EDU_01",
+    "family_group_id": "FG_EDUCATION",
+    "major_category_num": 20,
+    "major_category_label": "교육",
+    "major_category_icon": "📚",
+    "job_family_name_ko": "유아·초중고 교사·보육교사",
+    "typical_roles": [
+      "유치원교사",
+      "보육교사",
+      "초등교사",
+      "중학교교사",
+      "고등학교교사",
+      "특수교사",
+      "교직원",
+      "조교",
+      "방과후교사"
+    ]
+  },
+  {
+    "job_family_id": "JF_EDU_02",
+    "family_group_id": "FG_EDUCATION",
+    "major_category_num": 20,
+    "major_category_label": "교육",
+    "major_category_icon": "📚",
+    "job_family_name_ko": "대학교수·강사",
+    "typical_roles": [
+      "대학교수",
+      "강사(대학)",
+      "시간강사",
+      "겸임교수",
+      "초빙교수",
+      "연구교수"
+    ]
+  },
+  {
+    "job_family_id": "JF_EDU_03",
+    "family_group_id": "FG_EDUCATION",
+    "major_category_num": 20,
+    "major_category_label": "교육",
+    "major_category_icon": "📚",
+    "job_family_name_ko": "학원강사·과외·방문교사",
+    "typical_roles": [
+      "학원강사",
+      "과외교사",
+      "외국어강사",
+      "기술·전문강사",
+      "학습지·방문교사",
+      "온라인강사",
+      "튜터"
+    ]
+  },
+  {
+    "job_family_id": "JF_EDU_04",
+    "family_group_id": "FG_EDUCATION",
+    "major_category_num": 20,
+    "major_category_label": "교육",
+    "major_category_icon": "📚",
+    "job_family_name_ko": "학원운영·교육상담",
+    "typical_roles": [
+      "학원운영담당",
+      "학원상담사",
+      "입시컨설턴트",
+      "원장",
+      "교육컨설턴트",
+      "AI교육컨설턴트",
+      "교육행정담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_EDU_05",
+    "family_group_id": "FG_EDUCATION",
+    "major_category_num": 20,
+    "major_category_label": "교육",
+    "major_category_icon": "📚",
+    "job_family_name_ko": "기업교육·HRD·교수설계",
+    "typical_roles": [
+      "HRD강사",
+      "기업교육강사",
+      "교수설계자",
+      "이러닝기획자",
+      "러닝디자이너",
+      "사내강사",
+      "L&D담당",
+      "역량개발담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_EDU_06",
+    "family_group_id": "FG_EDUCATION",
+    "major_category_num": 20,
+    "major_category_label": "교육",
+    "major_category_icon": "📚",
+    "job_family_name_ko": "이러닝·에듀테크개발",
+    "typical_roles": [
+      "이러닝개발자",
+      "콘텐츠개발자",
+      "SCORM개발자",
+      "에듀테크기획자",
+      "교육플랫폼개발",
+      "Moodle운영자",
+      "교재개발자"
+    ]
+  },
+  {
+    "job_family_id": "JF_PUB_01",
+    "family_group_id": "FG_PUBLIC",
+    "major_category_num": 21,
+    "major_category_label": "공공·복지",
+    "major_category_icon": "🏛️",
+    "job_family_name_ko": "공무원·행정직",
+    "typical_roles": [
+      "공무원",
+      "행정직",
+      "사무관",
+      "주무관",
+      "정책기획담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_PUB_02",
+    "family_group_id": "FG_PUBLIC",
+    "major_category_num": 21,
+    "major_category_label": "공공·복지",
+    "major_category_icon": "🏛️",
+    "job_family_name_ko": "공공기관·준정부",
+    "typical_roles": [
+      "공공기관직원",
+      "준정부기관담당",
+      "기금운용담당",
+      "공공기관기획"
+    ]
+  },
+  {
+    "job_family_id": "JF_PUB_03",
+    "family_group_id": "FG_PUBLIC",
+    "major_category_num": 21,
+    "major_category_label": "공공·복지",
+    "major_category_icon": "🏛️",
+    "job_family_name_ko": "NGO·비영리단체",
+    "typical_roles": [
+      "NGO담당",
+      "비영리단체직원",
+      "사회적기업담당",
+      "사회공헌담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_PUB_04",
+    "family_group_id": "FG_PUBLIC",
+    "major_category_num": 21,
+    "major_category_label": "공공·복지",
+    "major_category_icon": "🏛️",
+    "job_family_name_ko": "군무원·경찰·소방",
+    "typical_roles": [
+      "군무원",
+      "경찰행정직",
+      "소방행정직",
+      "교정직",
+      "출입국심사관"
+    ]
+  },
+  {
+    "job_family_id": "JF_PUB_05",
+    "family_group_id": "FG_PUBLIC",
+    "major_category_num": 21,
+    "major_category_label": "공공·복지",
+    "major_category_icon": "🏛️",
+    "job_family_name_ko": "보건·방역·사회서비스직",
+    "typical_roles": [
+      "보건관리자",
+      "방역기사",
+      "방재기사",
+      "환경미화원",
+      "사서",
+      "자원봉사코디네이터",
+      "보건교사"
+    ]
+  }
+]

@@ -32,6 +32,7 @@ import type { IndustryNode } from "./industryTypes";
 import IndustrySelectModal from "./IndustrySelectModal";
 import DiagnosisStartStep from "./DiagnosisStartStep";
 import ProgressHeader from "@/components/diagnosis/ProgressHeader";
+import DiagnosisInfoInputLeftPanel from "@/components/diagnosis/DiagnosisInfoInputLeftPanel";
 import { ROUTES } from "@/lib/routes";
 import { serializeReportRequest } from "@/lib/report/report-data";
 
@@ -157,9 +158,12 @@ const COMPANY_TYPE_OPTIONS = [
 
 type PersistedState = {
   step: number;
+  infoInputStep: 1 | 2 | 3;
   form: {
     name: string;
     email: string;
+    password: string;
+    phone: string;
     industry: string;
     job: string;
     companyType: string;
@@ -190,9 +194,12 @@ function loadPersistedState(): Partial<PersistedState> | null {
     if (!data || typeof data !== "object") return null;
     const d = data as Record<string, unknown>;
     const step = typeof d.step === "number" && d.step >= 0 && d.step <= 6 ? d.step : undefined;
+    const infoInputStep =
+      d.infoInputStep === 1 || d.infoInputStep === 2 || d.infoInputStep === 3 ? (d.infoInputStep as 1 | 2 | 3) : undefined;
     if (step === undefined) return null;
     return {
       step,
+      infoInputStep,
       form: typeof d.form === "object" && d.form !== null ? (d.form as PersistedState["form"]) : undefined,
       selectedEtrayId: typeof d.selectedEtrayId === "string" || d.selectedEtrayId === null ? d.selectedEtrayId : undefined,
       inbasketView: d.inbasketView === "list" || d.inbasketView === "simulation" ? d.inbasketView : undefined,
@@ -216,6 +223,8 @@ function savePersistedState(state: PersistedState) {
 const initialForm = {
   name: "",
   email: "",
+  password: "",
+  phone: "",
   industry: "",
   job: "",
   companyType: "",
@@ -237,6 +246,7 @@ const initialAnswers = {
 export default function DiagnosisPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const [infoInputStep, setInfoInputStep] = useState<1 | 2 | 3>(1);
   /** 단계 전환 방향: 다음 → 우측 슬라이드, 이전 → 좌측 슬라이드 */
   const [stepTransitionDir, setStepTransitionDir] = useState<"left" | "right" | null>(null);
   /** 카드형 문항 UI: step 내 현재 문항 인덱스 */
@@ -311,6 +321,7 @@ export default function DiagnosisPage() {
     const saved = loadPersistedState();
     if (!saved || saved.step === undefined) return;
     setStep(saved.step);
+    if (saved.infoInputStep !== undefined) setInfoInputStep(saved.infoInputStep);
     if (saved.form) {
       setForm({ ...initialForm, ...saved.form });
       const industryName = saved.form.industry;
@@ -333,6 +344,7 @@ export default function DiagnosisPage() {
     }
     const state: PersistedState = {
       step,
+      infoInputStep,
       form,
       selectedEtrayId,
       inbasketView,
@@ -340,7 +352,7 @@ export default function DiagnosisPage() {
       answers,
     };
     savePersistedState(state);
-  }, [step, form, selectedEtrayId, inbasketView, inbasketSelectedId, answers]);
+  }, [step, infoInputStep, form, selectedEtrayId, inbasketView, inbasketSelectedId, answers]);
 
   const knowledgeList = (knowledgeData as { questions: KnowledgeQ[] }).questions;
   const applicationList = (applicationData as { questions: ApplicationQ[] }).questions;
@@ -447,24 +459,48 @@ export default function DiagnosisPage() {
     }));
   };
 
-  const canNextFromInfo = () =>
-    form.name.trim() &&
-    form.industry &&
-    form.job &&
-    form.companyType &&
-    form.position &&
-    form.experienceYears &&
-    form.companySize;
+  const canNextFromInfoInputStep = () => {
+    switch (infoInputStep) {
+      case 1:
+        return !!(form.industry && form.job);
+      case 2:
+        return !!(
+          form.name.trim() &&
+          form.email.trim() &&
+          form.password.trim() &&
+          form.phone.trim()
+        );
+      case 3:
+        return !!(
+          form.companyType &&
+          form.position &&
+          form.experienceYears &&
+          form.companySize
+        );
+      default:
+        return false;
+    }
+  };
 
   const canNext = () => {
-    if (step === 1) return canNextFromInfo();
+    if (step === 1) return canNextFromInfoInputStep();
     return true;
   };
 
   const goNext = () => {
     setStepTransitionDir("right");
-    if (step === 1) setForm((f) => ({ ...f, job: "" }));
     setStep((s) => Math.min(STEPS.length - 1, s + 1));
+  };
+
+  const handleInfoInputNext = () => {
+    if (infoInputStep < 3) {
+      // 산업군 모달이 열려있을 수 있으므로, 서브 스텝 전환 시 닫아준다.
+      setIndustrySelectModalOpen(false);
+      setInfoInputStep((s) => (Math.min(3, s + 1) as 1 | 2 | 3));
+      return;
+    }
+    // 서브 스텝 3 완료 -> 메인 step 1 -> step 2로 이동
+    goNext();
   };
 
   const goPrev = () => {
@@ -514,7 +550,10 @@ export default function DiagnosisPage() {
                   onClick={() => {
                     if (step === 5 && inbasketView === "simulation") {
                       handleInbasketBackToList();
+                    } else if (step === 1 && infoInputStep > 1) {
+                      setInfoInputStep((s) => (Math.max(1, s - 1) as 1 | 2 | 3));
                     } else {
+                      setIndustrySelectModalOpen(false);
                       goPrev();
                     }
                   }}
@@ -614,7 +653,13 @@ export default function DiagnosisPage() {
           >
           {/* 0: 시작 — Split Layout + 카드뉴스 슬라이드 */}
           {step === 0 && (
-            <DiagnosisStartStep onStart={() => { setStepTransitionDir("right"); setStep(1); }} />
+            <DiagnosisStartStep
+              onStart={() => {
+                setStepTransitionDir("right");
+                setInfoInputStep(1);
+                setStep(1);
+              }}
+            />
           )}
 
           {/* 1: 정보 입력 — Split Layout (좌 60% 설명 / 우 40% 입력 UI) */}
@@ -622,174 +667,208 @@ export default function DiagnosisPage() {
             <div className="grid grid-cols-[60%_40%] flex-1 min-h-0 overflow-hidden bg-white">
               {/* 좌측 60%: 설명 영역, 세로 가운데 정렬 */}
               <div className="flex flex-col items-start justify-center px-10 py-8 min-h-0 border-r border-gray-100">
-                <h2 className="text-3xl font-bold text-gray-900 mb-3 md:text-4xl">
-                  맞춤형 역량 진단을 위한 정보 입력
-                </h2>
-                <p className="text-lg text-gray-600 max-w-[420px] leading-relaxed">
-                  귀하의 상황에 최적화된 진단 문항을 제공하기 위해 다음 정보를 입력해주세요
-                </p>
+                <DiagnosisInfoInputLeftPanel infoStep={infoInputStep} />
               </div>
 
               {/* 우측 40%: 입력 UI, overflow 시 세로 스크롤 */}
               <div className="flex flex-col min-h-0 overflow-y-auto">
-                <div className="flex-1 p-8 flex flex-col gap-5">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">이름 *</label>
-                    <input
-                      type="text"
-                      value={form.name}
-                      onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                      placeholder="홍길동"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">이메일 (선택)</label>
-                    <input
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                      placeholder="example@company.com"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">산업군 *</label>
-                      <button
-                        type="button"
-                        onClick={() => setIndustrySelectModalOpen(true)}
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-left bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-gray-50 transition-colors flex items-center justify-between shadow-sm"
-                      >
-                        <span className={form.industry ? "text-gray-900" : "text-gray-500"}>
-                          {(selectedMajor?.name ?? form.industry) || "산업군 선택"}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
-                      </button>
-                      <IndustrySelectModal
-                        open={industrySelectModalOpen}
-                        onClose={() => setIndustrySelectModalOpen(false)}
-                        majors={industryTreeData}
-                        onSelect={handleIndustrySelect}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">세부 직무 *</label>
-                      <input
-                        type="text"
-                        value={form.job}
-                        readOnly
-                        disabled={!form.industry}
-                        placeholder={
-                          form.industry
-                            ? "산업군 모달에서 직무·직업을 선택해주세요"
-                            : "먼저 산업군을 선택해주세요"
-                        }
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-400 shadow-sm"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">기업유형 *</label>
-                    <select
-                      value={form.companyType}
-                      onChange={(e) => setForm((f) => ({ ...f, companyType: e.target.value }))}
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                    >
-                      <option value="">선택해주세요</option>
-                      {COMPANY_TYPE_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">직급 *</label>
-                      <select
-                        value={form.position}
-                        onChange={(e) => setForm((f) => ({ ...f, position: e.target.value }))}
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                      >
-                        <option value="">선택해주세요</option>
-                        {positionLevels.map((p) => (
-                          <option key={p.value} value={p.value}>
-                            {p.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        회사명 (선택)
-                      </label>
-                      <input
-                        type="text"
-                        value={form.company}
-                        onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                        placeholder="소속 회사"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">연차 *</label>
-                    <select
-                      value={form.experienceYears}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, experienceYears: e.target.value }))
-                      }
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                    >
-                      <option value="">선택해주세요</option>
-                      {experienceYears.map((e) => (
-                        <option key={e.value} value={e.value}>
-                          {e.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">기업 규모 *</label>
-                    <select
-                      value={form.companySize}
-                      onChange={(e) => setForm((f) => ({ ...f, companySize: e.target.value }))}
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                    >
-                      <option value="">선택해주세요</option>
-                      {companySizes.map((c) => (
-                        <option key={c.value} value={c.value}>
-                          {c.icon ?? ""} {c.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      진단 목표 (선택, 복수 선택 가능)
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {diagnosticGoals.map((g) => (
+                <div className="flex-1 p-8 flex flex-col gap-5 justify-center">
+                  {infoInputStep === 1 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">산업군 *</label>
                         <button
-                          key={g.value}
                           type="button"
-                          onClick={() => toggleGoal(g.value)}
-                          className={`rounded-lg border px-3 py-1.5 text-sm transition-colors shadow-sm ${
-                            form.diagnosticGoals.includes(g.value)
-                              ? "border-blue-500 bg-blue-50 text-blue-700"
-                              : "border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100"
-                          }`}
+                          onClick={() => setIndustrySelectModalOpen(true)}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-left bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-gray-50 transition-colors flex items-center justify-between shadow-sm"
                         >
-                          {g.label}
+                          <span className={form.industry ? "text-gray-900" : "text-gray-500"}>
+                            {(selectedMajor?.name ?? form.industry) || "산업군 선택"}
+                          </span>
+                          <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
                         </button>
-                      ))}
+
+                        <IndustrySelectModal
+                          open={industrySelectModalOpen}
+                          onClose={() => setIndustrySelectModalOpen(false)}
+                          majors={industryTreeData}
+                          onSelect={handleIndustrySelect}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">세부 직무 *</label>
+                        <input
+                          type="text"
+                          value={form.job}
+                          readOnly
+                          disabled={!form.industry}
+                          placeholder={
+                            form.industry
+                              ? "산업군 모달에서 직무·직업을 선택해주세요"
+                              : "먼저 산업군을 선택해주세요"
+                          }
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-400 shadow-sm"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.1">
-                    <span className="inline-block w-4 h-4 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] shrink-0">i</span>
-                    입력하신 정보는 맞춤형 진단에만 활용되며, 암호화되어 안전하게 보호됩니다.
-                  </p>
+                  )}
+
+                  {infoInputStep === 2 && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">이름 *</label>
+                        <input
+                          type="text"
+                          value={form.name}
+                          onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                          placeholder="홍길동"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">이메일 (아이디) *</label>
+                        <input
+                          type="email"
+                          value={form.email}
+                          onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                          placeholder="example@company.com"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">비밀번호 *</label>
+                        <input
+                          type="password"
+                          value={form.password}
+                          onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                          placeholder="••••••••"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">전화번호 *</label>
+                        <input
+                          type="tel"
+                          value={form.phone}
+                          onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                          placeholder="010-1234-5678"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {infoInputStep === 3 && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">기업유형 *</label>
+                        <select
+                          value={form.companyType}
+                          onChange={(e) => setForm((f) => ({ ...f, companyType: e.target.value }))}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                        >
+                          <option value="">선택해주세요</option>
+                          {COMPANY_TYPE_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">직급 *</label>
+                          <select
+                            value={form.position}
+                            onChange={(e) => setForm((f) => ({ ...f, position: e.target.value }))}
+                            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                          >
+                            <option value="">선택해주세요</option>
+                            {positionLevels.map((p) => (
+                              <option key={p.value} value={p.value}>
+                                {p.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">회사명 (선택)</label>
+                          <input
+                            type="text"
+                            value={form.company}
+                            onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
+                            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                            placeholder="소속 회사"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">연차 *</label>
+                        <select
+                          value={form.experienceYears}
+                          onChange={(e) => setForm((f) => ({ ...f, experienceYears: e.target.value }))}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                        >
+                          <option value="">선택해주세요</option>
+                          {experienceYears.map((e) => (
+                            <option key={e.value} value={e.value}>
+                              {e.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">기업 규모 *</label>
+                        <select
+                          value={form.companySize}
+                          onChange={(e) => setForm((f) => ({ ...f, companySize: e.target.value }))}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                        >
+                          <option value="">선택해주세요</option>
+                          {companySizes.map((c) => (
+                            <option key={c.value} value={c.value}>
+                              {c.icon ?? ""} {c.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          진단 목표 (선택, 복수 선택 가능)
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {diagnosticGoals.map((g) => (
+                            <button
+                              key={g.value}
+                              type="button"
+                              onClick={() => toggleGoal(g.value)}
+                              className={`rounded-lg border px-3 py-1.5 text-sm transition-colors shadow-sm ${
+                                form.diagnosticGoals.includes(g.value)
+                                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                                  : "border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100"
+                              }`}
+                            >
+                              {g.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.1">
+                        <span className="inline-block w-4 h-4 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] shrink-0">i</span>
+                        입력하신 정보는 맞춤형 진단에만 활용되며, 암호화되어 안전하게 보호됩니다.
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -1162,8 +1241,9 @@ export default function DiagnosisPage() {
             <div className="absolute bottom-6 right-6 z-10">
               <button
                 type="button"
-                onClick={goNext}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all"
+                onClick={handleInfoInputNext}
+                disabled={!canNext()}
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all disabled:opacity-40 disabled:pointer-events-none"
               >
                 다음
                 <ChevronRight className="w-5 h-5" />

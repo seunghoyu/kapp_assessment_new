@@ -150,10 +150,12 @@ const ANALYSIS_LOADING_MESSAGES = [
 ];
 
 const COMPANY_TYPE_OPTIONS = [
-  { value: "일반기업", label: "일반기업" },
-  { value: "스타트업", label: "스타트업" },
-  { value: "외국계", label: "외국계" },
-  { value: "공공기관", label: "공공기관" },
+  { value: "일반 사기업", label: "일반 사기업" },
+  { value: "공기업·공공기관", label: "공기업·공공기관" },
+  { value: "외국계 기업", label: "외국계 기업" },
+  { value: "스타트업·벤처", label: "스타트업·벤처" },
+  { value: "비영리·NGO", label: "비영리·NGO" },
+  { value: "전문직", label: "전문직" },
 ] as const;
 
 type PersistedState = {
@@ -256,7 +258,7 @@ export default function DiagnosisPage() {
   const industryJobData = userInfoOptions.industryJobData as IndustryJobData;
   const positionLevels = userInfoOptions.positionLevels as OptionItem[];
   const experienceYears = userInfoOptions.experienceYears as OptionItem[];
-  const companySizes = userInfoOptions.companySizes as (OptionItem & { icon?: string })[];
+  const companySizes = userInfoOptions.companySizes as OptionItem[];
   const diagnosticGoals = userInfoOptions.diagnosticGoals as OptionItem[];
 
   const [form, setForm] = useState(initialForm);
@@ -284,6 +286,19 @@ export default function DiagnosisPage() {
     if (typeof window === "undefined") return;
     setInbasketTutorialDismissed(sessionStorage.getItem(INBASKET_TUTORIAL_DISMISSED_KEY) === "1");
   }, []);
+
+  // 옵션 변경 시(또는 복원된 값이 구버전일 때) 매칭 안 되면 placeholder로 초기화
+  useEffect(() => {
+    const companyTypeValues = new Set(COMPANY_TYPE_OPTIONS.map((o) => o.value));
+    const companySizeValues = new Set(companySizes.map((o) => o.value));
+
+    setForm((f) => {
+      const nextCompanyType = companyTypeValues.has(f.companyType) ? f.companyType : "";
+      const nextCompanySize = companySizeValues.has(f.companySize) ? f.companySize : "";
+      if (nextCompanyType === f.companyType && nextCompanySize === f.companySize) return f;
+      return { ...f, companyType: nextCompanyType, companySize: nextCompanySize };
+    });
+  }, [companySizes]);
 
   // 분석 로딩 중: 메시지 시간 기준 순환 (엔진 진행률과 무관, 추후 API 완료 시점으로 교체 가능)
   useEffect(() => {
@@ -835,7 +850,7 @@ export default function DiagnosisPage() {
                           <option value="">선택해주세요</option>
                           {companySizes.map((c) => (
                             <option key={c.value} value={c.value}>
-                              {c.icon ?? ""} {c.label}
+                              {c.label}
                             </option>
                           ))}
                         </select>

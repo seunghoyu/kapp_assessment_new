@@ -32,10 +32,10 @@
     { "value": "16년 이상", "label": "16년 이상" }
   ],
   "companySizes": [
-    { "value": "대기업", "label": "대기업 (1000명 이상)", "icon": "🏢" },
-    { "value": "중견기업", "label": "중견기업 (300-999명)", "icon": "🏬" },
-    { "value": "중소기업", "label": "중소기업 (50-299명)", "icon": "🏪" },
-    { "value": "스타트업", "label": "스타트업 (50명 미만)", "icon": "🚀" }
+    { "value": "소기업", "label": "소기업" },
+    { "value": "중소기업", "label": "중소기업" },
+    { "value": "중견기업", "label": "중견기업" },
+    { "value": "대기업", "label": "대기업" }
   ],
   "diagnosticGoals": [
     { "value": "승진", "label": "승진 준비" },

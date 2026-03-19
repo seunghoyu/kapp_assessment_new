@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback, Fragment, useRef } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   BookOpen,
@@ -31,6 +31,7 @@ import InbasketSimulation from "./InbasketSimulation";
 import type { IndustryNode } from "./industryTypes";
 import IndustrySelectModal from "./IndustrySelectModal";
 import DiagnosisStartStep from "./DiagnosisStartStep";
+import ProgressHeader from "@/components/diagnosis/ProgressHeader";
 import { ROUTES } from "@/lib/routes";
 import { serializeReportRequest } from "@/lib/report/report-data";
 
@@ -596,30 +597,8 @@ export default function DiagnosisPage() {
               </div>
             ) : null}
             </div>
-            <div className="flex items-center justify-end gap-0.5 flex-wrap shrink-0">
-            {STEPS.map((s, i) => (
-              <Fragment key={s.id}>
-                {i > 0 && <span className="text-gray-300 text-xs mx-0.5 select-none" aria-hidden>→</span>}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (step === 5 && inbasketView === "simulation" && s.id === 5) {
-                      handleInbasketBackToList();
-                    } else {
-                      setStepTransitionDir(s.id > step ? "right" : "left");
-                      setStep(s.id);
-                    }
-                  }}
-                  className={`rounded-lg px-2 py-1.5 text-xs font-medium transition-colors shrink-0 ${
-                    step === s.id
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {s.short}
-                </button>
-              </Fragment>
-            ))}
+            <div className="flex items-center justify-end gap-3 flex-wrap shrink-0">
+              {step >= 1 && <ProgressHeader step={step} />}
             </div>
           </div>
           {/* 단계별 콘텐츠 — 단계 전환 시 방향별 슬라이드 인 (다음→우측, 이전→좌측) */}

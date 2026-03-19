@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X, ChevronLeft } from "lucide-react";
 import type { IndustryNode } from "./industryTypes";
+import HighlightedText from "@/components/common/HighlightedText";
+import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 
 type Props = {
   open: boolean;
@@ -13,6 +15,8 @@ type Props = {
   middleNodes: IndustryNode[];
   /** 대분류 선택 확정 콜백 (어느 레벨에서 선택해도 대분류 기준) */
   onConfirmMajor?: () => void;
+  /** 검색 결과 클릭 시 이 경로로 선택 상태를 맞춥니다. [중,소,세,세세] 코드 배열(존재하는 depth까지만) */
+  initialSelectionCodes?: string[];
 };
 
 export default function IndustryClassificationModal({
@@ -21,11 +25,15 @@ export default function IndustryClassificationModal({
   majorName,
   middleNodes,
   onConfirmMajor,
+  initialSelectionCodes,
 }: Props) {
   const [selectedMiddle, setSelectedMiddle] = useState<IndustryNode | null>(null);
   const [selectedSmall, setSelectedSmall] = useState<IndustryNode | null>(null);
   const [selectedDetail, setSelectedDetail] = useState<IndustryNode | null>(null);
   const [selectedSubDetail, setSelectedSubDetail] = useState<IndustryNode | null>(null);
+
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const debouncedKeyword = useDebouncedValue(searchKeyword, 300);
 
   useEffect(() => {
     if (open) {
@@ -33,6 +41,7 @@ export default function IndustryClassificationModal({
       setSelectedSmall(null);
       setSelectedDetail(null);
       setSelectedSubDetail(null);
+      setSearchKeyword("");
     }
   }, [open]);
 
@@ -40,6 +49,59 @@ export default function IndustryClassificationModal({
   const smalls = selectedMiddle?.children ?? [];
   const details = selectedSmall?.children ?? [];
   const subDetails = selectedDetail?.children ?? [];
+
+  // 외부에서 경로가 주어지면(open 시점에) 선택 상태 자동 세팅
+  useEffect(() => {
+    if (!open) return;
+    if (!initialSelectionCodes || initialSelectionCodes.length === 0) return;
+
+    const [midCode, smallCode, detailCode, subDetailCode] = initialSelectionCodes;
+    const mid = middles.find((m) => m.code === midCode) ?? null;
+    const small = mid?.children?.find((n) => n.code === smallCode) ?? null;
+    const detail = small?.children?.find((n) => n.code === detailCode) ?? null;
+    const subDetail = detail?.children?.find((n) => n.code === subDetailCode) ?? null;
+
+    setSelectedMiddle(mid);
+    setSelectedSmall(small);
+    setSelectedDetail(detail);
+    setSelectedSubDetail(subDetail);
+  }, [open, initialSelectionCodes, middles]);
+
+  type SearchResult = {
+    codes: string[];
+    path: string;
+  };
+
+  const searchResults = useMemo((): SearchResult[] => {
+    const q = debouncedKeyword.trim().toLowerCase();
+    if (!q) return [];
+
+    const results: SearchResult[] = [];
+
+    const walk = (node: IndustryNode, names: string[], codes: string[]) => {
+      const nextNames = [...names, node.name];
+      const nextCodes = [...codes, node.code];
+      const path = nextNames.join(" > ");
+      if (path.toLowerCase().includes(q)) results.push({ codes: nextCodes, path });
+      for (const c of node.children ?? []) walk(c, nextNames, nextCodes);
+    };
+
+    for (const mid of middles) walk(mid, [], []);
+    return results.slice(0, 200);
+  }, [debouncedKeyword, middles]);
+
+  const applySelectionCodes = (codes: string[]) => {
+    const [midCode, smallCode, detailCode, subDetailCode] = codes;
+    const mid = middles.find((m) => m.code === midCode) ?? null;
+    const small = mid?.children?.find((n) => n.code === smallCode) ?? null;
+    const detail = small?.children?.find((n) => n.code === detailCode) ?? null;
+    const subDetail = detail?.children?.find((n) => n.code === subDetailCode) ?? null;
+
+    setSelectedMiddle(mid);
+    setSelectedSmall(small);
+    setSelectedDetail(detail);
+    setSelectedSubDetail(subDetail);
+  };
 
   const hasSelection =
     !!selectedMiddle || !!selectedSmall || !!selectedDetail || !!selectedSubDetail;
@@ -107,8 +169,43 @@ export default function IndustryClassificationModal({
           </div>
         </div>
 
+        {/* 검색 input (구분선 아래, 중앙 정렬) */}
+        <div className="flex-shrink-0 bg-white pt-[15px] pb-1 flex justify-center">
+          <div className="w-full max-w-5xl px-6">
+            <input
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              placeholder="산업군 키워드를 검색하세요."
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-600 shadow-sm"
+            />
+          </div>
+        </div>
+
         {/* 단계별 4열 테이블 */}
-        <div className="flex-1 min-h-0 overflow-auto px-6 py-4">
+        <div className="flex-1 min-h-0 overflow-auto px-6 py-3">
+          {debouncedKeyword.trim() ? (
+            <div>
+              {searchResults.length === 0 ? (
+                <p className="text-sm text-gray-500">검색 결과가 없습니다</p>
+              ) : (
+                <div className="max-h-[70vh] overflow-auto rounded-lg border border-gray-200 bg-white max-w-5xl mx-auto">
+                  {searchResults.map((r, idx) => (
+                    <button
+                      key={`${r.codes.join("-")}-${idx}`}
+                      type="button"
+                      onClick={() => applySelectionCodes(r.codes)}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 cursor-pointer"
+                      title={r.path}
+                    >
+                      <span className="block whitespace-nowrap overflow-hidden text-ellipsis">
+                        <HighlightedText text={r.path} keyword={debouncedKeyword} />
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
           <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
             <table className="w-full border-collapse">
               <thead>
@@ -219,6 +316,7 @@ export default function IndustryClassificationModal({
               </tbody>
             </table>
           </div>
+          )}
         </div>
 
         {/* 하단: 대분류 목록으로 돌아가기 */}

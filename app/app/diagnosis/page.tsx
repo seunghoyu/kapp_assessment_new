@@ -289,8 +289,8 @@ export default function DiagnosisPage() {
 
   // 옵션 변경 시(또는 복원된 값이 구버전일 때) 매칭 안 되면 placeholder로 초기화
   useEffect(() => {
-    const companyTypeValues = new Set(COMPANY_TYPE_OPTIONS.map((o) => o.value));
-    const companySizeValues = new Set(companySizes.map((o) => o.value));
+    const companyTypeValues = new Set<string>(COMPANY_TYPE_OPTIONS.map((o) => o.value));
+    const companySizeValues = new Set<string>(companySizes.map((o) => o.value));
 
     setForm((f) => {
       const nextCompanyType = companyTypeValues.has(f.companyType) ? f.companyType : "";

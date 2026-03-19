@@ -6,8 +6,10 @@ import { X } from "lucide-react";
 import type { IndustryNode } from "./industryTypes";
 import IndustryClassificationModal from "./IndustryClassificationModal";
 import TwemojiIcon from "@/components/common/TwemojiIcon";
+import HighlightedText from "@/components/common/HighlightedText";
 import jobFamilyPayload from "@/data/Industry/job_family_payload_v10.json";
 import industryMajorMeta from "@/data/Industry/industry_major_meta_v10.json";
+import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 
 type JobFamilyItem = {
   job_family_id: string;
@@ -44,12 +46,19 @@ export default function IndustrySelectModal({
 }: Props) {
   const [selectedMajorInModal, setSelectedMajorInModal] = useState<IndustryNode | null>(null);
   const [classificationMajor, setClassificationMajor] = useState<IndustryNode | null>(null);
+  const [classificationInitialCodes, setClassificationInitialCodes] = useState<string[] | null>(null);
   const [step, setStep] = useState<Step>("industry");
   const [jobStep, setJobStep] = useState<JobStep>("category");
 
   const [selectedCategoryNum, setSelectedCategoryNum] = useState<number | null>(null);
   const [selectedJobFamilyId, setSelectedJobFamilyId] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+
+  const [industrySearchKeyword, setIndustrySearchKeyword] = useState("");
+  const debouncedIndustryKeyword = useDebouncedValue(industrySearchKeyword, 300);
+
+  const [jobSearchKeyword, setJobSearchKeyword] = useState("");
+  const debouncedJobKeyword = useDebouncedValue(jobSearchKeyword, 300);
 
   type DisplayMajor = IndustryNode & { sort_order: number; short_name: string };
 
@@ -96,15 +105,87 @@ export default function IndustrySelectModal({
     return j?.typical_roles ?? [];
   }, [selectedJobFamilyId]);
 
+  type IndustrySearchResult = {
+    major: DisplayMajor;
+    codes: string[]; // [middle, small, detail, subDetail] 중 존재하는 것만
+    path: string;
+  };
+
+  const industrySearchResults = useMemo((): IndustrySearchResult[] => {
+    const q = debouncedIndustryKeyword.trim().toLowerCase();
+    if (!q) return [];
+
+    const results: IndustrySearchResult[] = [];
+
+    const walk = (
+      major: DisplayMajor,
+      node: IndustryNode,
+      names: string[],
+      codes: string[]
+    ) => {
+      const nextNames = [...names, node.name];
+      const nextCodes = [...codes, node.code];
+
+      const full = nextNames.join(" > ");
+      if (full.toLowerCase().includes(q)) {
+        results.push({ major, codes: nextCodes, path: full });
+      }
+
+      const children = node.children ?? [];
+      for (const c of children) walk(major, c, nextNames, nextCodes);
+    };
+
+    for (const major of displayMajors) {
+      const middles = major.children ?? [];
+      for (const mid of middles) walk(major, mid, [], []);
+    }
+
+    return results.slice(0, 200);
+  }, [debouncedIndustryKeyword, displayMajors]);
+
+  type JobSearchResult = {
+    categoryNum: number;
+    jobFamilyId: string;
+    role: string;
+    path: string;
+  };
+
+  const jobSearchResults = useMemo((): JobSearchResult[] => {
+    const q = debouncedJobKeyword.trim().toLowerCase();
+    if (!q) return [];
+
+    const results: JobSearchResult[] = [];
+    for (const f of JOB_FAMILIES) {
+      const category = f.major_category_label;
+      const family = f.job_family_name_ko;
+      for (const role of f.typical_roles ?? []) {
+        const path = `${category} > ${family} > ${role}`;
+        if (path.toLowerCase().includes(q)) {
+          results.push({
+            categoryNum: f.major_category_num,
+            jobFamilyId: f.job_family_id,
+            role,
+            path,
+          });
+        }
+      }
+    }
+
+    return results.slice(0, 200);
+  }, [debouncedJobKeyword]);
+
   useEffect(() => {
     if (!open) {
       setSelectedMajorInModal(null);
       setClassificationMajor(null);
+      setClassificationInitialCodes(null);
       setStep("industry");
       setJobStep("category");
       setSelectedCategoryNum(null);
       setSelectedJobFamilyId(null);
       setSelectedRole(null);
+      setIndustrySearchKeyword("");
+      setJobSearchKeyword("");
     }
   }, [open]);
 
@@ -138,10 +219,16 @@ export default function IndustrySelectModal({
   };
 
   const handleOpenDetail = () => {
-    if (selectedMajorInModal) setClassificationMajor(selectedMajorInModal);
+    if (selectedMajorInModal) {
+      setClassificationMajor(selectedMajorInModal);
+      setClassificationInitialCodes(null);
+    }
   };
 
-  const handleCloseClassification = () => setClassificationMajor(null);
+  const handleCloseClassification = () => {
+    setClassificationMajor(null);
+    setClassificationInitialCodes(null);
+  };
 
   const handleConfirmFromClassification = () => {
     if (!classificationMajor) return;
@@ -200,7 +287,7 @@ export default function IndustrySelectModal({
               <p className="text-sm text-gray-500 mt-1">
                 {isIndustryStep
                   ? "산업군 선택이 어려운 경우 상세보기를 통해 산업 분류 체계를 확인할 수 있습니다."
-                  : "직무 카테고리를 선택해주세요."}
+                  : "직무 카테고리 -> 직무군 -> 역할을 선택해주세요."}
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -243,41 +330,88 @@ export default function IndustrySelectModal({
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 px-4 py-3 relative overflow-hidden">
+        {/* 검색 input (구분선 아래, 중앙 정렬) */}
+        <div className="flex-shrink-0 bg-white pt-[15px] pb-1 flex justify-center">
+          <div className="w-full max-w-5xl px-6">
+            <input
+              value={isIndustryStep ? industrySearchKeyword : jobSearchKeyword}
+              onChange={(e) =>
+                isIndustryStep ? setIndustrySearchKeyword(e.target.value) : setJobSearchKeyword(e.target.value)
+              }
+              placeholder={
+                isIndustryStep ? "산업군 키워드를 검색하세요." : "직무 / 역할 키워드를 입력하세요."
+              }
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-600 shadow-sm"
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 min-h-0 px-4 py-2 relative overflow-hidden">
           {/* 1단계: 산업군 선택 (그리드, 19개 sort_order·short_name) */}
           <div
             className={`absolute inset-0 transition-transform duration-300 ${
               step === "industry" ? "translate-x-0" : "-translate-x-full"
             }`}
           >
-            <div className="h-full flex items-center justify-center">
-              <div className="w-full max-w-7xl px-8 py-8">
-                <div className="grid grid-cols-4 gap-6 auto-rows-fr">
-                  {displayMajors.map((major) => {
-                    const isSelected = selectedMajorInModal?.code === major.code;
-                    return (
-                      <button
-                        key={major.code}
-                        type="button"
-                        onClick={() => setSelectedMajorInModal(major)}
-                        className={`rounded-xl border p-5 shadow-sm text-left flex items-center gap-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-0 ${
-                          isSelected
-                            ? "border-blue-500 bg-blue-50 ring-2 ring-blue-500"
-                            : "border-gray-200 bg-white hover:bg-gray-50"
-                        }`}
-                      >
-                        <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-600 shrink-0 font-bold text-base">
-                          {major.sort_order}
-                        </span>
-                        <span className="text-gray-900 font-medium text-sm leading-snug">
-                          {major.short_name}
-                        </span>
-                      </button>
-                    );
-                  })}
+            {debouncedIndustryKeyword.trim() ? (
+              <div className="h-full flex items-start justify-center pt-4">
+                <div className="w-full max-w-5xl px-6">
+                  {industrySearchResults.length === 0 ? (
+                    <p className="text-sm text-gray-500">검색 결과가 없습니다</p>
+                  ) : (
+                    <div className="max-h-[70vh] overflow-auto rounded-lg border border-gray-200 bg-white">
+                      {industrySearchResults.map((r, idx) => (
+                        <button
+                          key={`${r.major.code}-${r.codes.join("-")}-${idx}`}
+                          type="button"
+                          onClick={() => {
+                            setSelectedMajorInModal(r.major);
+                            setClassificationMajor(r.major);
+                            setClassificationInitialCodes(r.codes);
+                            setIndustrySearchKeyword("");
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 cursor-pointer"
+                          title={r.path}
+                        >
+                          <span className="block whitespace-nowrap overflow-hidden text-ellipsis">
+                            <HighlightedText text={r.path} keyword={debouncedIndustryKeyword} />
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <div className="w-full max-w-7xl px-8 py-8">
+                  <div className="grid grid-cols-4 gap-6 auto-rows-fr">
+                    {displayMajors.map((major) => {
+                      const isSelected = selectedMajorInModal?.code === major.code;
+                      return (
+                        <button
+                          key={major.code}
+                          type="button"
+                          onClick={() => setSelectedMajorInModal(major)}
+                          className={`rounded-xl border p-5 shadow-sm text-left flex items-center gap-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-0 ${
+                            isSelected
+                              ? "border-blue-500 bg-blue-50 ring-2 ring-blue-500"
+                              : "border-gray-200 bg-white hover:bg-gray-50"
+                          }`}
+                        >
+                          <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-600 shrink-0 font-bold text-base">
+                            {major.sort_order}
+                          </span>
+                          <span className="text-gray-900 font-medium text-sm leading-snug">
+                            {major.short_name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 2단계: 직무 선택 — (1) 카테고리 카드 (2) 좌 job_family 리스트 / 우 typical_roles 행형 */}
@@ -287,7 +421,36 @@ export default function IndustrySelectModal({
             }`}
           >
             <div className="h-full flex flex-col overflow-hidden">
-              {jobStep === "category" ? (
+              {debouncedJobKeyword.trim() ? (
+                <div className="flex-1 min-h-0 flex justify-center px-6 py-6">
+                  {jobSearchResults.length === 0 ? (
+                    <p className="text-sm text-gray-500">검색 결과가 없습니다</p>
+                  ) : (
+                    <div className="w-full max-w-5xl max-h-[70vh] overflow-auto rounded-lg border border-gray-200 bg-white">
+                      {jobSearchResults.map((r, idx) => (
+                        <button
+                          key={`${r.jobFamilyId}-${r.role}-${idx}`}
+                          type="button"
+                          onClick={() => {
+                            setStep("job");
+                            setJobStep("family");
+                            setSelectedCategoryNum(r.categoryNum);
+                            setSelectedJobFamilyId(r.jobFamilyId);
+                            setSelectedRole(r.role);
+                            setJobSearchKeyword("");
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 cursor-pointer"
+                          title={r.path}
+                        >
+                          <span className="block whitespace-nowrap overflow-hidden text-ellipsis">
+                            <HighlightedText text={r.path} keyword={debouncedJobKeyword} />
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : jobStep === "category" ? (
                 <>
                   <p className="text-sm text-gray-500 mb-4 px-6">
                   </p>
@@ -310,7 +473,7 @@ export default function IndustrySelectModal({
                           <TwemojiIcon
                             icon={cat.major_category_icon}
                             size="2rem"
-                            className="mb-5"
+                            className="mb-2"
                           />
                           <span className="text-xs font-medium text-gray-800 text-center px-1">
                             {cat.major_category_label}
@@ -418,6 +581,7 @@ export default function IndustrySelectModal({
         majorName={classificationMajor?.name ?? ""}
         middleNodes={classificationMajor?.children ?? []}
         onConfirmMajor={handleConfirmFromClassification}
+        initialSelectionCodes={classificationInitialCodes ?? undefined}
       />
     </>
   );

@@ -22,7 +22,7 @@ function getProgressDescription(step: number): string {
   if (step >= 1 && step <= 2) return "기초 정보를 분석하고 있어요";
   if (step >= 3 && step <= 4) return "핵심 역량을 분석하고 있어요";
   if (step === 5) return "실전 역량을 분석 중입니다";
-  return "최종 결과를 정리 중입니다";
+  return "최종 결과를 확인하세요";
 }
 
 export default function ProgressHeader({ step }: Props) {

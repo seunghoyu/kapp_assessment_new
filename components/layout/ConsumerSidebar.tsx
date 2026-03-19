@@ -23,7 +23,7 @@ export default function ConsumerSidebar() {
 
   // /app Hero 페이지 최초 진입 시 사이드바 collapsed 유지
   useEffect(() => {
-    if (pathname === ROUTES.APP) {
+    if (pathname === ROUTES.APP_DIAGNOSIS) {
       setIsCollapsed(true);
     }
   }, [pathname]);
@@ -37,7 +37,7 @@ export default function ConsumerSidebar() {
       <div className="border-b border-gray-200 h-16 px-4 flex items-center justify-between">
         {!isCollapsed && (
           <Link
-            href={ROUTES.APP}
+              href={ROUTES.APP_DIAGNOSIS}
             className="relative w-full h-full flex items-center justify-center"
           >
             <Image

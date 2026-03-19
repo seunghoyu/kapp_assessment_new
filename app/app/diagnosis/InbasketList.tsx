@@ -114,6 +114,11 @@ type Props = {
   onStart: (questionId: string) => void;
   completedCount?: number;
   totalCount?: number;
+  /**
+   * 테스트 환경용 보조 버튼 콜백:
+   * 인바스켓 문항을 모두 완료하지 않아도 결과(step 6)로 이동할 수 있게 한다.
+   */
+  onNextToResult?: () => void;
 };
 
 const AI_WORKFLOW_ID = "ai-workflow";
@@ -130,7 +135,14 @@ const TEST_ENV_TOOLTIP = (
   </>
 );
 
-export default function InbasketList({ questions, aiWorkflow, onStart, completedCount = 0, totalCount }: Props) {
+export default function InbasketList({
+  questions,
+  aiWorkflow,
+  onStart,
+  completedCount = 0,
+  totalCount,
+  onNextToResult,
+}: Props) {
   const [jobFilter, setJobFilter] = useState("전체");
   const [modalQuestion, setModalQuestion] = useState<InbasketQuestion | null>(null);
   const [aiWorkflowModalOpen, setAiWorkflowModalOpen] = useState(false);
@@ -203,24 +215,38 @@ export default function InbasketList({ questions, aiWorkflow, onStart, completed
 
           {/* 테스트 환경 펼침 시: 직무 선택 드롭다운 */}
           {testEnvExpanded && (
-            <div className="flex-shrink-0 px-4 py-2 border-b border-gray-100 bg-gray-50/30 flex items-center gap-2">
-              <label htmlFor="inbasket-job-filter" className="text-xs font-medium text-gray-600 shrink-0">직무 필터</label>
-              <select
-                id="inbasket-job-filter"
-                value={jobFilter}
-                onChange={(e) => setJobFilter(e.target.value)}
-                className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white min-w-[140px]"
-              >
-                {JOB_PILLS.map((p) => {
-                  const count = jobCounts[p.id] ?? 0;
-                  return (
-                    <option key={p.id} value={p.id}>
-                      {p.shortLabel ?? p.label} ({count})
-                    </option>
-                  );
-                })}
-              </select>
-              <span className="text-xs text-gray-500">현재: {jobFilter}</span>
+            <div className="flex-shrink-0 px-4 py-2 border-b border-gray-100 bg-gray-50/30">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 min-w-0">
+                  <label htmlFor="inbasket-job-filter" className="text-xs font-medium text-gray-600 shrink-0">
+                    직무 필터
+                  </label>
+                  <select
+                    id="inbasket-job-filter"
+                    value={jobFilter}
+                    onChange={(e) => setJobFilter(e.target.value)}
+                    className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white min-w-[140px]"
+                  >
+                    {JOB_PILLS.map((p) => {
+                      const count = jobCounts[p.id] ?? 0;
+                      return (
+                        <option key={p.id} value={p.id}>
+                          {p.shortLabel ?? p.label} ({count})
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <span className="text-xs text-gray-500 truncate">현재: {jobFilter}</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onNextToResult?.()}
+                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  다음 →
+                </button>
+              </div>
             </div>
           )}
 

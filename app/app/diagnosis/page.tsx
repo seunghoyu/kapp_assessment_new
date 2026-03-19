@@ -1189,6 +1189,7 @@ export default function DiagnosisPage() {
                   }}
                   completedCount={inbasketProgress.completed}
                   totalCount={inbasketProgress.total}
+                  onNextToResult={goNext}
                 />
               )}
             </>

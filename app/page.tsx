@@ -42,7 +42,7 @@ export default function ConsumerHomePage() {
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-12">
               <Link
-                href={ROUTES.LOGIN}
+                href={ROUTES.APP_DIAGNOSIS}
                 className="inline-flex items-center gap-2 rounded-lg bg-white text-blue-600 px-8 py-4 font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
               >
                 <TrendingUp className="w-5 h-5" />
@@ -188,7 +188,7 @@ export default function ConsumerHomePage() {
                 게임처럼 몰입하며 정확하게! 실무 시나리오, 시뮬레이션으로 역량을 측정합니다
               </p>
               <Link
-                href={ROUTES.LOGIN}
+                href={ROUTES.APP_DIAGNOSIS}
                 className="inline-flex items-center gap-1 text-indigo-600 font-semibold text-sm hover:gap-2 transition-all"
               >
                 체험하기 <ArrowRight className="w-4 h-4" />
@@ -257,7 +257,7 @@ export default function ConsumerHomePage() {
             8가지 인터랙티브 문항으로 더 정확하고 재미있게!
           </p>
           <Link
-            href={ROUTES.LOGIN}
+            href={ROUTES.APP_DIAGNOSIS}
             className="inline-flex items-center gap-2 rounded-lg bg-white text-blue-600 px-8 py-4 font-semibold hover:bg-gray-100 transition-colors"
           >
             <Rocket className="w-5 h-5" />
@@ -278,7 +278,7 @@ export default function ConsumerHomePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-4 mb-10">
             <Link
-              href={ROUTES.LOGIN}
+              href={ROUTES.APP_DIAGNOSIS}
               className="inline-flex items-center gap-2 rounded-full bg-white text-indigo-600 px-10 py-4 font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
             >
               <Rocket className="w-5 h-5" />
@@ -320,12 +320,12 @@ export default function ConsumerHomePage() {
               <h4 className="text-sm font-semibold text-emerald-400 mb-3">서비스</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link href={ROUTES.LOGIN} className="text-gray-400 hover:text-white transition-colors">
+                  <Link href={ROUTES.APP_DIAGNOSIS} className="text-gray-400 hover:text-white transition-colors">
                     KAPP 진단
                   </Link>
                 </li>
                 <li>
-                  <Link href={ROUTES.APP} className="text-gray-400 hover:text-white transition-colors">
+                  <Link href={ROUTES.APP_MY_DASHBOARD} className="text-gray-400 hover:text-white transition-colors">
                     대시보드
                   </Link>
                 </li>

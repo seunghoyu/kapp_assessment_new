@@ -190,7 +190,7 @@ export default function ConsumerLoginPage() {
       }
       localStorage.setItem("kapp_consumer_email", email);
       setIsLoading(false);
-      router.push(ROUTES.APP);
+      router.push(ROUTES.APP_DIAGNOSIS);
     }, 800);
   };
 

@@ -256,6 +256,9 @@ export default function IndustrySelectModal({
   if (!open) return null;
 
   const isIndustryStep = step === "industry";
+  /** 직무군·역할 분할 패널(family 단계)일 때는 상단 검색 미표시 */
+  const showJobStepSearch = step === "job" && jobStep === "category";
+  const showSearchRow = isIndustryStep || showJobStepSearch;
 
   const modalContent = (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4">
@@ -274,15 +277,6 @@ export default function IndustrySelectModal({
                 <h2 id="industry-select-title" className="text-xl font-semibold text-gray-900">
                   {isIndustryStep ? "산업군 선택" : "세부 직무 선택"}
                 </h2>
-                {step === "job" && jobStep === "family" && (
-                  <button
-                    type="button"
-                    onClick={goBackToCategoryStep}
-                    className="text-sm text-blue-600 hover:text-blue-800"
-                  >
-                    ← 뒤로가기
-                  </button>
-                )}
               </div>
               <p className="text-sm text-gray-500 mt-1">
                 {isIndustryStep
@@ -294,10 +288,12 @@ export default function IndustrySelectModal({
                 {!isIndustryStep && (
                   <button
                     type="button"
-                    onClick={goBackToIndustryStep}
+                    onClick={
+                      jobStep === "family" ? goBackToCategoryStep : goBackToIndustryStep
+                    }
                     className="rounded-md bg-white border border-gray-300 text-gray-700 text-sm font-medium px-3 py-2 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    산업군 다시 선택
+                    {jobStep === "family" ? "직무 카테고리 선택" : "산업군 다시 선택"}
                   </button>
                 )}
               {isIndustryStep && (
@@ -330,21 +326,25 @@ export default function IndustrySelectModal({
           </div>
         </div>
 
-        {/* 검색 input (구분선 아래, 중앙 정렬) */}
-        <div className="flex-shrink-0 bg-white pt-[15px] pb-1 flex justify-center">
-          <div className="w-full max-w-5xl px-6">
-            <input
-              value={isIndustryStep ? industrySearchKeyword : jobSearchKeyword}
-              onChange={(e) =>
-                isIndustryStep ? setIndustrySearchKeyword(e.target.value) : setJobSearchKeyword(e.target.value)
-              }
-              placeholder={
-                isIndustryStep ? "산업군 키워드를 검색하세요." : "직무 / 역할 키워드를 입력하세요."
-              }
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-600 shadow-sm"
-            />
+        {/* 검색 input: 산업 단계 + 직무 카테고리 단계만 노출 (직무군·역할 패널에서는 숨김) */}
+        {showSearchRow ? (
+          <div className="flex-shrink-0 bg-white pt-[15px] pb-1 flex justify-center">
+            <div className="w-full max-w-5xl px-6">
+              <input
+                value={isIndustryStep ? industrySearchKeyword : jobSearchKeyword}
+                onChange={(e) =>
+                  isIndustryStep
+                    ? setIndustrySearchKeyword(e.target.value)
+                    : setJobSearchKeyword(e.target.value)
+                }
+                placeholder={
+                  isIndustryStep ? "산업군 키워드를 검색하세요." : "직무 / 역할 키워드를 입력하세요."
+                }
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-600 shadow-sm"
+              />
+            </div>
           </div>
-        </div>
+        ) : null}
 
         <div className="flex-1 min-h-0 px-4 py-2 relative overflow-hidden">
           {/* 1단계: 산업군 선택 (그리드, 19개 sort_order·short_name) */}
@@ -582,6 +582,7 @@ export default function IndustrySelectModal({
         middleNodes={classificationMajor?.children ?? []}
         onConfirmMajor={handleConfirmFromClassification}
         initialSelectionCodes={classificationInitialCodes ?? undefined}
+        showSearch={(classificationInitialCodes?.length ?? 0) > 0}
       />
     </>
   );

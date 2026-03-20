@@ -1,4 +1,5 @@
 # KAPP 서비스 구조도 (수정 반영본) — React Flow 초안용
+# 최종 보강: 2026-03 — 디지털 인바스켓 48문항·AI 워크플로우 **기능명세 부록** 추가.
 
 ※ **본문**: 기획자도 이해할 수 있도록 기능·화면 중심 서술.
 ※ **하위 [개발]**: 개발자용 상세 — 파일 경로, 상태/키 이름, 데이터 구조, 컴포넌트·props 보완.
@@ -52,50 +53,50 @@ Root (진입점)
       │    ├─ step 0 (시작)
       │    │    └─ [버튼] 진단 시작하기 → step 1
       │    ├─ step 1 (정보 입력)
-      │    │    ├─ [데이터 노드] userInfoOptions — 산업·직무, 직급, 연차, 기업규모, 진단목표 옵션
-      │    │    │    [개발] userInfoOptions.json 경로. 키: industryJobData, positionLevels, experienceYears, companySizes, diagnosticGoals. industryJobData는 산업명 키 → { icon, jobs[] }.
-      │    │    │    [샘플] industryJobData
-      │    │    │      "IT": { "icon": "💻", "jobs": ["개발자(Backend)", "개발자(Frontend)", "데이터 엔지니어", "정보보안", "DevOps", "UI/UX 디자이너", "QA/테스터", "프로젝트 매니저"] }
-      │    │    │      "금융": { "icon": "🏦", "jobs": ["카드사업부 마케터", "여신심사역", "리스크 관리", "IB 애널리스트", "자산관리(PB)", …] }
-      │    │    │      "교육", "의료", "제조", "유통/리테일", "마케팅/광고", "호텔/관광", "법률/회계", "기타" (동일 구조)
-      │    │    │    [샘플] positionLevels[0] { "value": "인턴", "label": "인턴" }
-      │    │    │    [샘플] experienceYears[0] { "value": "1년 미만", "label": "1년 미만 (신입)" }
-      │    │    │    [샘플] companySizes[0] { "value": "대기업", "label": "대기업 (1000명 이상)", "icon": "🏢" }
-      │    │    │    [샘플] diagnosticGoals[0] { "value": "승진", "label": "승진 준비" }
-      │    │    ├─ [산업군 선택 동작]
-      │    │    │    ├─ [버튼] "산업군 선택" 클릭 → 산업 선택 모달 열림
-      │    │    │    │    [개발] industrySelectModalOpen=true. IndustrySelectModal 렌더.
-      │    │    │    ├─ [데이터] 산업 대분류 목록 → 모달에 전달해 그리드 표시
-      │    │    │    │    [개발] data/Industry/industry_tree.json. IndustryNode[] (code, name, children 재귀). 모달 props: majors=industryTreeData.
-      │    │    │    ├─ [모달] 산업군 선택 모달 — 대분류 그리드, 상세보기, 선택/닫기
-      │    │    │    │    [개발] IndustrySelectModal. state: selectedMajorInModal(IndustryNode). 대분류 그리드 majors.map → 클릭 시 setSelectedMajorInModal(major). [상세보기] → setClassificationMajor(selectedMajorInModal), IndustryClassificationModal open. [선택] → onSelect(major) → 부모 handleIndustrySelect: setSelectedMajor(major), setForm(industry: major.name, job: ""), 모달 닫기. [닫기] onClose.
-      │    │    │    └─ [모달] 산업 분류 체계 상세 — 선택한 대분류의 중·소·세·세세 테이블
-      │    │    │          [개발] IndustryClassificationModal. props: majorName, middleNodes(=선택 대분류.children, 중분류 배열). 4열 테이블: 중|소|세|세세분류(children 단계별). 닫기: 대분류 선택 / X.
-      │    │    ├─ [산업군과 함께 조회하는 데이터]
-      │    │    │    ├─ 산업 대분류·분류체계 → 모달 표시용
-      │    │    │    │    [개발] industry_tree.json. IndustryNode[] 샘플: { "code": "A", "name": "농업, 임업 및 어업", "children": [ { "code": "01", "name": "농업", "children": [ … ] }, … ] }
-      │    │    │    └─ 산업별 세부 직무 목록 → 직무 select 옵션
-      │    │    │          [개발] userInfoOptions.industryJobData[form.industry] → jobList. form.industry 선택 후 직무 <select> 옵션에 사용.
+      │    │    ├─ [데이터 노드] userInfoOptions — 직급, 연차, 기업규모, 진단목표, 기업유형 옵션 (산업·직무는 모달 내부에서 별도 JSON 사용)
+      │    │    │    [개발] userInfoOptions.json: positionLevels, experienceYears, companySizes, diagnosticGoals, industryJobData(기타 용도). 산업·직무 선택 UI 데이터: industry_tree.json + job_taxonomy_payload.json (모달 내부 import).
+      │    │    │    [샘플] positionLevels[0] { "value": "인턴", "label": "인턴" }, companySizes[0] { "value": "대기업", "label": "대기업 (1000명 이상)", "icon": "🏢" }
+      │    │    │
+      │    │    ├─ [산업군·세부직무 선택 동작] — 단일 모달 2단계 슬라이드 (IndustrySelectModal)
+      │    │    │    [진입] step 1 폼에서 [버튼] "산업군 선택" 클릭 → industrySelectModalOpen=true → IndustrySelectModal 렌더.
+      │    │    │    [개발] app/app/diagnosis/page.tsx: setIndustrySelectModalOpen(true). IndustrySelectModal props: open, onClose, majors=industryTreeData(industry_tree.json), onSelect=handleIndustrySelect(major, jobName).
+      │    │    │
+      │    │    │    ■ 1단계: 산업군 선택 (step === "industry")
+      │    │    │    ├─ [데이터] 산업 대분류 → 모달에 전달
+      │    │    │    │    [개발] data/Industry/industry_tree.json. IndustryNode[] (code, name, children 재귀). 모달 props: majors. displayMajors = majors.filter(m => m.name !== EXCLUDED_MAJOR_NAME) → 20개 표시 ("가구 내 고용 활동…" 제외).
+      │    │    │    ├─ [UI] 대분류 그리드 — 4x5 그리드, 카드 클릭 시 선택
+      │    │    │    │    [개발] IndustrySelectModal state: selectedMajorInModal(IndustryNode). grid grid-cols-4 grid-rows-5, 클릭 시 setSelectedMajorInModal(major).
+      │    │    │    ├─ [버튼] 상세보기 — 1단계에서만 노출, 산업 선택 시에만 활성화
+      │    │    │    │    [개발] handleOpenDetail: selectedMajorInModal 있으면 setClassificationMajor(selectedMajorInModal) → IndustryClassificationModal open.
+      │    │    │    ├─ [버튼] 선택 — 1단계일 때: 산업 선택돼 있으면 goToJobStep() (setStep("job"), selectedCategoryId/jobName 초기화). 모달은 유지, 본문만 슬라이드로 2단계로 전환.
+      │    │    │    ├─ [버튼] 닫기(X) — onClose() → industrySelectModalOpen=false.
+      │    │    │    └─ [모달] 산업 분류 체계 상세 (IndustryClassificationModal) — 상세보기 클릭 시 열림
+      │    │    │          [개발] IndustryClassificationModal. props: open=(classificationMajor!==null), onClose=handleCloseClassification, majorName, middleNodes=선택대분류.children, onConfirmMajor=handleConfirmFromClassification. 4열 테이블: 중|소|세|세세분류(children 단계별). [대분류 선택] → onClose. [선택] → handleConfirmFromClassification: setSelectedMajorInModal(classificationMajor), setClassificationMajor(null), goToJobStep() → 분류 모달 닫고 1단계에서 2단계로 전환.
+      │    │    │
+      │    │    │    ■ 2단계: 세부 직무 선택 (step === "job")
+      │    │    │    ├─ [데이터] 직무 분야·직무 목록 — 모달 내부에서 직접 import
+      │    │    │    │    [개발] data/Industry/job_taxonomy_payload.json. 구조: { snapshot: {...}, categories: SaraminCategory[], jobs: SaraminJob[] }. SaraminCategory: { saraminCategoryId, saraminCategoryName, jobCount?, ... }. SaraminJob: { saraminCategoryId, saraminCategoryName, saraminJobName }. JOB_CATEGORIES = categories, JOB_ITEMS = jobs. jobsForSelectedCategory = JOB_ITEMS.filter(j => j.saraminCategoryId === selectedCategoryId).
+      │    │    │    ├─ [UI] 좌우 2컬럼 — 왼쪽 50% 분야, 오른쪽 50% 직무·직업
+      │    │    │    │    [개발] state: selectedCategoryId(number|null), selectedJobName(string). 왼쪽: JOB_CATEGORIES.map → 분야 버튼, 클릭 시 setSelectedCategoryId(cat.saraminCategoryId), setSelectedJobName(""). 오른쪽: selectedCategoryId 없으면 "분야를 먼저 선택하세요", 있으면 jobsForSelectedCategory.map → 직무 버튼, 클릭 시 setSelectedJobName(job.saraminJobName).
+      │    │    │    ├─ [버튼] 선택 — 2단계일 때: selectedMajorInModal && selectedJobName 있으면 onSelect(selectedMajorInModal, selectedJobName) → onClose(). 부모 handleIndustrySelect: setSelectedMajor(major), setForm({ ...f, industry: major.name, job: jobName }), setIndustrySelectModalOpen(false).
+      │    │    │    └─ [버튼] 닫기(X) — onClose(). 모달 열릴 때 open 변경 시 useEffect로 step/selectedMajorInModal/selectedCategoryId/selectedJobName 초기화.
+      │    │    │
+      │    │    │    [레이아웃] 본문 좌우 슬라이드: step===industry → translate-x-0, step===job → -translate-x-full(1단계) / translate-x-0(2단계). duration-300. 헤더 제목·설명: 1단계 "산업군 선택", 2단계 "세부 직무 선택" / "선택한 산업군에 맞춰 분야와 세부 직무·직업을 선택해 주세요."
+      │    │    │
+      │    │    ├─ [산업·직무 데이터 요약]
+      │    │    │    ├─ industry_tree.json — 경로: data/Industry/industry_tree.json (page에서 import → majors). IndustryNode[] 최상위 대분류(21개 중 20개 사용). IndustryClassificationModal에는 선택 대분류.children → 중|소|세|세세 테이블.
+      │    │    │    └─ job_taxonomy_payload.json — 경로: data/Industry/job_taxonomy_payload.json (IndustrySelectModal.tsx에서 import). categories(분야), jobs(직무·직업). 2단계 분야·직무 목록에 사용. 산업 선택값과 무관(동일 직무 목록).
+      │    │    │    [컴포넌트] app/app/diagnosis/IndustrySelectModal.tsx, IndustryClassificationModal.tsx, industryTypes.ts (IndustryNode).
+      │    │    │
       │    │    ├─ [입력] step 1 폼 필드 — 선택지 전체
       │    │    │
-      │    │    │    [입력·텍스트]
-      │    │    │    이름, 이메일, 회사명 — 자유 입력
+      │    │    │    [입력·텍스트] 이름, 이메일, 회사(company) — 자유 입력
       │    │    │
-      │    │    │    [산업군]
-      │    │    │    모달 선택 — industry_tree.json 최상위 대분류 21개 (예: 농업·임업 및 어업, 광업, 제조업, …)
+      │    │    │    [산업군] [버튼] "산업군 선택" — 클릭 시 IndustrySelectModal 열림. 표시: selectedMajor?.name ?? form.industry || "산업군 선택". 모달 내 1단계 그리드(industry_tree 20개) → [선택] 시 2단계로 슬라이드.
       │    │    │
-      │    │    │    [세부 직무] 드롭다운(산업군 의존) — industryJobData[산업].jobs
-      │    │    │      IT: 개발자(Backend), 개발자(Frontend), 데이터 엔지니어, 정보보안, DevOps, UI/UX 디자이너, QA/테스터, 프로젝트 매니저
-      │    │    │      금융: 카드사업부 마케터, 여신심사역, 리스크 관리, IB 애널리스트, 자산관리(PB), 핀테크 기획자, 준법감시, 금융상품 개발
-      │    │    │      교육: 강사/교수, 교육 콘텐츠 기획자, 교육 컨설턴트, LMS 관리자, 커리큘럼 디자이너, 에듀테크 PM
-      │    │    │      의료: 의사, 간호사, 의료 행정, 의료 IT, 임상시험 코디네이터, 제약 마케터, 병원 경영
-      │    │    │      제조: 생산 관리, 품질 관리, SCM 담당자, 공정 엔지니어, R&D 연구원, 구매/자재
-      │    │    │      유통/리테일: MD, 바이어, 매장 관리자, 물류 담당자, E-커머스 운영, 유통 기획
-      │    │    │      마케팅/광고: 디지털 마케터, 퍼포먼스 마케터, 브랜드 매니저, 콘텐츠 마케터, 광고 AE, 소셜미디어 매니저
-      │    │    │      호텔/관광: 호텔리어, 여행 상품 기획자, 관광 컨설턴트, F&B 매니저, 이벤트 플래너
-      │    │    │     
-       법률/회계: 변호사, 노무사, 세무사, 회계사, 법무팀, 재무 분석가
-      │    │    │      기타: 인사/HR, 총무, 경영 기획, 영업, 고객 서비스, 일반 관리
+      │    │    │    [세부 직무] [읽기전용 input] — value=form.job. 모달 2단계에서 분야→직무 선택 후 [선택] 시 form.job에 반영. disabled=!form.industry. placeholder: form.industry 있으면 "산업군 모달에서 직무·직업을 선택해주세요", 없으면 "먼저 산업군을 선택해주세요". 별도 "세부직무 선택" 버튼 없음(동일 모달에서 1→2단계로 선택).
+      │    │    │
+      │    │    │    [기업유형] 드롭다운 — COMPANY_TYPE_OPTIONS(일반기업, 스타트업, 외국계, 공공기관). form.companyType.
       │    │    │
       │    │    │    [직급] 드롭다운 (8개)
       │    │    │      인턴, 사원, 주임, 대리, 과장, 차장, 부장, 임원
@@ -110,8 +111,7 @@ Root (진입점)
       │    │    │      승진 준비, 이직/전직 준비, 직무 스킬 향상, 커리어 전환 (value: 승진, 이직, 스킬업, 커리어전환)
       │    │    │
       │    │    │    [개발]
-      │    │    │    form 필드: name, email, industry, job, position, experienceYears, companyName, companySize, diagnosticGoals[]
-      │    │    │    value 저장: positionLevels / experienceYears / companySizes / diagnosticGoals 의 value 사용
+      │    │    │    form 필드: name, email, industry, job, companyType, position, experienceYears, company, companySize, diagnosticGoals[]. canNextFromInfo: name, industry, job, companyType, position, experienceYears, companySize 필수. goNext(step===1) 시 job 초기화.
       │    │    │
       │    │    └─ [버튼] 진단 목표 복수 선택
       │    ├─ step 2 (지식 문항)
@@ -127,24 +127,30 @@ Root (진입점)
       │    │    │    [개발] performanceQuestions.json. answers.performance에 문항별 선택값 저장.
       │    │    └─ [라디오] 문항별 선택지
       │    ├─ step 5 (디지털 인바스켓)
-      │    │    ├─ [데이터 노드] 인바스켓 문항 + 산업별 AI 워크플로우
-      │    │    │    [개발] lib/inbasketData(inbasketQuestions), aiWorkflowByIndustry.json. 문항 타입별 이메일/메신저/보고서 또는 AI 워크플로우.
+      │    │    ├─ [데이터 노드] 인바스켓 문항(JSON 48건) + 산업별 AI 워크플로우(1건) + (데이터만 로드) 산업별 E-tray 이메일 세트
+      │    │    │    [개발] 문항: data/kappDiagnosis/inbasket/inbasketQuestions.json + lib/inbasketData.ts(getInbasketQuestions, InbasketQuestion).
+      │    │    │    AI: data/kappDiagnosis/aiWorkflowByIndustry.json — form.industry 가 AI_INDUSTRY_KEYS(IT,금융,의료,마케팅/광고,기타)에 없으면 "기타" 키.
+      │    │    │    E-tray 원천: data/kappDiagnosis/etrayByIndustry.json — page.tsx 에서 etrayEmails·selectedEtrayId 동기화만 수행(시뮬 UI 미연동, 확장 여지).
+      │    │    │    완료 상태: answers.etray[문항id]="completed" 문자열(키 이름은 레거시). AI: answers.ai = 선택 옵션 인덱스(number)|null.
+      │    │    │    진행률 분모 = questions.length + (aiWorkflow ? 1 : 0) — 테스트 환경 기준 최대 49(48+1).
       │    │    ├─ [헤더] "디지털 인바스켓" + [버튼] 이용 안내(물음표) — 텍스트 바로 우측
-      │    │    ├─ [뷰] 목록 | 시뮬레이션
+      │    │    ├─ [뷰] 목록 | 시뮬레이션 (inbasketView, inbasketSelectedId — sessionStorage 진단 상태에 포함)
       │    │    │
-      │    │    │  ■ InbasketList (목록)
-      │    │    │    ├─ [헤더] 전체 문항 | 진행률 + 게이지바 + [버튼] 테스트 환경(클릭 시 직무 필터 노출)
-      │    │    │    │    [개발] 진행률: completedCount/totalCount(answers.etray·answers.ai 기준). 테스트 환경 클릭 시 직무 드롭다운 노출.
-      │    │    │    ├─ [테스트 환경 펼침 시] 직무 필터 드롭다운 (전체, 경영/기획, …)
-      │    │    │    ├─ [테이블] 분류·제목·발신자·카테고리·내용·액션
-      │    │    │    ├─ [버튼] 상세보기 → 모달
-      │    │    │    └─ [버튼] 진행하기 → 시뮬레이션 뷰 (이메일 또는 AI 워크플로우)
+      │    │    │  ■ InbasketList (목록) — InbasketList.tsx
+      │    │    │    ├─ [헤더] "전체 문항" | 진행률 게이지(completed/total) | [버튼] 테스트 환경(호버 시 툴팁: 운영에선 인당 4문항·직무 UI 비노출 안내)
+      │    │    │    ├─ [테스트 환경 펼침] 직무 필터 select(JOB_PILLS: 전체·경영/기획·커뮤니케이션·…) + [다음 →] (onNextToResult, 미완료여도 결과 단계 스킵용)
+      │    │    │    ├─ [테이블 행] 우선순위 뱃지(긴급/보통/낮음) | 제목 | 발신자 | 카테고리(시뮬 타입) | 내용 미리보기 | 상세보기·진행하기
+      │    │    │    ├─ [하단 고정 행] AI 워크플로우 — 우선순위 표시 "자동화"(보라), 카테고리 컬럼 "자동화", id 상수 "ai-workflow"
+      │    │    │    ├─ [모달] 문항 상세 — 제목·발신·일시·카테고리·본문·첨부·[시뮬레이션 시작]·[기본 응답 작성](alert 스텁)
+      │    │    │    └─ [모달] AI 시나리오 전문 — [진행하기]
       │    │    │
-      │    │    │  ■ InbasketSimulation (시뮬레이션)
-      │    │    │    ├─ [버튼] 목록으로 (onBack)
-      │    │    │    ├─ SimulationContent (이메일/메신저/보고서 등)
-      │    │    │    └─ [버튼] 완료하고 다음 단계로 (onComplete → etray 저장 후 목록 복귀)
-      │    │    │          [개발] onComplete 시 answers.etray 또는 answers.ai에 완료 반영 → InbasketList에 completedCount/totalCount 전달.
+      │    │    │  ■ 일반 문항 시뮬 — InbasketSimulation.tsx + SimulationContent (inbasket-simulations/index.tsx)
+      │    │    │    ├─ category 문자열 → 16종 TSX 중 하나(미매칭 시 PlaceholderSimulation)
+      │    │    │    ├─ [버튼] 목록으로 — inbasketView=list, inbasketSelectedId 초기화
+      │    │    │    ├─ 하단 [완료하고 다음 단계로] — answers.etray[question.id]="completed" 후 목록 복귀
+      │    │    │
+      │    │    │  ■ AI 워크플로우 시뮬 — page.tsx 내 인라인(자동화 배지, task, 라디오 4지선다, explanation은 답 선택 후)
+      │    │    │    └─ 완료 시 answers.ai 확정 후 목록 복귀
       │    │    │
       │    │    └─ [하단] 이전 | 목록으로 / 완료하고 결과 보기 / 다음
       │    │         → "다음" 또는 "완료하고 결과 보기" 클릭 시 [로딩 화면] 표시 (사이드바·상단헤더 유지)
@@ -336,6 +342,7 @@ Root (진입점)
 ================================================================================
 수정 반영 사항 요약 (원본 대비)
 ================================================================================
+- 진단 step 1: 산업·세부직무는 단일 모달(IndustrySelectModal) 2단계 슬라이드. 1단계 산업군 그리드(industry_tree 20개)→[선택]→2단계 분야·직무(job_taxonomy_payload: categories+jobs)→[선택] 시 onSelect(major,jobName), 모달 닫기. 세부 직무는 읽기전용 input, 별도 직무 전용 모달 없음.
 - 진단: step 5=디지털 인바스켓, step 6=결과 (AI 워크플로우는 step 5 내 한 문항). step 7 없음.
 - 진단 step 5: 헤더 "전체 문항", 진행률 게이지(테스트 환경 좌측), 테스트 환경 클릭 시 직무 필터 드롭다운만 노출.
 - 진단 step 5→6: "다음" 또는 "완료하고 결과 보기" 클릭 시 로딩 화면(원형 스피너+순환 메시지), 사이드바·상단헤더 유지.
@@ -343,6 +350,254 @@ Root (진입점)
 - 진단 상단 헤더: sticky 고정. 디지털 인바스켓 제목 옆에 HelpCircle 버튼(텍스트 바로 우측).
 - 대시보드: 탭 2개만 — 내 역량 | 성장 로드맵. (시장·경쟁력 탭 없음, 시장 포지션은 내 역량 하단 섹션.)
 - 성장 로드맵: 카드 현재/3년 후/5년 후, 확률(%) 문구 미표시. 산업군 가상프론트 21개, 직무 1~4 더미.
+- 부록 A 추가: 디지털 인바스켓 **48개 문항** 필드·본문·첨부·직무태그·시뮬레이션 컴포넌트 매핑, 산업별 AI 워크플로우 전문, 상태키·진행률 공식.
+
+================================================================================
+부록 A: 디지털 인바스켓 기능명세 (문항·AI·상태)
+================================================================================
+
+본 부록은 `data/kappDiagnosis/inbasket/inbasketQuestions.json` 및 연동 코드 기준 **현행 구현**을 명세한다.
+
+--------------------------------------------------------------------------------
+A.1 목적·측정 관점
+--------------------------------------------------------------------------------
+- 디지털 인바스켓은 받은편지함·메신저·보고·일정 등 **업무 알림이 동시에 유입**된다는 가정 하에서, 학습자가 **우선순위 판단·채널별 대응·의사결정**을 연습하는 단계(step 5).
+- 문항은 **16개 시뮬레이션 타입(category)** × **타입당 3문항** = **총 48문항**으로 구성된다.
+- 각 문항은 `jobCategory`로 **직무 필터**(테스트 환경)와 표시 아이콘·테이블 정렬에 쓰인다.
+- **AI 워크플로우**는 별도 1건으로 목록 하단에 붙으며, 산업(form.industry)에 따라 시나리오·선지가 바뀐다.
+
+--------------------------------------------------------------------------------
+A.2 데이터·상태·파일 경로
+--------------------------------------------------------------------------------
+| 구분 | 경로 또는 식별자 | 비고 |
+| 문항 JSON | data/kappDiagnosis/inbasket/inbasketQuestions.json | questions[] 48건 |
+| 로더 | lib/inbasketData.ts | getInbasketQuestions(), InbasketQuestion 타입 |
+| AI 산업별 | data/kappDiagnosis/aiWorkflowByIndustry.json | byIndustry[ IT \| 금융 \| 의료 \| 마케팅/광고 \| 기타 ] |
+| E-tray 원천 | data/kappDiagnosis/etrayByIndustry.json | page에서 로드·selectedEtrayId만 동기화, UI 미소비 |
+| 목록 UI | app/app/diagnosis/InbasketList.tsx | 필터·테이블·모달·진행률 |
+| 래퍼 | app/app/diagnosis/InbasketSimulation.tsx | 목록↔시뮬 전환 |
+| 타입별 시뮬 | app/app/diagnosis/inbasket-simulations/*.tsx | index.tsx CATEGORY_COMPONENTS 매핑 |
+| 진단 오케스트 | app/app/diagnosis/page.tsx | aiWorkflow, inbasketProgress, answers |
+
+**answers 스키마(인바스켓 관련)**  
+- `answers.etray: Record<string, string>` — 키는 **인바스켓 문항 id**(예: inbasket_email_1). 값이 비어 있지 않으면 해당 문항 **완료**(현재 구현은 `"completed"` 문자열 저장).  
+- `answers.ai: number | null` — AI 워크플로우에서 선택한 **옵션 배열 인덱스**(0~3). null이면 미완료.
+
+**진행률**  
+- `total = inbasketQuestions.length + (aiWorkflow ? 1 : 0)`  
+- `completed = (etray에 값이 있는 문항 수) + (answers.ai != null ? 1 : 0)`
+
+**category → 시뮬레이션 컴포넌트** (inbasket-simulations/index.tsx)
+
+| category(정확한 문자열) | 컴포넌트 파일 |
+| 이메일 관리 | EmailSimulation.tsx |
+| 메신저 대응 | MessengerSimulation.tsx |
+| 보고서 작성 | ReportSimulation.tsx |
+| 일정 관리 | CalendarSimulation.tsx |
+| 통합 업무 | IntegratedWorkSimulation.tsx |
+| 위기 관리 | EmergencySimulation.tsx |
+| 글로벌 협업 | GlobalSimulation.tsx |
+| 법무 검토 | LegalSimulation.tsx |
+| 디지털 활용 | DigitalToolSimulation.tsx |
+| 인사 관리 | HRSimulation.tsx |
+| 재무 관리 | FinanceSimulation.tsx |
+| 고객 관리 | CustomerSimulation.tsx |
+| 윤리 경영 | EthicsSimulation.tsx |
+| 전략 기획 | StrategySimulation.tsx |
+| 마케팅캠페인 | MarketingCampaignSimulation.tsx |
+| 생산관리 | ProductionSimulation.tsx |
+| (매칭 실패) | PlaceholderSimulation.tsx |
+
+--------------------------------------------------------------------------------
+A.3 이메일 관리 (3문항) — EmailSimulation
+--------------------------------------------------------------------------------
+공통 UX 요약: 왼쪽 받은편지함 목록, 본문·액션(열람/답장/전달/보관 등). **문항 기준 1통 + 고정 보조 4통**으로 총 5통 구성(EmailSimulation.buildEmails).
+
+■ inbasket_email_1  
+- jobCategory: 커뮤니케이션 | 우선순위: 긴급 | 발신: 이CTO (최고기술책임자) | 시각: 5분 전  
+- 제목: [긴급] 프로덕션 서버 CPU 사용률 95% 초과  
+- 본문: 프로덕션 서버 3대 중 2대의 CPU 사용률이 95%를 초과했습니다. 서버 A: CPU 97%, 서버 B: CPU 96%, 서버 C: 정상. 사용자 응답 시간 평균 3.2초. 즉시 원인 파악 및 대응 부탁드립니다.  
+- 첨부: 없음  
+
+■ inbasket_email_2  
+- jobCategory: 경영/기획 | 우선순위: 보통 | 발신: 이사회 사무국 | 시각: 10분 전  
+- 제목: 이사회 안건 승인 요청  
+- 본문: 다음 주 이사회에서 논의할 안건에 대한 사전 검토와 승인이 필요합니다.  
+- 첨부: 없음  
+
+■ inbasket_email_3  
+- jobCategory: 경영/기획 | 우선순위: 낮음 | 발신: 마케팅팀 | 시각: 1시간 전  
+- 제목: 월간 실적 보고서 제출  
+- 본문: 2월 마케팅 실적을 정리하여 보고드립니다. 검토 후 피드백 부탁드립니다.  
+- 첨부: 없음  
+
+--------------------------------------------------------------------------------
+A.4 메신저 대응 (3문항) — MessengerSimulation
+--------------------------------------------------------------------------------
+■ inbasket_messenger_1 — jobCategory: 커뮤니케이션 | 긴급 | DevOps팀 | 방금 전 | 제목: 채널 #긴급-장애에 메시지 도착 | 본문: 배포 서버 장애 발생. 배포 중인 팀에게 즉시 대응 방향을 전달해 주세요.  
+
+■ inbasket_messenger_2 — jobCategory: 커뮤니케이션 | 긴급 | 재무팀 | 09:25 | 제목: 긴급 결재 요청 | 본문: 오늘 오후 3시까지 긴급 결재가 필요한 건이 있습니다. 확인 부탁드립니다.  
+
+■ inbasket_messenger_3 — jobCategory: 인사/조직 | 보통 | 인사팀 | 09:30 | 제목: 면접 일정 조율 | 본문: 면접 일정 3건 조율 부탁드립니다. 가능한 시간대 회신 주세요.  
+
+--------------------------------------------------------------------------------
+A.5 보고서 작성 (3문항) — ReportSimulation
+--------------------------------------------------------------------------------
+■ inbasket_report_1 — 경영/기획 | 보통 | 경영기획팀 | 1시간 전 | 분기 실적 보고서 작성 요청 | 본문: 본부별 데이터를 수집해 분기 실적 보고서 초안을 작성해 주세요. 제출 상태와 우선순위를 확인한 뒤 보고서를 완성하세요.  
+
+■ inbasket_report_2 — 경영/기획 | 보통 | 전략기획팀 | 2일 전 | 연간 사업계획서 초안 검토 | 본문: 2026년 연간 사업계획서 초안이 완성되었습니다. 검토 후 의견 주시기 바랍니다.  
+
+■ inbasket_report_3 — 경영/기획 | 긴급 | 경영지원팀 | 오늘 | 정기 경영회의 자료 제출 | 본문: 다음 주 경영회의 자료를 금요일까지 제출 부탁드립니다.  
+
+--------------------------------------------------------------------------------
+A.6 일정 관리 (3문항) — CalendarSimulation
+--------------------------------------------------------------------------------
+■ inbasket_calendar_1 — 경영/기획 | 보통 | 경영지원팀 | 오늘 | 14시 회의 3건 충돌 - 일정 조율 | 본문: 오후 2시에 세 개 회의가 겹칩니다. 참석/대리/시간 변경/불참 중 결정해 주세요.  
+
+■ inbasket_calendar_2 — 경영/기획 | 보통 | 비서실 | 어제 | 주간 정기회의 일정 확정 | 본문: 다음 주부터 주간 정기회의 요일과 시간을 확정해야 합니다. 각 부서 가능 요일을 확인해 주세요.  
+
+■ inbasket_calendar_3 — 경영/기획 | 긴급 | IR팀 | 30분 전 | 투자자 미팅 일정 변경 | 본문: 주요 투자자 미팅이 다음 주로 연기되었습니다. 관련 일정 조정 부탁드립니다.  
+
+--------------------------------------------------------------------------------
+A.7 통합 업무 (3문항) — IntegratedWorkSimulation
+--------------------------------------------------------------------------------
+■ inbasket_integrated_1 — 프로젝트관리 | 긴급 | 고객대응센터 | 30분 전 | 멀티채널 고객 문의 대응 | 본문: 이메일/전화/SNS/메신저로 동시에 유입된 문의를 확인하고 우선순위에 따라 처리 방향을 정해 주세요.  
+
+■ inbasket_integrated_2 — 프로젝트관리 | 보통 | 운영팀 | 오늘 | 채널별 일일 현황 점검 | 본문: 오늘 채널별 문의 현황과 미처리 건을 점검하고 우선 처리 대상을 정해 주세요.  
+
+■ inbasket_integrated_3 — 고객서비스 | 긴급 | 고객센터 | 10분 전 | VIP 문의 에스컬레이션 | 본문: VIP 고객으로부터 전화·이메일 동시 문의가 들어왔습니다. 즉시 대응 방안을 결정해 주세요.  
+
+--------------------------------------------------------------------------------
+A.8 위기 관리 (3문항) — EmergencySimulation
+--------------------------------------------------------------------------------
+■ inbasket_emergency_1 — 위기대응 | 긴급 | 위기대응팀 | 즉시 | 제품 이상 사례 위기 대응 | 본문: 제품 이상 사례가 보고되었습니다. 즉각 대응 전략, 위기대응팀 구성, 고객 커뮤니케이션, 긴급 예산을 단계별로 결정해 주세요.  
+
+■ inbasket_emergency_2 — 위기대응 | 긴급 | 홍보팀 | 1시간 전 | 언론 보도 예정 - 대응 전략 | 본문: 내일자 보도가 예정되어 있습니다. 선제 대응 여부와 담당자 배치를 결정해 주세요.  
+
+■ inbasket_emergency_3 — 위기대응 | 긴급 | IT운영팀 | 방금 전 | 시스템 장애 긴급 대응 | 본문: 핵심 시스템 장애가 발생했습니다. 복구 우선순위와 고객 공지 방안을 결정해 주세요.  
+
+--------------------------------------------------------------------------------
+A.9 글로벌 협업 (3문항) — GlobalSimulation
+--------------------------------------------------------------------------------
+■ inbasket_global_1 — 프로젝트관리 | 보통 | 해외사업부 | 오늘 | 글로벌 4개 지사 회의 시간 조율 | 본문: 서울·뉴욕·베를린·싱가포르 지사가 참여하는 회의 시간을 조율하고, 문서 버전 관리·커뮤니케이션 프로토콜을 정해 주세요.  
+
+■ inbasket_global_2 — 프로젝트관리 | 보통 | 해외사업부 | 2일 전 | 해외 지사 문서 공유 규칙 수립 | 본문: 타임존별 문서 공유 및 검토 마감 규칙을 정하고, 각 지사에 공유해 주세요.  
+
+■ inbasket_global_3 — 프로젝트관리 | 보통 | 법무팀 | 1일 전 | 다국어 계약서 버전 통일 | 본문: 영문·중문·일문 버전 간 불일치가 발견되었습니다. 통일 기준을 정해 주세요.  
+
+--------------------------------------------------------------------------------
+A.10 법무 검토 (3문항) — LegalSimulation
+--------------------------------------------------------------------------------
+■ inbasket_legal_1 — 법무/컴플라이언스 | 긴급 | 법무팀 | 2시간 전 | 50억원 규모 계약서 법무 검토 | 본문: 계약서 조항별 위험도를 검토하고, 수정요청/협상/수용/거절 의견을 제시해 주세요. | 첨부: 계약서_초안.pdf  
+
+■ inbasket_legal_2 — 법무/컴플라이언스 | 보통 | 사업개발팀 | 3시간 전 | 제휴 계약서 검토 요청 | 본문: 신규 제휴사와의 계약서 초안이 도착했습니다. 법무 검토 후 의견 주세요.  
+
+■ inbasket_legal_3 — 법무/컴플라이언스 | 보통 | 법무팀 | 1일 전 | 표준 계약 조항 개정안 검토 | 본문: 표준 계약서 개정안에 대한 최종 검토가 필요합니다.  
+
+--------------------------------------------------------------------------------
+A.11 디지털 활용 (3문항) — DigitalToolSimulation
+--------------------------------------------------------------------------------
+■ inbasket_digital_1 — IT/디지털 | 보통 | IT기획팀 | 1일 전 | AI 도구 도입 예산 배분 | 본문: ChatGPT Plus, Notion AI, Midjourney, GitHub Copilot 등 4종 도구의 ROI를 비교하고 도입 여부·우선순위·예산 할당을 결정해 주세요.  
+
+■ inbasket_digital_2 — IT/디지털 | 보통 | IT기획팀 | 오늘 | 사내 협업 도구 확대 검토 | 본문: 팀 규모 확대로 협업 도구 라이선스 증설이 필요합니다. 옵션 비교 후 제안해 주세요.  
+
+■ inbasket_digital_3 — IT/디지털 | 긴급 | 정보보안팀 | 2일 전 | 보안 솔루션 도입 제안 | 본문: 최근 규제 강화에 따른 보안 솔루션 도입 제안서를 검토해 주세요.  
+
+--------------------------------------------------------------------------------
+A.12 인사 관리 (3문항) — HRSimulation
+--------------------------------------------------------------------------------
+■ inbasket_hr_1 — 인사/조직 | 보통 | 인사팀 | 3시간 전 | 영업-생산 부서 간 갈등 조정 | 본문: 조직도 상 갈등 당사자와 퇴사 예정자를 고려해, 프로세스 정립·팀빌딩·개별 면담 전략을 선택해 주세요.  
+
+■ inbasket_hr_2 — 인사/조직 | 보통 | 인사팀 | 1일 전 | 부서 간 인력 이동 제안 | 본문: A부서 초과 인력과 B부서 부족 인력을 조정하는 방안을 검토해 주세요.  
+
+■ inbasket_hr_3 — 인사/조직 | 낮음 | 인사개발팀 | 오늘 | 리더십 교육 일정 확정 | 본문: 다음 분기 리더십 교육 일정과 강사를 확정해야 합니다. 참석 가능 인원을 확인해 주세요.  
+
+--------------------------------------------------------------------------------
+A.13 재무 관리 (3문항) — FinanceSimulation
+--------------------------------------------------------------------------------
+■ inbasket_finance_1 — 재무/회계 | 긴급 | 재무팀 | 오늘 | 부서별 예산 증액 요청 검토 | 본문: 마케팅·연구개발·영업·생산 4개 부서의 예산 증액 요청을 검토하고 전액/일부/거부/차기 분기 중 결정해 주세요.  
+
+■ inbasket_finance_2 — 재무/회계 | 보통 | 재무팀 | 2일 전 | 분기 결산 보고 일정 | 본문: 2분기 결산 보고 일정과 담당자를 확정해 주세요.  
+
+■ inbasket_finance_3 — 재무/회계 | 긴급 | 재무팀 | 1시간 전 | 투자 검토 회의 자료 | 본문: 다음 주 투자 검토 회의 자료를 금요일까지 제출 부탁드립니다.  
+
+--------------------------------------------------------------------------------
+A.14 고객 관리 (3문항) — CustomerSimulation
+--------------------------------------------------------------------------------
+■ inbasket_customer_1 — 고객서비스 | 긴급 | 영업본부 | 1시간 전 | VIP 고객 ABC 그룹 이슈 대응 | 본문: VIP 고객의 가격 할인·품질 보증·전담팀 요구에 대해 즉각 대응 전략, 가격 협상, 품질 보증 방안, 관계 강화 전략을 선택해 주세요.  
+
+■ inbasket_customer_2 — 고객서비스 | 긴급 | 영업팀 | 30분 전 | 대기업 B사 불만 대응 | 본문: 주요 거래처 B사에서 납기 지연과 품질 이슈로 강한 불만이 접수되었습니다. 대응 방안을 결정해 주세요.  
+
+■ inbasket_customer_3 — 고객서비스 | 보통 | 고객성과팀 | 오늘 | 고객 만족도 설문 결과 공유 | 본문: 1분기 고객 만족도 설문 결과가 나왔습니다. 개선 항목을 도출해 주세요.  
+
+--------------------------------------------------------------------------------
+A.15 윤리 경영 (3문항) — EthicsSimulation
+--------------------------------------------------------------------------------
+■ inbasket_ethics_1 — 법무/컴플라이언스 | 긴급 | 윤리경영팀 | 방금 전 | 제보 WB-2026-021 초기 대응 | 본문: 구매팀 김과장에 대한 제보가 접수되었습니다. 초기 대응 방향, 대상자 조치, 조사 범위, 공개 및 보고 전략을 단계별로 결정해 주세요.  
+
+■ inbasket_ethics_2 — 법무/컴플라이언스 | 보통 | 감사팀 | 1일 전 | 내부 감사 결과 후속 조치 | 본문: 내부 감사에서 발견된 미비점에 대한 시정 조치 계획을 수립해 주세요.  
+
+■ inbasket_ethics_3 — 법무/컴플라이언스 | 낮음 | 윤리경영팀 | 3일 전 | 윤리 강령 개정안 검토 | 본문: 윤리 강령 개정안에 대한 전 직원 검토 의견을 수렴해 주세요.  
+
+--------------------------------------------------------------------------------
+A.16 전략 기획 (3문항) — StrategySimulation
+--------------------------------------------------------------------------------
+■ inbasket_strategy_1 — 경영/기획 | 보통 | 전략기획팀 | 2일 전 | XYZ 테크놀로지 M&A 검토 | 본문: 인수 대상 XYZ 테크놀로지(인수가 1,500억원)에 대해 재무적 타당성·전략적 적합성·실사 리스크·통합 전략·최종 의사결정을 검토해 주세요.  
+
+■ inbasket_strategy_2 — 경영/기획 | 보통 | 전략기획팀 | 오늘 | 신사업 투자 우선순위 | 본문: 3개 신사업 후보에 대한 투자 우선순위를 정해 주세요.  
+
+■ inbasket_strategy_3 — 경영/기획 | 보통 | 경영기획팀 | 1일 전 | 연도 전략 목표 점검 | 본문: 2026년 상반기 전략 목표 달성률을 점검하고 하반기 조정안을 제안해 주세요.  
+
+--------------------------------------------------------------------------------
+A.17 마케팅캠페인 (3문항) — MarketingCampaignSimulation
+--------------------------------------------------------------------------------
+■ inbasket_marketing_1 — 마케팅/영업 | 보통 | 마케팅팀 | 오늘 | 캠페인별 예산·성과 점검 및 조치 | 본문: SNS 인플루언서·온라인 광고·오프라인 이벤트·이메일 마케팅 4개 캠페인의 예산 집행과 성과를 확인하고 계속/확대/축소/중단을 결정해 주세요.  
+
+■ inbasket_marketing_2 — 마케팅/영업 | 보통 | 마케팅팀 | 1일 전 | 신규 런칭 캠페인 승인 | 본문: 다음 달 런칭 캠페인 기획안이 완성되었습니다. 예산과 일정 승인 부탁드립니다.  
+
+■ inbasket_marketing_3 — 마케팅/영업 | 긴급 | 마케팅팀 | 2시간 전 | 경쟁사 프로모션 대응 | 본문: 경쟁사가 대규모 프로모션을 시작했습니다. 대응 전략을 결정해 주세요.  
+
+--------------------------------------------------------------------------------
+A.18 생산관리 (3문항) — ProductionSimulation
+--------------------------------------------------------------------------------
+■ inbasket_production_1 — 생산/운영 | 긴급 | 생산관리팀 | 10분 전 | 라인 2 긴급 중단 - 생산 의사결정 | 본문: 라인 2(B제품) 불량률 15%로 긴급 중단 상태입니다. 납기 5일 후 10,000개, 재고 2,000개. 원자재 교체/라인 전환/외주 생산/납기 연장 중 결정해 주세요.  
+
+■ inbasket_production_2 — 생산/운영 | 보통 | 생산관리팀 | 오늘 | 설비 정기 점검 일정 | 본문: 다음 주 설비 정기 점검 일정을 확정하고, 생산 계획을 조정해 주세요.  
+
+■ inbasket_production_3 — 생산/운영 | 긴급 | 구매팀 | 1시간 전 | 원자재 재고 부족 대응 | 본문: 주요 원자재 재고가 3일분 이하로 떨어졔습니다. 긴급 발주 또는 대체 공급처를 결정해 주세요.  
+
+--------------------------------------------------------------------------------
+A.19 산업별 AI 워크플로우 (목록 id = "ai-workflow")
+--------------------------------------------------------------------------------
+선택 키: page.tsx `AI_INDUSTRY_KEYS` 와 동일 — **IT, 금융, 의료, 마케팅/광고**, 그 외 산업명은 **기타** 시나리오.
+
+■ IT — it_ai_workflow | 제목: AI 워크플로우: 코드 리뷰 자동화  
+- 상황: Backend 리드, 팀원 5명·PR 15건/일, 리뷰 7.5h/일 → 리뷰 시간 50% 단축·품질 유지 설계.  
+- 선지: A GitHub Copilot 단독(시간 20%, 품질 70) | B SonarQube+AI 리뷰 봇(60%, 95) | C ChatGPT 수동(10%, 60) | D 수동 유지(0%, 85) | 정답 인덱스: 1  
+
+■ 금융 — finance_ai_workflow | AI 워크플로우: 고객 세그먼트 자동 분석  
+- 상황: 카드사 마케터, 50만 고객·수동 20h/주 → 분석 70% 단축·정확도 향상.  
+- 선지: Excel+ChatGPT(30%,70) | Python+AutoML(75%,92) | Tableau+AI인사이트(45%,80) | 수동(0%,75) | 정답: 1  
+
+■ 의료 — med_ai_workflow | AI 워크플로우: EMR 데이터 자동 분석  
+- 상황: 병원 IT, EMR 리포트 수동 15h/주 → 65% 단축·인사이트 품질.  
+- 선지: Excel 피벗(15%,65) | AI 의료 분석 플랫폼(70%,93) | ChatGPT 해석(25%,70) | 수동(0%,80) | 정답: 1  
+
+■ 마케팅/광고 — mkt_ai_workflow | AI 워크플로우: 광고 캠페인 자동 최적화  
+- 상황: 10채널·50광고·수동 5h/일 → 시간 단축·ROAS 향상.  
+- 선지: 자동 입찰만(40%,75) | AI 마케팅 자동화 통합(85%,95) | ChatGPT 소재만(15%,70) | 수동(0%,80) | 정답: 1  
+
+■ 기타 — etc_ai_workflow | AI 워크플로우: 업무 보고서 자동화  
+- 상황: 주간 보고 5h — 수집·표·요약 반복 → 50% 이상 단축.  
+- 선지: Excel 템플릿(10%,70) | 데이터연동+AI요약(60%,88) | ChatGPT 붙여넣기(25%,72) | 수동(0%,80) | 정답: 1  
+
+※ 각 시나리오는 JSON 필드 `explanation`으로 채점 근거 문구 제공. UI는 답 선택 후 explanation 표시.
+
+--------------------------------------------------------------------------------
+A.20 운영(설계)·테스트 환경 차이 (InbasketList 툴팁 기준)
+--------------------------------------------------------------------------------
+- **현재 구현**: 테스트 환경 배지·직무 필터·「다음→」로 결과 단계 스킵 가능. 목록은 JSON 전체(48)+AI(1) 노출.  
+- **설계 메시지(툴팁)**: 실제 학습자 환경에서는 헤더가 "선정 문항" 형태로 바뀌고, **인당 4문항**만 노출·직무 선택 UI 비표시(선정 규칙은 별도 정책/미구현 시 테스트와 동일 데이터 소스 사용).
 
 ================================================================================
 React Flow 구조도 제작 — 단계별 프롬프트 (Cursor 전달용)
@@ -355,7 +610,7 @@ React Flow 구조도 제작 — 단계별 프롬프트 (Cursor 전달용)
 - docs/service-structure-diagram.txt 의 "트리 1: 학습자 LMS" 부분을 참고해, Root, /, /login, /admin, /app 까지의 노드를 추가해 주세요. 각 라우트를 하나의 노드로 하고, 링크(엣지)로 연결합니다. 노드에는 경로명과 주요 버튼/링크 목적지만 짧게 표기합니다.
 
 [3단계: /app 하위 라우트 및 진단 단계]
-- /app, /app/diagnosis, /app/dashboard, /app/education, /app/growth 노드를 추가하고, ConsumerSidebar 메뉴와 연결해 주세요. /app/diagnosis 아래에 step 0~6(시작·정보·지식·적용·성과·인바스켓·결과)를 서브노드로 추가합니다. 디지털 인바스켓(step 5) 내부에 InbasketList / InbasketSimulation, 로딩 화면, "결과 확인하기" → /app/dashboard 흐름을 엣지로 표시합니다.
+- /app, /app/diagnosis, /app/dashboard, /app/education, /app/growth 노드를 추가하고, ConsumerSidebar 메뉴와 연결해 주세요. /app/diagnosis 아래에 step 0~6(시작·정보·지식·적용·성과·인바스켓·결과)를 서브노드로 추가합니다. 디지털 인바스켓(step 5) 내부에 InbasketList / InbasketSimulation·AI 워크플로우, 로딩 화면, "결과 확인하기" → /app/dashboard 흐름을 엣지로 표시합니다. 48문항·AI 5종 산업 시나리오는 본 문서 **부록 A** 참고.
 
 [4단계: 대시보드·성장 탭 및 데이터 노드]
 - /app/dashboard 노드 아래에 탭 "내 역량", "성장 로드맵" 노드를 두고, 각 탭 내 섹션(예: AI 인사이트, KAPP 역량 점수, 시장 포지션, 커리어 시뮬레이터, IDP)을 자식 노드로 추가합니다. /app/growth 에는 "성장 활동", "인증서" 탭 노드를 추가합니다. JSON/데이터 소스가 있는 곳은 "데이터 노드" 하나로 묶어 표시하고, 노드 라벨에 예: "dashboard.json", "careerPathByIndustry.json" 같이 파일명만 표기합니다.

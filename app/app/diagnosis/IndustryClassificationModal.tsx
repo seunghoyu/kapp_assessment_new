@@ -17,6 +17,8 @@ type Props = {
   onConfirmMajor?: () => void;
   /** 검색 결과 클릭 시 이 경로로 선택 상태를 맞춥니다. [중,소,세,세세] 코드 배열(존재하는 depth까지만) */
   initialSelectionCodes?: string[];
+  /** false면 상단 검색창·검색 결과 UI를 숨기고 분류 테이블만 표시(산업군 카드에서 「상세보기」로 열었을 때 등) */
+  showSearch?: boolean;
 };
 
 export default function IndustryClassificationModal({
@@ -26,6 +28,7 @@ export default function IndustryClassificationModal({
   middleNodes,
   onConfirmMajor,
   initialSelectionCodes,
+  showSearch = true,
 }: Props) {
   const [selectedMiddle, setSelectedMiddle] = useState<IndustryNode | null>(null);
   const [selectedSmall, setSelectedSmall] = useState<IndustryNode | null>(null);
@@ -169,21 +172,23 @@ export default function IndustryClassificationModal({
           </div>
         </div>
 
-        {/* 검색 input (구분선 아래, 중앙 정렬) */}
-        <div className="flex-shrink-0 bg-white pt-[15px] pb-1 flex justify-center">
-          <div className="w-full max-w-5xl px-6">
-            <input
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-              placeholder="산업군 키워드를 검색하세요."
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-600 shadow-sm"
-            />
+        {/* 검색 input (구분선 아래, 중앙 정렬) — 「상세보기」만으로 열었을 때는 미표시 */}
+        {showSearch ? (
+          <div className="flex-shrink-0 bg-white pt-[15px] pb-1 flex justify-center">
+            <div className="w-full max-w-5xl px-6">
+              <input
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                placeholder="산업군 키워드를 검색하세요."
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-600 shadow-sm"
+              />
+            </div>
           </div>
-        </div>
+        ) : null}
 
         {/* 단계별 4열 테이블 */}
         <div className="flex-1 min-h-0 overflow-auto px-6 py-3">
-          {debouncedKeyword.trim() ? (
+          {showSearch && debouncedKeyword.trim() ? (
             <div>
               {searchResults.length === 0 ? (
                 <p className="text-sm text-gray-500">검색 결과가 없습니다</p>

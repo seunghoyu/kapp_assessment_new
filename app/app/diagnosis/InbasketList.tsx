@@ -110,13 +110,14 @@ export type AiWorkflowRow = {
 
 type Props = {
   questions: InbasketQuestion[];
-  aiWorkflow: AiWorkflowRow | null;
+  /** 생략·null이면 인바스켓 목록에서 AI 행을 표시하지 않음(별도 단계에서 진행). */
+  aiWorkflow?: AiWorkflowRow | null;
   onStart: (questionId: string) => void;
   completedCount?: number;
   totalCount?: number;
   /**
    * 테스트 환경용 보조 버튼 콜백:
-   * 인바스켓 문항을 모두 완료하지 않아도 결과(step 6)로 이동할 수 있게 한다.
+   * 인바스켓 다음 단계(AI 활용 탐색)로 이동한다.
    */
   onNextToResult?: () => void;
 };

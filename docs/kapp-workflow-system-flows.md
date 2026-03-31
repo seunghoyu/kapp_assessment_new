@@ -211,17 +211,17 @@
     - (step2) 지식 문항 렌더링
     - (step3) 적용 문항 렌더링
     - (step4) 성과 문항 렌더링
-    - (step5) InbasketList
-      - 헤더: 전체 문항 / 진행률 / 테스트 환경(툴팁: 운영 시 인당 4문항 등 안내)
-      - 펼침 시: 직무 필터 `<select>` + `다음 →` (`onNextToResult`)
-      - 테이블 행: `filtered.map(question)` + `aiWorkflow`일 때 하단 고정 AI 행
-      - 모달: 문항 상세(`modalQuestion`), AI 시나리오 상세(`aiWorkflowModalOpen`)
+    - (step5) InbasketList (`aiWorkflow` 생략 시 목록에서 AI 행 미표시; AI는 step6에서 진행)
+      - 헤더: 전체 문항 / 진행률 / 테스트 환경(툴팁)
+      - 펼침 시: 직무 필터 `<select>` + `다음 →` (`onNextToResult` → step6 AI 단계)
+      - 테이블 행: `filtered.map(question)`만(선택적 `aiWorkflow` 행은 별도 단계와 중복 시 생략)
+      - 모달: 문항 상세(`modalQuestion`); AI 상세 모달은 `aiWorkflow` 전달 시에만
     - (step5) 시뮬레이션 분기 (`inbasketView==="simulation"`)
-      - `inbasketSelectedId==="ai-workflow"` → **page.tsx 인라인** AI 라디오 UI
-      - 그 외 → `InbasketSimulation`
+      - `InbasketSimulation` (인바스켓 문항 id)
         - SimulationContent
           - `CATEGORY_COMPONENTS[question.category]` → Email/Messenger/Report/…/Production
-    - (step6) ResultActions
+    - (step6) **page.tsx 인라인** AI 워크플로우 라디오 UI (`answers.ai`), 완료 후 분석 로딩 → step7
+    - (step7) ResultActions
       - DashboardButton -> `/app/dashboard`
       - ReportPreviewButton -> `/report/preview?payload=...`
 - ReportPreviewPage
@@ -263,15 +263,15 @@
 ### 소비자: 진단 상태
 - state 생성 위치: `DiagnosisPage` (`app/app/diagnosis/page.tsx`)
 - 저장/복원 방식
-  - 저장: `useEffect`에서 `step`, `infoInputStep`, `form`, `selectedEtrayId`, `inbasketView`, `inbasketSelectedId`, `answers` 등 변화 시 `sessionStorage("kapp_diagnosis_state")`
-  - 복원: 마운트 시 `loadPersistedState()`
+  - 저장: `useEffect`에서 `flowVersion`, `step`, `infoInputStep`, `form`, `selectedEtrayId`, `inbasketView`, `inbasketSelectedId`, `answers` 등 변화 시 `sessionStorage("kapp_diagnosis_state")`
+  - 복원: 마운트 시 `loadPersistedState()` (구버전 `flowVersion` 없음·`step===6`이면 결과 단계로 간주해 step7로 마이그레이션)
 - 디지털 인바스켓 전용 필드
-  - `inbasketView`, `inbasketSelectedId`, `answers.etray`, `answers.ai`
+  - `inbasketView`, `inbasketSelectedId`, `answers.etray`, `answers.ai`(step6에서 확정)
   - `selectedEtrayId`: `etrayByIndustry`와 동기화용(현재 시뮬에 미사용)
 - props 전달 방식
-  - `InbasketList`: `questions`, `aiWorkflow`, `onStart(id)`, `completedCount`, `totalCount`, `onNextToResult`
+  - `InbasketList`: `questions`, `aiWorkflow?`, `onStart(id)`, `completedCount`, `totalCount`, `onNextToResult`
   - `inbasketSelectedId`가 일반 문항 id면 `selectedInbasketQuestion = questions.find(...)` 후 `InbasketSimulation`에 `question` 전달
-  - 완료 콜백: 일반 문항은 `answers.etray[qId]="completed"`, AI는 `answers.ai` 인덱스 확정 후 목록으로 복귀
+  - 완료 콜백: 인바스켓 문항은 `answers.etray[qId]="completed"`; AI 선택은 step6에서 `answers.ai` 저장
 
 ### 소비자: 대시보드 반영
 - `ConsumerDashboardPage`는 `sessionStorage("kapp_diagnosis_state")`에서 `form.industry`를 읽어 로드맵 시뮬레이터 기본값을 설정

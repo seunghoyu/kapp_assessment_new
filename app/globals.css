@@ -67,3 +67,35 @@ body {
 .diagnosis-step-enter-left {
   animation: diagnosis-step-slide-in-left 0.35s ease-out both;
 }
+
+/* AI 활용 탐색: 인벤토리 카드 등장 */
+@keyframes ai-explore-inventory-enter {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.ai-explore-inventory-enter {
+  animation: ai-explore-inventory-enter 0.28s ease-out both;
+}
+
+/* 도구 카드 리스트 등장 */
+@keyframes ai-tool-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ai-tool-card-enter {
+  animation: ai-tool-card-enter 0.3s ease-out both;
+}

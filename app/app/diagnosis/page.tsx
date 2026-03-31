@@ -23,7 +23,6 @@ import knowledgeData from "@/data/kappDiagnosis/knowledgeQuestions.json";
 import applicationData from "@/data/kappDiagnosis/applicationQuestions.json";
 import performanceData from "@/data/kappDiagnosis/performanceQuestions.json";
 import etrayData from "@/data/kappDiagnosis/etrayByIndustry.json";
-import aiWorkflowData from "@/data/kappDiagnosis/aiWorkflowByIndustry.json";
 import industryTree from "@/data/Industry/industry_tree.json";
 import { getInbasketQuestions } from "@/lib/inbasketData";
 import InbasketList, { type InbasketQuestion } from "./InbasketList";
@@ -31,6 +30,7 @@ import InbasketSimulation from "./InbasketSimulation";
 import type { IndustryNode } from "./industryTypes";
 import IndustrySelectModal from "./IndustrySelectModal";
 import DiagnosisStartStep from "./DiagnosisStartStep";
+import AiExplorationFlow, { defaultAiExploration, type AiExplorationPayload } from "./AiExplorationFlow";
 import ProgressHeader from "@/components/diagnosis/ProgressHeader";
 import DiagnosisInfoInputLeftPanel from "@/components/diagnosis/DiagnosisInfoInputLeftPanel";
 import { ROUTES } from "@/lib/routes";
@@ -44,8 +44,12 @@ const STEPS = [
   { id: 3, title: "적용 문항", short: "적용" },
   { id: 4, title: "성과 문항", short: "성과" },
   { id: 5, title: "디지털 인바스켓", short: "인바스켓" },
-  { id: 6, title: "결과", short: "결과" },
+  { id: 6, title: "AI 활용 탐색", short: "AI" },
+  { id: 7, title: "결과", short: "결과" },
 ];
+
+/** sessionStorage 진단 상태 스키마 버전 (2: AI 단계 분리 이후, 구버전은 step 6 = 결과) */
+const DIAGNOSIS_FLOW_VERSION = 2;
 
 /** 단계별 상세 로직 (KAPP_DIAGNOSIS_QUESTION_LOGIC + KAPP_DIAGNOSIS_DATA_REFERENCE + kapp_origin 동일) */
 const STEP_DETAILS: Record<number, { title: string; what: string; criteria: string; logic: string[] }> = {
@@ -54,7 +58,7 @@ const STEP_DETAILS: Record<number, { title: string; what: string; criteria: stri
     what: "이름, 산업·직무, 직급, 연차, 기업 규모, 진단 목표 등 입력. 한 번만 입력하며, 이후 단계의 문항·시나리오 선정 기준이 됩니다.",
     criteria: "산업·직무 → 세부 직무 2단계 선택. 직급(인턴~임원), 연차(1년 미만~16년 이상), 기업 규모(대기업/중견/중소/스타트업), 진단 목표(복수 선택, 결과 해석·추천에만 사용).",
     logic: [
-      "입력 정보는 「어떤 문항이 나올지」와 「이메일/워크플로우 시나리오」를 결정하는 데 사용됩니다.",
+      "입력 정보는 「어떤 문항이 나올지」와 「인바스켓·AI 탐색 맥락」을 결정하는 데 사용됩니다.",
       "진단 목표(승진/이직/스킬업/커리어전환)는 문항 선정에는 쓰이지 않고, 결과 해석·추천에만 활용됩니다.",
     ],
   },
@@ -92,21 +96,26 @@ const STEP_DETAILS: Record<number, { title: string; what: string; criteria: stri
   },
   5: {
     title: "디지털 인바스켓 (E-tray)",
-    what: "우선순위(긴급·보통·낮음) 문항 3개 + 자동화(AI 워크플로우) 1개. 받은 이메일/업무 시뮬레이션으로 의사결정·AI 활용 능력 측정.",
-    criteria: "직무·산업군·기업규모·직급에 따라 선정된 4문항(긴급·보통·낮음·자동화 각 1문항).",
+    what: "받은 이메일·업무 시뮬레이션으로 우선순위·의사결정을 연습한다. AI 시나리오는 다음 단계 「AI 활용 탐색」에서 진행한다.",
+    criteria: "직무·산업에 맞는 인바스켓 문항 목록에서 시뮬레이션을 완료한다.",
     logic: [
-      "문항: 우선순위별 3문항 + 자동화 1문항. 자동화는 산업별 AI 워크플로우 시나리오.",
-      "기록: 이메일별 액션·소요시간, AI 워크플로우 선택 옵션·정답 여부.",
-      "점수: 긴급도 대응, 제한 시간 내 처리, AI 활용 품질로 생산성 점수 계산.",
+      "기록: 문항별 완료는 `answers.etray`에 저장.",
+      "완료 후 다음 단계로 이동하여 산업별 AI 시나리오를 푼다.",
     ],
   },
   6: {
+    title: "AI 활용 탐색",
+    what: "산업별 AI 업무 시나리오(객관식)로 활용 방식을 선택한다.",
+    criteria: "입력 산업에 따라 `aiWorkflowByIndustry.json` 시나리오 1개가 로드된다.",
+    logic: ["선택·해설은 `answers.ai`에 저장."],
+  },
+  7: {
     title: "진단 결과",
     what: "영역별·종합 점수, 지식 수준, 강점/개선 영역 표시. 결과 해석·추천에 진단 목표 활용.",
     criteria: "결과 해석·추천 시 산업/직무/직급/연차/진단 목표 모두 참고.",
     logic: [
-      "포함: 입력 정보, 영역별 점수(지식/적용/성과/생산성), 종합 점수, 지식 수준(1~5), 문항별 답, 인바스켓 기록(이메일별 액션·소요시간), AI 워크플로우 기록(선택 옵션·정답 여부).",
-      "저장: 한 번의 진단을 한 덩어리로 정규화 저장. 마이페이지·관리자 대시보드에서 조회·집계 연동.",
+      "포함: 입력 정보, 영역별 점수, 문항별 답, 인바스켓 기록, AI 탐색(`answers.aiExploration`, `answers.ai`).",
+      "저장: 한 번의 진단을 한 덩어리로 정규화 저장.",
     ],
   },
 };
@@ -125,10 +134,7 @@ type KnowledgeQ = { id: string; category: string; difficulty: string; industry: 
 type ApplicationQ = { id: string; category: string; industry: string; job: string; position: string; title: string; scenario: string; question: string; options: { label: string; score: number }[]; answer: number };
 type PerformanceQ = { id: string; category: string; industry: string; job: string; title: string; question: string; options: { label: string; score: number }[]; answer: number };
 type EtrayEmail = { id: string; sender: string; subject: string; time: string; priority: string; body: string; unread?: boolean };
-type AiWorkflow = { id: string; industry: string; title: string; task: string; options: { id: string; choice: string; timeReduction: string; qualityScore: number }[]; answer: number; explanation?: string };
-
 const ETRAY_INDUSTRY_KEYS = ["IT", "금융", "의료", "마케팅/광고", "기타"];
-const AI_INDUSTRY_KEYS = ["IT", "금융", "의료", "마케팅/광고", "기타"];
 
 const industryTreeData = industryTree as IndustryNode[];
 
@@ -138,7 +144,7 @@ const INBASKET_TUTORIAL_DISMISSED_KEY = "kapp_inbasket_tutorial_dismissed";
 /**
  * 진단 완료 후 AI 분석 로딩 메시지 (시간 기준으로만 순환)
  * - 전환 기준: MESSAGE_INTERVAL_MS(2.2초)마다 다음 문구로 변경. 실제 엔진 진행률과 무관.
- * - 추후 엔진 연동 시: setTimeout 대신 API 호출 후 .then(() => { setAnalysisLoading(false); setStep(6); }) 로
+ * - 추후 엔진 연동 시: setTimeout 대신 API 호출 후 .then(() => { setAnalysisLoading(false); setStep(7); }) 로
  *   로딩 종료만 엔진 완료 시점에 맞추면 됨. 메시지 순환은 그대로 시간 기준 유지 가능.
  */
 const ANALYSIS_LOADING_MESSAGES = [
@@ -160,6 +166,7 @@ const COMPANY_TYPE_OPTIONS = [
 
 type PersistedState = {
   step: number;
+  flowVersion: number;
   infoInputStep: 1 | 2 | 3;
   form: {
     name: string;
@@ -184,6 +191,7 @@ type PersistedState = {
     performance: number[];
     etray: Record<string, string>;
     ai: number | null;
+    aiExploration: AiExplorationPayload;
   };
 };
 
@@ -195,12 +203,14 @@ function loadPersistedState(): Partial<PersistedState> | null {
     const data = JSON.parse(raw) as unknown;
     if (!data || typeof data !== "object") return null;
     const d = data as Record<string, unknown>;
-    const step = typeof d.step === "number" && d.step >= 0 && d.step <= 6 ? d.step : undefined;
+    const step = typeof d.step === "number" && d.step >= 0 && d.step <= 7 ? d.step : undefined;
+    const flowVersion = typeof d.flowVersion === "number" ? d.flowVersion : undefined;
     const infoInputStep =
       d.infoInputStep === 1 || d.infoInputStep === 2 || d.infoInputStep === 3 ? (d.infoInputStep as 1 | 2 | 3) : undefined;
     if (step === undefined) return null;
     return {
       step,
+      flowVersion,
       infoInputStep,
       form: typeof d.form === "object" && d.form !== null ? (d.form as PersistedState["form"]) : undefined,
       selectedEtrayId: typeof d.selectedEtrayId === "string" || d.selectedEtrayId === null ? d.selectedEtrayId : undefined,
@@ -237,12 +247,13 @@ const initialForm = {
   diagnosticGoals: [] as string[],
 };
 
-const initialAnswers = {
-  knowledge: [] as number[],
-  application: [] as number[],
-  performance: [] as number[],
-  etray: {} as Record<string, string>,
-  ai: null as number | null,
+const initialAnswers: PersistedState["answers"] = {
+  knowledge: [],
+  application: [],
+  performance: [],
+  etray: {},
+  ai: null,
+  aiExploration: defaultAiExploration(),
 };
 
 export default function DiagnosisPage() {
@@ -267,7 +278,7 @@ export default function DiagnosisPage() {
   const [selectedEtrayId, setSelectedEtrayId] = useState<string | null>(null);
   const [inbasketView, setInbasketView] = useState<"list" | "simulation">("list");
   const [inbasketSelectedId, setInbasketSelectedId] = useState<string | null>(null);
-  const [answers, setAnswers] = useState(initialAnswers);
+  const [answers, setAnswers] = useState<PersistedState["answers"]>(initialAnswers);
   const hasRestored = useRef(false);
   const skipNextSave = useRef(true);
 
@@ -321,7 +332,7 @@ export default function DiagnosisPage() {
     }, MESSAGE_INTERVAL_MS);
     analysisLoadingTimerRef.current = setTimeout(() => {
       setAnalysisLoading(false);
-      setStep(6);
+      setStep(7);
     }, LOADING_DURATION_MS);
     return () => {
       if (analysisLoadingIntervalRef.current) clearInterval(analysisLoadingIntervalRef.current);
@@ -335,7 +346,19 @@ export default function DiagnosisPage() {
     hasRestored.current = true;
     const saved = loadPersistedState();
     if (!saved || saved.step === undefined) return;
-    setStep(saved.step);
+    let nextStep = saved.step;
+    const fv = saved.flowVersion ?? 1;
+    if (fv < DIAGNOSIS_FLOW_VERSION && nextStep === 6) {
+      nextStep = 7;
+    }
+    if (saved.step === 5 && saved.inbasketSelectedId === "ai-workflow") {
+      nextStep = 6;
+    }
+    setStep(nextStep);
+    if (saved.step === 5 && saved.inbasketSelectedId === "ai-workflow") {
+      setInbasketView("list");
+      setInbasketSelectedId(null);
+    }
     if (saved.infoInputStep !== undefined) setInfoInputStep(saved.infoInputStep);
     if (saved.form) {
       setForm({ ...initialForm, ...saved.form });
@@ -348,7 +371,17 @@ export default function DiagnosisPage() {
     if (saved.selectedEtrayId !== undefined) setSelectedEtrayId(saved.selectedEtrayId);
     if (saved.inbasketView !== undefined) setInbasketView(saved.inbasketView);
     if (saved.inbasketSelectedId !== undefined) setInbasketSelectedId(saved.inbasketSelectedId);
-    if (saved.answers) setAnswers({ ...initialAnswers, ...saved.answers });
+    if (saved.answers) {
+      const merged = { ...initialAnswers, ...saved.answers };
+      if (!merged.aiExploration) {
+        merged.aiExploration = defaultAiExploration();
+        if (typeof merged.ai === "number" && merged.ai >= 0) {
+          merged.aiExploration.scenarioChoice = merged.ai;
+          merged.aiExploration.phase = "scenario";
+        }
+      }
+      setAnswers(merged);
+    }
   }, []);
 
   // 진단 상태 변경 시 sessionStorage에 저장 (첫 마운트 시 복원 전 덮어쓰기 방지)
@@ -359,6 +392,7 @@ export default function DiagnosisPage() {
     }
     const state: PersistedState = {
       step,
+      flowVersion: DIAGNOSIS_FLOW_VERSION,
       infoInputStep,
       form,
       selectedEtrayId,
@@ -373,7 +407,6 @@ export default function DiagnosisPage() {
   const applicationList = (applicationData as { questions: ApplicationQ[] }).questions;
   const performanceList = (performanceData as { questions: PerformanceQ[] }).questions;
   const etrayByIndustry = (etrayData as { byIndustry: Record<string, EtrayEmail[]> }).byIndustry;
-  const aiByIndustry = (aiWorkflowData as { byIndustry: Record<string, AiWorkflow> }).byIndustry;
 
   const filteredKnowledge = useMemo(() => {
     return knowledgeList.filter(
@@ -408,27 +441,29 @@ export default function DiagnosisPage() {
     }
   }, [step, etrayEmails, selectedEtrayId]);
 
-  const aiWorkflow = useMemo(() => {
-    const key = AI_INDUSTRY_KEYS.includes(form.industry) ? form.industry : "기타";
-    return aiByIndustry[key] ?? aiByIndustry["기타"] ?? null;
-  }, [form.industry]);
-
   const inbasketQuestions = getInbasketQuestions();
 
   const selectedInbasketQuestion = useMemo(
-    () => (inbasketSelectedId && inbasketSelectedId !== "ai-workflow"
-      ? inbasketQuestions.find((q) => q.id === inbasketSelectedId) ?? null
-      : null),
+    () => (inbasketSelectedId ? inbasketQuestions.find((q) => q.id === inbasketSelectedId) ?? null : null),
     [inbasketSelectedId, inbasketQuestions]
   );
 
   const inbasketProgress = useMemo(() => {
-    const total = inbasketQuestions.length + (aiWorkflow ? 1 : 0);
-    const completed =
-      inbasketQuestions.filter((q) => answers.etray[q.id] != null && String(answers.etray[q.id]).trim() !== "").length +
-      (answers.ai != null ? 1 : 0);
+    const total = inbasketQuestions.length;
+    const completed = inbasketQuestions.filter(
+      (q) => answers.etray[q.id] != null && String(answers.etray[q.id]).trim() !== ""
+    ).length;
     return { completed, total };
-  }, [inbasketQuestions, aiWorkflow, answers.etray, answers.ai]);
+  }, [inbasketQuestions, answers.etray]);
+
+  const allInbasketComplete = useMemo(
+    () =>
+      inbasketQuestions.length > 0 &&
+      inbasketQuestions.every(
+        (q) => answers.etray[q.id] != null && String(answers.etray[q.id]).trim() !== ""
+      ),
+    [inbasketQuestions, answers.etray]
+  );
 
   /** 디지털 인바스켓 시뮬레이션 → 목록으로 돌아가기. step은 변경하지 않음(5 유지). */
   const handleInbasketBackToList = useCallback(() => {
@@ -565,6 +600,10 @@ export default function DiagnosisPage() {
                   onClick={() => {
                     if (step === 5 && inbasketView === "simulation") {
                       handleInbasketBackToList();
+                    } else if (step === 6) {
+                      setStepTransitionDir("left");
+                      setInbasketView("list");
+                      setStep(5);
                     } else if (step === 1 && infoInputStep > 1) {
                       setInfoInputStep((s) => (Math.max(1, s - 1) as 1 | 2 | 3));
                     } else {
@@ -613,7 +652,7 @@ export default function DiagnosisPage() {
                         </button>
                       </div>
                       <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-                        디지털 인바스켓은 <strong>실전 업무 의사결정 시뮬레이터</strong>입니다. 인당 4문항(긴급·보통·낮음·자동화 각 1문항)이 나오며, 직무·산업군·기업규모·직급에 따라 선정된 문항이 표시됩니다.
+                        디지털 인바스켓은 <strong>실전 업무 의사결정 시뮬레이터</strong>입니다. 표시된 문항을 시뮬레이션으로 완료한 뒤, 다음 단계 「AI 활용 탐색」에서 산업별 AI 시나리오를 진행합니다.
                       </p>
                       <p className="font-semibold text-gray-800 text-xs mb-2">이용 방법</p>
                       <ul className="text-xs text-gray-600 space-y-2 list-disc list-inside">
@@ -625,7 +664,7 @@ export default function DiagnosisPage() {
                     </span>
                   </div>
                   <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-2 flex-wrap">
-                    <span>실전 업무 의사결정 시뮬레이터 · 인당 4문항 (긴급·보통·낮음·자동화 각 1문항)</span>
+                    <span>실전 업무 의사결정 시뮬레이터 · 이후 단계에서 AI 활용 탐색</span>
                     <span
                       className="relative inline-flex"
                       onMouseEnter={() => setTestEnvTooltipHover(true)}
@@ -641,12 +680,22 @@ export default function DiagnosisPage() {
                             현재는 <strong>테스트 환경</strong>입니다. 전체 문항과 직무 선택이 노출됩니다.
                           </p>
                           <p className="text-[11px] text-amber-800 leading-relaxed mt-2">
-                            실제 학습자 환경에서는 &quot;선정 문항&quot; 헤더로 표시되며, 직무·산업군·기업규모·직급에 따라 선정된 <strong>인당 4문항</strong>만 노출됩니다. 직무 선택 UI는 보이지 않습니다.
+                            실제 학습자 환경에서는 &quot;선정 문항&quot; 헤더로 표시되며, 직무·산업군·기업규모·직급에 따라 선정된 문항만 노출됩니다. 직무 선택 UI는 보이지 않습니다.
                           </p>
                         </div>
                       )}
                     </span>
                   </div>
+                </div>
+              </div>
+            ) : step === 6 ? (
+              <div className="min-w-0 flex items-start gap-2">
+                <div>
+                  <div className="inline-flex items-center gap-1.5">
+                    <Bot className="h-5 w-5 text-violet-600 shrink-0" aria-hidden />
+                    <h1 className="text-lg font-bold text-gray-900 shrink-0">AI 활용 탐색</h1>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5">산업별 AI 업무 시나리오에서 활용 방식을 선택하세요.</p>
                 </div>
               </div>
             ) : null}
@@ -1144,46 +1193,10 @@ export default function DiagnosisPage() {
             </div>
           )}
 
-          {/* 5: 디지털 인바스켓 — 목록(인당 4문항 + 자동화) / 시뮬레이션 / AI 워크플로우 */}
+          {/* 5: 디지털 인바스켓 — 목록 / 시뮬레이션 (AI는 step 6) */}
           {step === 5 && STEP_DETAILS[5] && (
             <>
-              {inbasketView === "simulation" && inbasketSelectedId === "ai-workflow" && aiWorkflow ? (
-                <div className="flex-1 overflow-y-auto p-6">
-                  <div className="max-w-2xl mx-auto">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">AI 워크플로우 (자동화)</h2>
-                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="rounded bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-800">
-                          {aiWorkflow.industry}
-                        </span>
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">{aiWorkflow.title}</h3>
-                      <p className="text-sm text-gray-600 whitespace-pre-wrap mb-4">{aiWorkflow.task}</p>
-                      <p className="font-medium text-gray-900 mb-3">선택지:</p>
-                      <ul className="space-y-2">
-                        {aiWorkflow.options.map((opt, i) => (
-                          <li key={opt.id}>
-                            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 p-3 hover:bg-gray-50 has-[:checked]:border-violet-500 has-[:checked]:bg-violet-50/50">
-                              <input
-                                type="radio"
-                                name="ai-workflow"
-                                checked={answers.ai === i}
-                                onChange={() => setAnswers((a) => ({ ...a, ai: i }))}
-                                className="h-4 w-4 text-violet-600"
-                              />
-                              <span className="text-sm font-medium">{opt.choice}</span>
-                              <span className="text-xs text-gray-500 ml-auto">시간 단축 {opt.timeReduction}, 품질 {opt.qualityScore}</span>
-                            </label>
-                          </li>
-                        ))}
-                      </ul>
-                      {aiWorkflow.explanation && answers.ai !== null && (
-                        <p className="mt-3 text-xs text-gray-500 border-t pt-2">{aiWorkflow.explanation}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ) : inbasketView === "simulation" && selectedInbasketQuestion ? (
+              {inbasketView === "simulation" && selectedInbasketQuestion ? (
                 <InbasketSimulation
                   question={selectedInbasketQuestion}
                   onBack={handleInbasketBackToList}
@@ -1197,7 +1210,6 @@ export default function DiagnosisPage() {
               ) : (
                 <InbasketList
                   questions={inbasketQuestions}
-                  aiWorkflow={aiWorkflow}
                   onStart={(id) => {
                     setInbasketSelectedId(id);
                     setInbasketView("simulation");
@@ -1210,8 +1222,29 @@ export default function DiagnosisPage() {
             </>
           )}
 
-          {/* 6: 결과 — 결과 확인하기 버튼만 표시 */}
-          {step === 6 && (
+          {/* 6: AI 활용 탐색 — 기획서 §4.11 (카탈로그·설문·시나리오), 구 aiWorkflowByIndustry 미사용 */}
+          {step === 6 && STEP_DETAILS[6] && (
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative">
+              <AiExplorationFlow
+                industry={form.industry}
+                value={answers.aiExploration}
+                onChange={(payload) =>
+                  setAnswers((a) => ({
+                    ...a,
+                    aiExploration: payload,
+                    ai: payload.scenarioChoice,
+                  }))
+                }
+                onRequestResult={() => {
+                  setStepTransitionDir("right");
+                  setAnalysisLoading(true);
+                }}
+              />
+            </div>
+          )}
+
+          {/* 7: 결과 — 결과 확인하기 버튼만 표시 */}
+          {step === 7 && (
             <div className="flex-1 flex items-center justify-center p-6">
               <div className="w-full max-w-[600px] flex flex-col items-center justify-center text-center">
                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
@@ -1252,7 +1285,7 @@ export default function DiagnosisPage() {
           )}
           </div>
 
-          {/* 메인(흰 카드) 영역 기준 우측 하단 고정 CTA — 정보(step 1)에서만 */}
+          {/* 메인(흰 카드) 영역 기준 우측 하단 고정 CTA — 정보(step 1) */}
           {step === 1 && (
             <div className="absolute bottom-6 right-6 z-10">
               <button
@@ -1262,6 +1295,19 @@ export default function DiagnosisPage() {
                 className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all disabled:opacity-40 disabled:pointer-events-none"
               >
                 다음
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+          {/* 인바스켓 목록에서 전체 완료 시 → AI 단계 */}
+          {step === 5 && inbasketView === "list" && allInbasketComplete && (
+            <div className="absolute bottom-6 right-6 z-10">
+              <button
+                type="button"
+                onClick={goNext}
+                className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-violet-600/25 hover:bg-violet-700 hover:shadow-violet-600/30 transition-all"
+              >
+                다음: AI 활용 탐색
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>

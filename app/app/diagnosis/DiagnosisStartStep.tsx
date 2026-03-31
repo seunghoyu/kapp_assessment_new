@@ -38,8 +38,9 @@ const CARDS = [
         <li><span className="text-gray-500 font-medium">2.</span> 지식 문항 <strong>3문항</strong> (객관식)</li>
         <li><span className="text-gray-500 font-medium">3.</span> 적용 문항 <strong>3문항</strong> (객관식)</li>
         <li><span className="text-gray-500 font-medium">4.</span> 성과 문항 <strong>3문항</strong> (객관식)</li>
-        <li><span className="text-gray-500 font-medium">5.</span> 디지털 인바스켓 <strong>4문항</strong>
-          <span className="text-gray-600 ml-1">(우선순위 3문항 + 자동화 1문항)</span>
+        <li><span className="text-gray-500 font-medium">5.</span> 디지털 인바스켓 <strong>(시뮬레이션 문항)</strong></li>
+        <li><span className="text-gray-500 font-medium">6.</span> AI 활용 탐색 <strong>1문항</strong>
+          <span className="text-gray-600 ml-1">(산업별 AI 시나리오)</span>
         </li>
       </ul>
     ),

@@ -5,14 +5,15 @@ type Props = {
 };
 
 function getProgressPercent(step: number): number {
-  // step 기준 단순 매핑: 1~6
+  // step 기준 단순 매핑: 1~7 (시작 0 제외)
   const map: Record<number, number> = {
     1: 10,
-    2: 25,
-    3: 40,
-    4: 55,
-    5: 75,
-    6: 100,
+    2: 24,
+    3: 38,
+    4: 52,
+    5: 66,
+    6: 82,
+    7: 100,
   };
   if (step <= 0) return 0;
   return map[step] ?? 0;
@@ -22,6 +23,7 @@ function getProgressDescription(step: number): string {
   if (step >= 1 && step <= 2) return "기초 정보를 분석하고 있어요";
   if (step >= 3 && step <= 4) return "핵심 역량을 분석하고 있어요";
   if (step === 5) return "실전 역량을 분석 중입니다";
+  if (step === 6) return "AI 활용 방식을 탐색하고 있어요";
   return "최종 결과를 확인하세요";
 }
 

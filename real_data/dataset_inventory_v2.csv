@@ -1,0 +1,21 @@
+﻿dataset_name,source,grain,key_columns,join_key,coverage,freshness,quality,missing_issues,usage,mapping_needed,status
+dim_job_family_v12,KAPP 내부 설계,JF코드 단위,"job_family_id,major_category,scope",job_family_id,전직종 167개,2026-03,매우 높음,없음,직무 분류 기준·문항 라우팅,없음,✅ 완료
+dim_display_role_v10_final,사람인+v3마이그레이션,직업명 단위,"display_role_id,display_role_name,job_family_id",job_family_id,1247개 직업명,2026-03,높음,일부 중복 정리 필요,직업명 검색·매칭,없음,✅ 완료
+dim_ksic_master_v6,통계청 KSIC,소분류 단위,"code,name,kapp_industry_tag",ksic_code,2038개 소분류,2023,높음,벤치마크 177개만 입력,산업 분류·P2 인바스켓 라우팅,없음,✅ 완료
+bridge_ksco_to_jf_v5,KSCO+KAPP매핑,KSCO 직업 단위,"ksco_code,job_name,new_jf_code_v10",ksco_code,479개 직업,2026-03,높음(confirmed),없음,직업분류↔JF코드 연결,완료,✅ 완료
+bridge_ksic_to_jf_v5,KSIC+KAPP매핑,KSIC 소분류 단위,"ksic_code,kapp_industry_tag,primary_jf_code",ksic_code,1161개 소분류,2026-03,중간(산업규칙 기반),개별 검수 필요,B2B 산업 자동매핑,없음,✅ 완료(검수 필요)
+taxonomy_master_v1,KAPP 내부 설계,코드 단위,"code,name,type",code,58개 코드,2026-03,높음,없음,서비스 공통 코드 기준,없음,✅ 완료
+dim_role_level_v1,KAPP 내부 설계,직급명 단위,"level_name,role_level_id,difficulty_multiplier",level_name,27개 직급,2026-03,높음,없음,직급↔역할레벨 정규화,없음,✅ 완료
+dim_competency_v1,KAPP 내부 설계+문서,서브역량 단위,"sub_competency_id,domain,definition",sub_competency_id,16개 서브역량,2026-03,높음,없음,문항 태깅·결과 해석,없음,✅ 완료
+dim_benchmark_v1,KAPP 추정치,직무군×레벨×산업,"benchmark_id,avg_K,avg_A,avg_P1,avg_P2",benchmark_id,700개 레코드,2026-03,낮음(추정치),실데이터 없음,대시보드 비교 기준,없음,⚠️ 추정치 — 실데이터로 교체 필요
+score_benchmark_dict_v1,KAPP 내부 설계,규칙 문서,-,-,전도메인,2026-03,높음,없음,채점·벤치마크 규칙,없음,✅ 완료
+item_metadata_spec_v1,KAPP 내부 설계,문항 스펙,-,-,전도메인,2026-03,높음,없음,문항 등록 형식 기준,없음,✅ 완료
+KECO 마스터,고용노동부,직업 단위,"keco_code,job_name",keco_code,미확보,-,-,전체 없음,KECO↔JF코드 연결,필요,❌ 미확보
+NCS 마스터,한국산업인력공단,능력단위 단위,"ncs_code,ability_unit",ncs_code,전직종,2024,높음,K문항용 매핑 미완,K문항 기준·교육과정 매핑,필요,⚠️ 원본 있음 — 매핑 필요
+fact_questions_K,KAPP 문항 개발,문항 단위,"item_id,question_text,correct_answer",item_id,0개,-,-,전체 없음,K 지식 문항 출제,없음,❌ 미생성
+fact_questions_A,KAPP 문항 개발,문항 단위,"item_id,scenario_context,scoring",item_id,0개,-,-,전체 없음,A 적용 문항 출제,없음,❌ 미생성
+fact_questions_P1,KAPP 문항 개발,문항 단위,"item_id,kpi_name,kpi_target",item_id,0개,-,-,전체 없음,P1 성과 문항 출제,없음,❌ 미생성
+fact_questions_P2,KAPP 문항 개발,시뮬레이션 단위,"sim_id,ui_config,task_pack",sim_id,6개(초안),2026-03,낮음,대부분 없음,P2 인바스켓,없음,⚠️ 부분 있음 — 확장 필요
+dim_result_insight,KAPP 내부 설계,JF코드 단위,"jf_code,score_band,insight_text",jf_code,0개,-,-,전체 없음,결과 해석 텍스트,없음,❌ 미생성
+dim_growth_roadmap,KAPP 내부 설계,JF코드 단위,"jf_code,career_path,skills",jf_code,0개,-,-,전체 없음,성장 로드맵,없음,❌ 미생성
+dim_ksco_master_v3,KSCO 8차+KAPP매핑,KSCO 직업 단위,"code,name,job_family_id",code,718개 (대/중/소/세분류),2026-03,높음,PRO_04·05·06·11 매핑 검수 필요,KSCO↔JF코드 연결·직업분류 조회,없음,✅ 완료(일부 검수 필요)

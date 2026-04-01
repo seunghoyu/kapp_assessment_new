@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/admin/Desktop/kapp_assessment_new/**)",
+      "Bash(done)",
+      "Bash(for i:*)",
+      "Bash(python3:*)",
+      "Bash(powershell -Command \"Get-Content 'C:\\\\Users\\\\admin\\\\Desktop\\\\kapp_assessment_new\\\\prompts\\\\step2.md' -Encoding UTF8\")",
+      "Bash(powershell -Command \"\n\\\\$files = @\\('step1.md','step2.md','step3.md','step4.md','step5.md'\\)\nforeach \\(\\\\$f in \\\\$files\\) {\n    \\\\$path = 'C:\\\\Users\\\\admin\\\\Desktop\\\\kapp_assessment_new\\\\prompts\\\\' + \\\\$f\n    \\\\$size = \\(Get-Item \\\\$path\\).Length\n    Write-Host \\\\\"=== \\\\$f : \\\\$size bytes ===\\\\\"\n}\n\")"
+    ]
+  }
+}

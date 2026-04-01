@@ -1,0 +1,165 @@
+{
+  "_meta": {
+    "version": "2.0",
+    "updated": "2026-03-17",
+    "changes_from_v1": [
+      "P2 라우팅 키를 kapp_industry_tag 단독 → industry+jf_group 복합키로 변경",
+      "IB 조회 구조: IB[industry] → IB[scenario_key] (scenario_key = industry_jfgroup)",
+      "하이브리드 캐시 fallback 로직 명시",
+      "P2 채점 가중치 P2_AI_USE 신규 분리 (기존 P2_DIGITAL_ACTION에 통합돼 있던 것)"
+    ]
+  },
+
+  "domain_weights": {
+    "K": 0.25,
+    "A": 0.25,
+    "P1": 0.25,
+    "P2": 0.25
+  },
+
+  "sub_competency_weights": {
+    "K": {
+      "K_CONCEPT": 0.35,
+      "K_PROCESS": 0.30,
+      "K_REGULATION": 0.20,
+      "K_TOOL": 0.15
+    },
+    "A": {
+      "A_JUDGMENT": 0.30,
+      "A_PRIORITY": 0.25,
+      "A_PROBLEM": 0.25,
+      "A_STAKEHOLDER": 0.20
+    },
+    "P1": {
+      "P1_KPI_READ": 0.30,
+      "P1_GAP_ANALYSIS": 0.30,
+      "P1_ACTION": 0.25,
+      "P1_TRADEOFF": 0.15
+    },
+    "P2": {
+      "P2_INBOX_PRIORITY": 0.35,
+      "P2_DIGITAL_ACTION": 0.30,
+      "P2_AI_USE": 0.20,
+      "P2_VALIDATION": 0.15
+    }
+  },
+
+  "scoring_rules": {
+    "K": {
+      "type": "binary",
+      "correct": 1.0,
+      "incorrect": 0.0
+    },
+    "A": {
+      "type": "partial_credit",
+      "levels": {
+        "optimal": 1.0,
+        "acceptable": 0.7,
+        "partial": 0.3,
+        "risky": 0.0
+      }
+    },
+    "P1": {
+      "type": "partial_credit",
+      "levels": {
+        "KPI_IMPROVE": 1.0,
+        "KPI_MAINTAIN": 0.7,
+        "KPI_NEUTRAL": 0.3,
+        "KPI_WORSEN": 0.0
+      }
+    },
+    "P2": {
+      "type": "event_log",
+      "sub_scores": {
+        "P2_INBOX_PRIORITY": {
+          "method": "rank_correlation",
+          "description": "응시자 우선순위 vs 채점기준 우선순위 스피어만 상관계수",
+          "full_match": 1.0,
+          "partial_match": 0.6,
+          "no_match": 0.0
+        },
+        "P2_DIGITAL_ACTION": {
+          "method": "action_checklist",
+          "description": "이메일별 조치 내용 체크리스트 매칭",
+          "optimal": 1.0,
+          "acceptable": 0.7,
+          "avoid_penalty": -0.2
+        },
+        "P2_AI_USE": {
+          "method": "ai_tool_detection",
+          "description": "AI 도구 활용 여부 및 품질",
+          "used_well": 1.0,
+          "used_poorly": 0.4,
+          "not_used": 0.0
+        },
+        "P2_VALIDATION": {
+          "method": "checklist",
+          "description": "확인·검증 행동 수행 여부",
+          "all_checked": 1.0,
+          "partial": 0.5,
+          "none": 0.0
+        }
+      }
+    }
+  },
+
+  "question_engine": {
+    "_comment": "buildQuestions() 함수의 라우팅 로직 기준",
+    "K_routing_key": "job_family_id",
+    "A_routing_key": "job_family_id",
+    "P1_routing_key": "job_family_id",
+    "P2_routing_key": "scenario_key",
+    "P2_scenario_key_format": "{kapp_industry_tag}_{jf_group}",
+    "P2_fallback_chain": [
+      "{industry}_{jf_group}_{role_level}",
+      "{industry}_{jf_group}",
+      "{industry}_{jf_family}",
+      "{industry}_COMMON",
+      "REALTIME_GENERATE"
+    ],
+    "question_counts": {
+      "K": 3,
+      "A": 3,
+      "P1": 3,
+      "P2": 4
+    },
+    "total_items": 13
+  },
+
+  "benchmark_group_priority": {
+    "_comment": "벤치마크 비교 집단 6단계 fallback — 변경 없음",
+    "1": {"key": "jf_code + role_level + industry", "min_n": 30},
+    "2": {"key": "jf_code + role_level", "min_n": 30},
+    "3": {"key": "family_group + role_level", "min_n": 30},
+    "4": {"key": "industry + role_level", "min_n": 20},
+    "5": {"key": "role_level", "min_n": 10},
+    "6": {"key": "전체 집합", "min_n": 1}
+  },
+
+  "difficulty_adjustment": {
+    "_comment": "role_level별 난이도 계수. 문항 선택 시 적용.",
+    "1": 0.6,
+    "2": 0.7,
+    "3": 0.8,
+    "4": 0.9,
+    "5": 1.0,
+    "6": 1.1
+  },
+
+  "score_normalization": {
+    "method": "percentile_rank",
+    "benchmark_source": "dim_benchmark_v1",
+    "output": {
+      "raw_score": "0~100",
+      "percentile": "0~100",
+      "level": "Starter | Developing | Proficient | Advanced | Expert"
+    },
+    "level_thresholds": {
+      "Starter":    [0, 40],
+      "Developing": [40, 55],
+      "Proficient": [55, 70],
+      "Advanced":   [70, 85],
+      "Expert":     [85, 100]
+    }
+  }
+}

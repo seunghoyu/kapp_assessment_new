@@ -1,0 +1,182 @@
+{
+  "_meta": {
+    "version": "2.0",
+    "updated": "2026-03-17",
+    "changes_from_v1": [
+      "P2 문항에 job_family_id, jf_group 필드 추가",
+      "scenario_key를 industry 단독에서 industry+jf_group 복합키로 변경",
+      "K/A/P1은 job_family_id 기반, P2는 scenario_key(복합키) 기반으로 명확히 분리"
+    ]
+  },
+
+  "common_fields": {
+    "item_id": "string — 고유 문항 ID. 형식: {domain}_{jf_group}_{role_level}_{seq:04d}",
+    "domain": "K | A | P1 | P2",
+    "job_family_id": "string — dim_job_family_v10의 job_family_id. K/A/P1/P2 전체 필수.",
+    "jf_group": "string — 직무군 대분류 코드 (예: FG_HR, FG_IT_DEV). P2 라우팅 키로 사용.",
+    "role_level": "integer — 1~6. dim_role_level_v1의 role_level_id.",
+    "difficulty": "float — 0.0~1.0. role_level × difficulty_multiplier로 계산.",
+    "version": "string — 문항 버전",
+    "status": "draft | pending_review | approved | deprecated",
+    "created_by": "human | ai_generated",
+    "reviewed_by": "string | null",
+    "tags": ["string"]
+  },
+
+  "K_item": {
+    "_comment": "직무 전문지식 — binary 채점",
+    "inherits": "common_fields",
+    "routing_key": "job_family_id",
+    "sub_competency": "K_CONCEPT | K_PROCESS | K_REGULATION | K_TOOL",
+    "question_type": "MCQ_4 | MCQ_5 | OX",
+    "stem": "string — 문항 지문",
+    "options": {
+      "A": "string", "B": "string", "C": "string", "D": "string"
+    },
+    "answer": "A | B | C | D",
+    "explanation": "string — 정답 해설",
+    "distractor_rationale": "string — 오답 선택지 설계 근거",
+    "scoring": {
+      "correct": 1.0,
+      "incorrect": 0.0
+    },
+    "source_reference": "string | null — 관련 법령·규정·NCS 코드"
+  },
+
+  "A_item": {
+    "_comment": "실무 상황 판단 — partial_credit 채점 (SJT 형식)",
+    "inherits": "common_fields",
+    "routing_key": "job_family_id",
+    "sub_competency": "A_JUDGMENT | A_PRIORITY | A_PROBLEM | A_STAKEHOLDER",
+    "question_type": "SJT_RANK | SJT_CHOOSE",
+    "trigger_situation": "string — 긴급 상황 트리거 (2~3문장)",
+    "stem": "string — 질문",
+    "options": {
+      "A": {"action": "string", "score": 1.0},
+      "B": {"action": "string", "score": 0.7},
+      "C": {"action": "string", "score": 0.3},
+      "D": {"action": "string", "score": 0.0}
+    },
+    "scoring": {
+      "type": "partial_credit",
+      "optimal": 1.0,
+      "acceptable": 0.7,
+      "partial": 0.3,
+      "risky": 0.0
+    },
+    "rationale": {
+      "optimal_reason": "string",
+      "risky_reason": "string"
+    }
+  },
+
+  "P1_item": {
+    "_comment": "KPI 시나리오 분석 — partial_credit 채점",
+    "inherits": "common_fields",
+    "routing_key": "job_family_id",
+    "sub_competency": "P1_KPI_READ | P1_GAP_ANALYSIS | P1_ACTION | P1_TRADEOFF",
+    "question_type": "KPI_SCENARIO",
+    "kpi_context": {
+      "metric_name": "string — KPI 명칭",
+      "current_value": "number",
+      "target_value": "number",
+      "unit": "string",
+      "trend": "improving | declining | flat",
+      "period": "string"
+    },
+    "additional_data": "string | null — 추가 맥락 데이터 (표, 그래프 설명)",
+    "stem": "string",
+    "options": {
+      "A": {"action": "string", "outcome": "KPI_IMPROVE", "score": 1.0},
+      "B": {"action": "string", "outcome": "KPI_MAINTAIN", "score": 0.7},
+      "C": {"action": "string", "outcome": "KPI_NEUTRAL", "score": 0.3},
+      "D": {"action": "string", "outcome": "KPI_WORSEN", "score": 0.0}
+    },
+    "scoring": {
+      "type": "partial_credit",
+      "improve": 1.0,
+      "maintain": 0.7,
+      "neutral": 0.3,
+      "worsen": 0.0
+    }
+  },
+
+  "P2_item": {
+    "_comment": "인바스켓 시나리오 — event_log 채점. v2: scenario_key = industry+jf_group 복합키",
+    "inherits": "common_fields",
+    "routing_key": "scenario_key",
+    "scenario_key": "string — 형식: {kapp_industry_tag}_{jf_group}. 예: IT_TECH_HR, MANUFACTURING_PRODUCTION",
+    "kapp_industry_tag": "string — P2 세계관(배경) 결정",
+    "jf_group": "string — P2 이메일 맥락(직무 역할) 결정. v2 신규 필드.",
+    "role_level": "integer — 직급별 의사결정 범위 조정",
+    "company_size": "string | null — 기업규모 (선택적 세분화)",
+    "scenario_source": "human | ai_generated",
+    "review_status": "pending_review | approved",
+    "world": {
+      "company_name": "string",
+      "company_type": "string",
+      "industry_context": "string",
+      "team_context": "string",
+      "role_description": "string"
+    },
+    "trigger_event": "string",
+    "time_limit_minutes": 25,
+    "emails": [
+      {
+        "email_id": "string — E1~E4",
+        "from": "string",
+        "subject": "string",
+        "body": "string — 200~400자",
+        "urgency": "high | medium | low",
+        "type": "string",
+        "stakeholder": "string",
+        "hidden_trap": "string"
+      }
+    ],
+    "scoring": {
+      "type": "event_log",
+      "weights": {
+        "P2_INBOX_PRIORITY": 0.35,
+        "P2_DIGITAL_ACTION": 0.30,
+        "P2_AI_USE": 0.20,
+        "P2_VALIDATION": 0.15
+      },
+      "priority_ranking": {
+        "optimal": ["E?", "E?", "E?", "E?"],
+        "acceptable": ["E?", "E?", "E?", "E?"],
+        "rationale": "string"
+      },
+      "action_points": [
+        {
+          "email_id": "E1",
+          "optimal_action": "string",
+          "acceptable_action": "string",
+          "avoid": "string",
+          "score_weight": 0.25
+        }
+      ],
+      "ai_use_opportunity": "string",
+      "validation_check": "string"
+    }
+  },
+
+  "scenario_key_examples": [
+    "IT_TECH_HR",
+    "IT_TECH_IT_DEV",
+    "MANUFACTURING_PRODUCTION",
+    "MANUFACTURING_HR",
+    "FINANCE_FINANCE_FIN",
+    "HEALTHCARE_HEALTHCARE",
+    "RETAIL_TRADE_SALES",
+    "CONSTRUCTION_CONSTRUCTION"
+  ],
+
+  "fallback_chain": {
+    "_comment": "P2 시나리오 조회 시 없으면 이 순서로 fallback",
+    "1": "scenario_key = {industry}_{jf_group}_{role_level}",
+    "2": "scenario_key = {industry}_{jf_group}",
+    "3": "scenario_key = {industry}_{jf_family}",
+    "4": "scenario_key = {industry}_COMMON",
+    "5": "실시간 생성 (Claude API) → DB 저장 후 반환"
+  }
+}

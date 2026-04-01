@@ -1,0 +1,117 @@
+[
+  {
+    "majorName": "제조업",
+    "middleName": "의복, 의복 액세서리 및 모피제품 제조업",
+    "smallName": "모피제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "목재 및 나무제품 제조업; 가구 제외",
+    "smallName": "코르크 및 조물 제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 제품 제조업",
+    "smallName": "그 외 기타 제품 제조업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "도매 및 상품 중개업",
+    "smallName": "기타 전문 도매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "소매업; 자동차 제외",
+    "smallName": "기타 상품 전문 소매업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "전문 서비스업",
+    "smallName": "기타 전문 서비스업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "기타 전문, 과학 및 기술 서비스업",
+    "smallName": "수의업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "기타 전문, 과학 및 기술 서비스업",
+    "smallName": "사진 촬영 및 처리업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "기타 전문, 과학 및 기술 서비스업",
+    "smallName": "그 외 기타 전문, 과학 및 기술 서비스업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "사업시설 관리 및 조경 서비스업",
+    "smallName": "조경관리 및 유지 서비스업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "사업 지원 서비스업",
+    "smallName": "기타 사업 지원 서비스업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "임대업; 부동산 제외",
+    "smallName": "개인 및 가정용품 임대업"
+  },
+  {
+    "majorName": "교육 서비스업",
+    "middleName": "교육 서비스업",
+    "smallName": "특수학교, 외국인학교 및 대안학교"
+  },
+  {
+    "majorName": "보건업 및 사회복지 서비스업",
+    "middleName": "보건업",
+    "smallName": "의원"
+  },
+  {
+    "majorName": "보건업 및 사회복지 서비스업",
+    "middleName": "보건업",
+    "smallName": "기타 보건업"
+  },
+  {
+    "majorName": "보건업 및 사회복지 서비스업",
+    "middleName": "사회복지 서비스업",
+    "smallName": "거주 복지시설 운영업"
+  },
+  {
+    "majorName": "보건업 및 사회복지 서비스업",
+    "middleName": "사회복지 서비스업",
+    "smallName": "비거주 복지시설 운영업"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "협회 및 단체",
+    "smallName": "기타 협회 및 단체"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "개인 및 소비용품 수리업",
+    "smallName": "개인 및 가정용품 수리업"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "기타 개인 서비스업",
+    "smallName": "그 외 기타 개인 서비스업"
+  },
+  {
+    "majorName": "가구 내 고용 활동 및 달리 분류되지 않은 자가 소비 생산 활동",
+    "middleName": "가구 내 고용활동",
+    "smallName": "가구 내 고용활동"
+  },
+  {
+    "majorName": "가구 내 고용 활동 및 달리 분류되지 않은 자가 소비 생산 활동",
+    "middleName": "달리 분류되지 않은 자가 소비를 위한 가구의 재화 및 서비스 생산활동",
+    "smallName": "자가 소비를 위한 가사 생산 활동"
+  },
+  {
+    "majorName": "가구 내 고용 활동 및 달리 분류되지 않은 자가 소비 생산 활동",
+    "middleName": "달리 분류되지 않은 자가 소비를 위한 가구의 재화 및 서비스 생산활동",
+    "smallName": "자가 소비를 위한 가사 서비스 활동"
+  }
+]

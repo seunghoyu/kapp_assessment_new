@@ -1,0 +1,311 @@
+{
+  "version": "v1",
+  "created_at": "2026-03-17T01:01:33",
+  "description": "KAPP ItemBank 문항 메타데이터 스펙 v1",
+  "common_fields": {
+    "item_id": {
+      "type": "string",
+      "format": "ITEM_{domain}_{jf_code}_{seq:04d}",
+      "required": true,
+      "pk": true
+    },
+    "domain": {
+      "type": "enum",
+      "values": [
+        "K",
+        "A",
+        "P1",
+        "P2"
+      ],
+      "required": true
+    },
+    "sub_competency_id": {
+      "type": "string",
+      "ref": "dim_competency.sub_competency_id",
+      "required": true
+    },
+    "jf_code": {
+      "type": "string",
+      "ref": "dim_job_family_v10.job_family_id",
+      "required": true
+    },
+    "family_group_id": {
+      "type": "string",
+      "ref": "dim_job_family_v10.family_group_id",
+      "required": true
+    },
+    "industry_modifier": {
+      "type": "string",
+      "ref": "taxonomy_master.code[type=industry]",
+      "required": false,
+      "note": "null이면 전산업 공통 문항"
+    },
+    "role_level_id": {
+      "type": "string",
+      "ref": "dim_role_level.role_level_id",
+      "required": true
+    },
+    "tenure_band": {
+      "type": "string",
+      "ref": "taxonomy_master.code[type=tenure_band]",
+      "required": false
+    },
+    "company_size_modifier": {
+      "type": "string",
+      "required": false
+    },
+    "company_type_modifier": {
+      "type": "string",
+      "required": false
+    },
+    "goal_modifier": {
+      "type": "string",
+      "required": false
+    },
+    "difficulty": {
+      "type": "enum",
+      "values": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "required": true
+    },
+    "skill_tags": {
+      "type": "array[string]",
+      "required": true,
+      "min": 1
+    },
+    "ncs_code": {
+      "type": "string",
+      "required": false
+    },
+    "kpi_id": {
+      "type": "string",
+      "required": false,
+      "for_domain": "P1"
+    },
+    "template_id": {
+      "type": "string",
+      "required": false,
+      "for_domain": "P2"
+    },
+    "rubric_id": {
+      "type": "string",
+      "required": true
+    },
+    "status": {
+      "type": "enum",
+      "values": [
+        "draft",
+        "review",
+        "approved",
+        "deprecated"
+      ],
+      "required": true
+    },
+    "version": {
+      "type": "string",
+      "required": true
+    },
+    "created_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "updated_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "author": {
+      "type": "string",
+      "required": false
+    },
+    "reviewer": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "K_specific": {
+    "question_text": {
+      "type": "string",
+      "required": true,
+      "max_len": 500
+    },
+    "option_1": {
+      "type": "string",
+      "required": true
+    },
+    "option_2": {
+      "type": "string",
+      "required": true
+    },
+    "option_3": {
+      "type": "string",
+      "required": true
+    },
+    "option_4": {
+      "type": "string",
+      "required": true
+    },
+    "correct_answer": {
+      "type": "int",
+      "values": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "required": true
+    },
+    "explanation": {
+      "type": "string",
+      "required": true,
+      "note": "오답 해설 포함"
+    },
+    "source_doc": {
+      "type": "string",
+      "required": false,
+      "note": "NCS 코드, 규정명 등"
+    }
+  },
+  "A_specific": {
+    "scenario_context": {
+      "type": "string",
+      "required": true,
+      "max_len": 800,
+      "note": "상황 설명 — 직무/산업/레벨 맥락 포함"
+    },
+    "question_text": {
+      "type": "string",
+      "required": true
+    },
+    "option_1": {
+      "type": "string",
+      "required": true
+    },
+    "option_2": {
+      "type": "string",
+      "required": true
+    },
+    "option_3": {
+      "type": "string",
+      "required": true
+    },
+    "option_4": {
+      "type": "string",
+      "required": true
+    },
+    "scoring": {
+      "type": "object",
+      "note": "각 선택지 점수 0~1.0"
+    },
+    "best_answer_reason": {
+      "type": "string",
+      "required": true
+    },
+    "stakeholder_type": {
+      "type": "string",
+      "required": false
+    },
+    "time_pressure": {
+      "type": "enum",
+      "values": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "required": false
+    }
+  },
+  "P1_specific": {
+    "scenario_context": {
+      "type": "string",
+      "required": true
+    },
+    "kpi_name": {
+      "type": "string",
+      "required": true
+    },
+    "kpi_target": {
+      "type": "string",
+      "required": true,
+      "note": "목표값"
+    },
+    "kpi_current": {
+      "type": "string",
+      "required": true,
+      "note": "현재값"
+    },
+    "constraints": {
+      "type": "string",
+      "required": false,
+      "note": "제약 조건"
+    },
+    "question_text": {
+      "type": "string",
+      "required": true
+    },
+    "option_1": {
+      "type": "string",
+      "required": true
+    },
+    "option_2": {
+      "type": "string",
+      "required": true
+    },
+    "option_3": {
+      "type": "string",
+      "required": true
+    },
+    "option_4": {
+      "type": "string",
+      "required": true
+    },
+    "scoring": {
+      "type": "object"
+    },
+    "expected_impact": {
+      "type": "string",
+      "required": true
+    },
+    "tradeoff_type": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "P2_specific": {
+    "simulation_template_id": {
+      "type": "string",
+      "required": true
+    },
+    "ui_config": {
+      "type": "object",
+      "note": "인바스켓 UI 구성"
+    },
+    "task_pack_id": {
+      "type": "string",
+      "required": true
+    },
+    "event_schema": {
+      "type": "object",
+      "note": "수집할 이벤트 정의"
+    },
+    "expected_sequence": {
+      "type": "array",
+      "note": "최적 처리 순서"
+    },
+    "scoring_rule": {
+      "type": "object"
+    },
+    "ai_workflow_template": {
+      "type": "object",
+      "required": false
+    }
+  },
+  "naming_convention": {
+    "K": "ITEM_K_{jf_code}_{seq:04d}",
+    "A": "ITEM_A_{jf_code}_{industry_tag}_{seq:04d}",
+    "P1": "ITEM_P1_{jf_code}_{kpi_domain}_{seq:04d}",
+    "P2": "ITEM_P2_{industry_tag}_{sim_type}_{seq:04d}"
+  }
+}

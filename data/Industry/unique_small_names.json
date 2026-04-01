@@ -1,0 +1,1172 @@
+[
+  {
+    "majorName": "농업, 임업 및 어업",
+    "middleName": "농업",
+    "smallName": "작물 재배업"
+  },
+  {
+    "majorName": "농업, 임업 및 어업",
+    "middleName": "농업",
+    "smallName": "축산업"
+  },
+  {
+    "majorName": "농업, 임업 및 어업",
+    "middleName": "농업",
+    "smallName": "작물재배 및 축산 복합농업"
+  },
+  {
+    "majorName": "농업, 임업 및 어업",
+    "middleName": "농업",
+    "smallName": "작물재배 및 축산 관련 서비스업"
+  },
+  {
+    "majorName": "농업, 임업 및 어업",
+    "middleName": "농업",
+    "smallName": "수렵 및 관련 서비스업"
+  },
+  {
+    "majorName": "농업, 임업 및 어업",
+    "middleName": "임업",
+    "smallName": "임업"
+  },
+  {
+    "majorName": "농업, 임업 및 어업",
+    "middleName": "어업",
+    "smallName": "어로 어업"
+  },
+  {
+    "majorName": "농업, 임업 및 어업",
+    "middleName": "어업",
+    "smallName": "양식어업 및 어업관련 서비스업"
+  },
+  {
+    "majorName": "광업",
+    "middleName": "석탄, 원유 및 천연가스 광업",
+    "smallName": "석탄 광업"
+  },
+  {
+    "majorName": "광업",
+    "middleName": "석탄, 원유 및 천연가스 광업",
+    "smallName": "원유 및 천연가스 채굴업"
+  },
+  {
+    "majorName": "광업",
+    "middleName": "금속 광업",
+    "smallName": "철 광업"
+  },
+  {
+    "majorName": "광업",
+    "middleName": "금속 광업",
+    "smallName": "비철금속 광업"
+  },
+  {
+    "majorName": "광업",
+    "middleName": "비금속광물 광업; 연료용 제외",
+    "smallName": "토사석 광업"
+  },
+  {
+    "majorName": "광업",
+    "middleName": "비금속광물 광업; 연료용 제외",
+    "smallName": "기타 비금속광물 광업"
+  },
+  {
+    "majorName": "광업",
+    "middleName": "광업 지원 서비스업",
+    "smallName": "광업 지원 서비스업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "식료품 제조업",
+    "smallName": "도축, 육류 가공 및 저장 처리업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "식료품 제조업",
+    "smallName": "수산물 가공 및 저장 처리업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "식료품 제조업",
+    "smallName": "과실, 채소 가공 및 저장 처리업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "식료품 제조업",
+    "smallName": "동ㆍ식물성 유지 및 낙농제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "식료품 제조업",
+    "smallName": "곡물 가공품, 전분 및 전분제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "식료품 제조업",
+    "smallName": "떡, 빵 및 과자류 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "식료품 제조업",
+    "smallName": "도시락 및 식사용 조리식품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "식료품 제조업",
+    "smallName": "기타 식품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "식료품 제조업",
+    "smallName": "동물용 사료 및 조제식품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "음료 제조업",
+    "smallName": "알코올 음료 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "음료 제조업",
+    "smallName": "비알코올 음료 및 얼음 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "담배 제조업",
+    "smallName": "담배 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "섬유제품 제조업; 의복 제외",
+    "smallName": "방적 및 가공사 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "섬유제품 제조업; 의복 제외",
+    "smallName": "직물 직조 및 직물제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "섬유제품 제조업; 의복 제외",
+    "smallName": "편조 원단 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "섬유제품 제조업; 의복 제외",
+    "smallName": "섬유제품 염색, 정리 및 마무리 가공업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "섬유제품 제조업; 의복 제외",
+    "smallName": "기타 섬유제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "의복, 의복 액세서리 및 모피제품 제조업",
+    "smallName": "봉제의복 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "의복, 의복 액세서리 및 모피제품 제조업",
+    "smallName": "모피제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "의복, 의복 액세서리 및 모피제품 제조업",
+    "smallName": "편조의복 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "의복, 의복 액세서리 및 모피제품 제조업",
+    "smallName": "의복 액세서리 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "가죽, 가방 및 신발 제조업",
+    "smallName": "가죽, 가방 및 유사 제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "가죽, 가방 및 신발 제조업",
+    "smallName": "신발 및 신발 부분품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "목재 및 나무제품 제조업; 가구 제외",
+    "smallName": "제재 및 목재 가공업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "목재 및 나무제품 제조업; 가구 제외",
+    "smallName": "나무제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "목재 및 나무제품 제조업; 가구 제외",
+    "smallName": "코르크 및 조물 제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "펄프, 종이 및 종이제품 제조업",
+    "smallName": "펄프, 종이 및 판지 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "펄프, 종이 및 종이제품 제조업",
+    "smallName": "골판지, 종이 상자 및 종이 용기 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "펄프, 종이 및 종이제품 제조업",
+    "smallName": "기타 종이 및 판지 제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "인쇄 및 기록매체 복제업",
+    "smallName": "인쇄 및 인쇄관련 산업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "인쇄 및 기록매체 복제업",
+    "smallName": "기록매체 복제업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "코크스, 연탄 및 석유정제품 제조업",
+    "smallName": "코크스 및 연탄 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "코크스, 연탄 및 석유정제품 제조업",
+    "smallName": "석유 정제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "화학 물질 및 화학제품 제조업; 의약품 제외",
+    "smallName": "기초 화학물질 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "화학 물질 및 화학제품 제조업; 의약품 제외",
+    "smallName": "합성고무 및 플라스틱 물질 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "화학 물질 및 화학제품 제조업; 의약품 제외",
+    "smallName": "비료, 농약 및 살균ㆍ살충제 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "화학 물질 및 화학제품 제조업; 의약품 제외",
+    "smallName": "기타 화학제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "화학 물질 및 화학제품 제조업; 의약품 제외",
+    "smallName": "화학섬유 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "의료용 물질 및 의약품 제조업",
+    "smallName": "기초 의약 물질 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "의료용 물질 및 의약품 제조업",
+    "smallName": "의약품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "의료용 물질 및 의약품 제조업",
+    "smallName": "의료용품 및 기타 의약 관련제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "고무 및 플라스틱제품 제조업",
+    "smallName": "고무제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "고무 및 플라스틱제품 제조업",
+    "smallName": "플라스틱 제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "비금속 광물제품 제조업",
+    "smallName": "유리 및 유리제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "비금속 광물제품 제조업",
+    "smallName": "내화, 비내화 요업제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "비금속 광물제품 제조업",
+    "smallName": "시멘트, 석회, 플라스터 및 그 제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "비금속 광물제품 제조업",
+    "smallName": "기타 비금속 광물제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "1차 금속 제조업",
+    "smallName": "1차 철강 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "1차 금속 제조업",
+    "smallName": "1차 비철금속 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "1차 금속 제조업",
+    "smallName": "금속 주조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "금속 가공제품 제조업; 기계 및 가구 제외",
+    "smallName": "구조용 금속제품, 탱크 및 증기발생기 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "금속 가공제품 제조업; 기계 및 가구 제외",
+    "smallName": "무기 및 총포탄 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "금속 가공제품 제조업; 기계 및 가구 제외",
+    "smallName": "기타 금속 가공제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전자 부품, 컴퓨터, 영상, 음향 및 통신장비 제조업",
+    "smallName": "반도체 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전자 부품, 컴퓨터, 영상, 음향 및 통신장비 제조업",
+    "smallName": "전자 부품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전자 부품, 컴퓨터, 영상, 음향 및 통신장비 제조업",
+    "smallName": "컴퓨터 및 주변 장치 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전자 부품, 컴퓨터, 영상, 음향 및 통신장비 제조업",
+    "smallName": "통신 및 방송장비 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전자 부품, 컴퓨터, 영상, 음향 및 통신장비 제조업",
+    "smallName": "영상 및 음향 기기 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전자 부품, 컴퓨터, 영상, 음향 및 통신장비 제조업",
+    "smallName": "마그네틱 및 광학 매체 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "의료, 정밀, 광학 기기 및 시계 제조업",
+    "smallName": "의료용 기기 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "의료, 정밀, 광학 기기 및 시계 제조업",
+    "smallName": "측정, 시험, 항해, 제어 및 기타 정밀 기기 제조업; 광학 기기 제외"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "의료, 정밀, 광학 기기 및 시계 제조업",
+    "smallName": "사진장비 및 광학 기기 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전기장비 제조업",
+    "smallName": "전동기, 발전기 및 전기 변환ㆍ공급ㆍ제어 장치 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전기장비 제조업",
+    "smallName": "일차전지 및 이차전지 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전기장비 제조업",
+    "smallName": "절연선 및 케이블 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전기장비 제조업",
+    "smallName": "전구 및 조명장치 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전기장비 제조업",
+    "smallName": "가정용 기기 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "전기장비 제조업",
+    "smallName": "기타 전기장비 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 기계 및 장비 제조업",
+    "smallName": "일반 목적용 기계 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 기계 및 장비 제조업",
+    "smallName": "특수 목적용 기계 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "자동차 및 트레일러 제조업",
+    "smallName": "자동차용 엔진 및 자동차 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "자동차 및 트레일러 제조업",
+    "smallName": "자동차 차체 및 트레일러 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "자동차 및 트레일러 제조업",
+    "smallName": "자동차 신품 부품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "자동차 및 트레일러 제조업",
+    "smallName": "자동차 재제조 부품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 운송장비 제조업",
+    "smallName": "선박 및 보트 건조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 운송장비 제조업",
+    "smallName": "철도장비 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 운송장비 제조업",
+    "smallName": "항공기, 우주선 및 부품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 운송장비 제조업",
+    "smallName": "그 외 기타 운송장비 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "가구 제조업",
+    "smallName": "가구 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 제품 제조업",
+    "smallName": "귀금속 및 장신용품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 제품 제조업",
+    "smallName": "악기 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 제품 제조업",
+    "smallName": "운동 및 경기용구 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 제품 제조업",
+    "smallName": "인형, 장난감 및 오락용품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "기타 제품 제조업",
+    "smallName": "그 외 기타 제품 제조업"
+  },
+  {
+    "majorName": "제조업",
+    "middleName": "산업용 기계 및 장비 수리업",
+    "smallName": "산업용 기계 및 장비 수리업"
+  },
+  {
+    "majorName": "전기, 가스, 증기 및 공기조절 공급업",
+    "middleName": "전기, 가스, 증기 및 공기 조절 공급업",
+    "smallName": "전기업"
+  },
+  {
+    "majorName": "전기, 가스, 증기 및 공기조절 공급업",
+    "middleName": "전기, 가스, 증기 및 공기 조절 공급업",
+    "smallName": "연료용 가스 제조 및 배관공급업"
+  },
+  {
+    "majorName": "전기, 가스, 증기 및 공기조절 공급업",
+    "middleName": "전기, 가스, 증기 및 공기 조절 공급업",
+    "smallName": "증기, 냉ㆍ온수 및 공기 조절 공급업"
+  },
+  {
+    "majorName": "수도, 하수 및 폐기물 처리, 원료 재생업",
+    "middleName": "수도업",
+    "smallName": "수도업"
+  },
+  {
+    "majorName": "수도, 하수 및 폐기물 처리, 원료 재생업",
+    "middleName": "하수, 폐수 및 분뇨 처리업",
+    "smallName": "하수, 폐수 및 분뇨 처리업"
+  },
+  {
+    "majorName": "수도, 하수 및 폐기물 처리, 원료 재생업",
+    "middleName": "폐기물 수집, 운반, 처리 및 원료 재생업",
+    "smallName": "폐기물 수집, 운반업"
+  },
+  {
+    "majorName": "수도, 하수 및 폐기물 처리, 원료 재생업",
+    "middleName": "폐기물 수집, 운반, 처리 및 원료 재생업",
+    "smallName": "폐기물 처리업"
+  },
+  {
+    "majorName": "수도, 하수 및 폐기물 처리, 원료 재생업",
+    "middleName": "폐기물 수집, 운반, 처리 및 원료 재생업",
+    "smallName": "해체, 선별 및 원료 재생업"
+  },
+  {
+    "majorName": "수도, 하수 및 폐기물 처리, 원료 재생업",
+    "middleName": "환경 정화 및 복원업",
+    "smallName": "환경 정화 및 복원업"
+  },
+  {
+    "majorName": "건설업",
+    "middleName": "종합 건설업",
+    "smallName": "건물 건설업"
+  },
+  {
+    "majorName": "건설업",
+    "middleName": "종합 건설업",
+    "smallName": "토목 건설업"
+  },
+  {
+    "majorName": "건설업",
+    "middleName": "전문직별 공사업",
+    "smallName": "기반조성 및 시설물 축조관련 전문공사업"
+  },
+  {
+    "majorName": "건설업",
+    "middleName": "전문직별 공사업",
+    "smallName": "건물설비 설치 공사업"
+  },
+  {
+    "majorName": "건설업",
+    "middleName": "전문직별 공사업",
+    "smallName": "전기 및 통신 공사업"
+  },
+  {
+    "majorName": "건설업",
+    "middleName": "전문직별 공사업",
+    "smallName": "실내건축 및 건축마무리 공사업"
+  },
+  {
+    "majorName": "건설업",
+    "middleName": "전문직별 공사업",
+    "smallName": "시설물 유지관리 공사업"
+  },
+  {
+    "majorName": "건설업",
+    "middleName": "전문직별 공사업",
+    "smallName": "건설장비 운영업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "자동차 및 부품 판매업",
+    "smallName": "자동차 판매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "자동차 및 부품 판매업",
+    "smallName": "자동차 부품 및 내장품 판매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "자동차 및 부품 판매업",
+    "smallName": "모터사이클 및 부품 판매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "도매 및 상품 중개업",
+    "smallName": "상품 중개업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "도매 및 상품 중개업",
+    "smallName": "산업용 농ㆍ축산물 및 동ㆍ식물 도매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "도매 및 상품 중개업",
+    "smallName": "음ㆍ식료품 및 담배 도매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "도매 및 상품 중개업",
+    "smallName": "생활용품 도매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "도매 및 상품 중개업",
+    "smallName": "기계장비 및 관련 물품 도매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "도매 및 상품 중개업",
+    "smallName": "건축 자재, 철물 및 난방장치 도매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "도매 및 상품 중개업",
+    "smallName": "기타 전문 도매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "도매 및 상품 중개업",
+    "smallName": "상품 종합 도매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "소매업; 자동차 제외",
+    "smallName": "종합 소매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "소매업; 자동차 제외",
+    "smallName": "음ㆍ식료품 및 담배 소매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "소매업; 자동차 제외",
+    "smallName": "가전제품 및 정보 통신장비 소매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "소매업; 자동차 제외",
+    "smallName": "섬유, 의복, 신발 및 가죽제품 소매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "소매업; 자동차 제외",
+    "smallName": "기타 생활용품 소매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "소매업; 자동차 제외",
+    "smallName": "문화, 오락 및 여가 용품 소매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "소매업; 자동차 제외",
+    "smallName": "연료 소매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "소매업; 자동차 제외",
+    "smallName": "기타 상품 전문 소매업"
+  },
+  {
+    "majorName": "도매 및 소매업",
+    "middleName": "소매업; 자동차 제외",
+    "smallName": "무점포 소매업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "육상 운송 및 파이프라인 운송업",
+    "smallName": "철도 운송업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "육상 운송 및 파이프라인 운송업",
+    "smallName": "육상 여객 운송업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "육상 운송 및 파이프라인 운송업",
+    "smallName": "도로 화물 운송업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "육상 운송 및 파이프라인 운송업",
+    "smallName": "소화물 전문 운송업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "육상 운송 및 파이프라인 운송업",
+    "smallName": "파이프라인 운송업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "수상 운송업",
+    "smallName": "해상 운송업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "수상 운송업",
+    "smallName": "내륙 수상 및 항만 내 운송업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "항공 운송업",
+    "smallName": "항공 여객 운송업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "항공 운송업",
+    "smallName": "항공 화물 운송업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "창고 및 운송관련 서비스업",
+    "smallName": "보관 및 창고업"
+  },
+  {
+    "majorName": "운수 및 창고업",
+    "middleName": "창고 및 운송관련 서비스업",
+    "smallName": "기타 운송관련 서비스업"
+  },
+  {
+    "majorName": "숙박 및 음식점업",
+    "middleName": "숙박업",
+    "smallName": "일반 및 생활 숙박시설 운영업"
+  },
+  {
+    "majorName": "숙박 및 음식점업",
+    "middleName": "숙박업",
+    "smallName": "기타 숙박업"
+  },
+  {
+    "majorName": "숙박 및 음식점업",
+    "middleName": "음식점 및 주점업",
+    "smallName": "음식점업"
+  },
+  {
+    "majorName": "숙박 및 음식점업",
+    "middleName": "음식점 및 주점업",
+    "smallName": "주점 및 비알코올 음료점업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "출판업",
+    "smallName": "서적, 잡지 및 기타 인쇄물 출판업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "출판업",
+    "smallName": "소프트웨어 개발 및 공급업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "영상ㆍ오디오 기록물 제작 및 배급업",
+    "smallName": "영화, 비디오물, 방송 프로그램 제작 및 배급업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "영상ㆍ오디오 기록물 제작 및 배급업",
+    "smallName": "오디오물 출판 및 원판 녹음업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "방송 및 영상ㆍ오디오물 제공 서비스업",
+    "smallName": "라디오 방송업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "방송 및 영상ㆍ오디오물 제공 서비스업",
+    "smallName": "텔레비전 방송업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "방송 및 영상ㆍ오디오물 제공 서비스업",
+    "smallName": "영상ㆍ오디오물 제공 서비스업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "우편 및 통신업",
+    "smallName": "공영 우편업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "우편 및 통신업",
+    "smallName": "전기 통신업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "컴퓨터 프로그래밍, 시스템 통합 및 관리업",
+    "smallName": "컴퓨터 프로그래밍, 시스템 통합 및 관리업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "정보서비스업",
+    "smallName": "자료 처리, 호스팅, 포털 및 기타 인터넷 정보 매개 서비스업"
+  },
+  {
+    "majorName": "정보통신업",
+    "middleName": "정보서비스업",
+    "smallName": "기타 정보 서비스업"
+  },
+  {
+    "majorName": "금융 및 보험업",
+    "middleName": "금융업",
+    "smallName": "은행 및 저축기관"
+  },
+  {
+    "majorName": "금융 및 보험업",
+    "middleName": "금융업",
+    "smallName": "신탁업 및 집합 투자업"
+  },
+  {
+    "majorName": "금융 및 보험업",
+    "middleName": "금융업",
+    "smallName": "기타 금융업"
+  },
+  {
+    "majorName": "금융 및 보험업",
+    "middleName": "보험업",
+    "smallName": "보험업"
+  },
+  {
+    "majorName": "금융 및 보험업",
+    "middleName": "보험업",
+    "smallName": "재보험업"
+  },
+  {
+    "majorName": "금융 및 보험업",
+    "middleName": "보험업",
+    "smallName": "공제업"
+  },
+  {
+    "majorName": "금융 및 보험업",
+    "middleName": "금융 및 보험관련 서비스업",
+    "smallName": "금융 지원 서비스업"
+  },
+  {
+    "majorName": "금융 및 보험업",
+    "middleName": "금융 및 보험관련 서비스업",
+    "smallName": "보험 및 연금관련 서비스업"
+  },
+  {
+    "majorName": "부동산 임대 및 공급업",
+    "middleName": "부동산업",
+    "smallName": "부동산 임대 및 공급업"
+  },
+  {
+    "majorName": "부동산 임대 및 공급업",
+    "middleName": "부동산업",
+    "smallName": "부동산관련 서비스업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "연구개발업",
+    "smallName": "자연과학 및 공학 연구개발업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "연구개발업",
+    "smallName": "인문 및 사회과학 연구개발업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "전문 서비스업",
+    "smallName": "법무관련 서비스업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "전문 서비스업",
+    "smallName": "회계 및 세무관련 서비스업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "전문 서비스업",
+    "smallName": "광고업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "전문 서비스업",
+    "smallName": "시장 조사 및 여론 조사업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "전문 서비스업",
+    "smallName": "회사 본부 및 경영 컨설팅 서비스업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "전문 서비스업",
+    "smallName": "기타 전문 서비스업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "건축 기술, 엔지니어링 및 기타 과학기술 서비스업",
+    "smallName": "건축 기술, 엔지니어링 및 관련 기술 서비스업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "건축 기술, 엔지니어링 및 기타 과학기술 서비스업",
+    "smallName": "기타 과학기술 서비스업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "기타 전문, 과학 및 기술 서비스업",
+    "smallName": "수의업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "기타 전문, 과학 및 기술 서비스업",
+    "smallName": "전문 디자인업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "기타 전문, 과학 및 기술 서비스업",
+    "smallName": "사진 촬영 및 처리업"
+  },
+  {
+    "majorName": "전문, 과학 및 기술 서비스업",
+    "middleName": "기타 전문, 과학 및 기술 서비스업",
+    "smallName": "그 외 기타 전문, 과학 및 기술 서비스업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "사업시설 관리 및 조경 서비스업",
+    "smallName": "사업시설 유지ㆍ관리 서비스업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "사업시설 관리 및 조경 서비스업",
+    "smallName": "건물ㆍ산업설비 청소 및 방제 서비스업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "사업시설 관리 및 조경 서비스업",
+    "smallName": "조경관리 및 유지 서비스업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "사업 지원 서비스업",
+    "smallName": "고용 알선 및 인력 공급업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "사업 지원 서비스업",
+    "smallName": "여행사 및 기타 여행 보조 서비스업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "사업 지원 서비스업",
+    "smallName": "경비, 경호 및 탐정업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "사업 지원 서비스업",
+    "smallName": "기타 사업 지원 서비스업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "임대업; 부동산 제외",
+    "smallName": "운송장비 임대업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "임대업; 부동산 제외",
+    "smallName": "개인 및 가정용품 임대업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "임대업; 부동산 제외",
+    "smallName": "산업용 기계 및 장비 임대업"
+  },
+  {
+    "majorName": "사업시설 관리, 사업 지원 및 임대 서비스업",
+    "middleName": "임대업; 부동산 제외",
+    "smallName": "무형 재산권 임대업"
+  },
+  {
+    "majorName": "공공 행정, 국방 및 사회보장 행정",
+    "middleName": "공공 행정, 국방 및 사회보장 행정",
+    "smallName": "입법 및 일반 정부 행정"
+  },
+  {
+    "majorName": "공공 행정, 국방 및 사회보장 행정",
+    "middleName": "공공 행정, 국방 및 사회보장 행정",
+    "smallName": "사회 및 산업정책 행정"
+  },
+  {
+    "majorName": "공공 행정, 국방 및 사회보장 행정",
+    "middleName": "공공 행정, 국방 및 사회보장 행정",
+    "smallName": "외무 및 국방 행정"
+  },
+  {
+    "majorName": "공공 행정, 국방 및 사회보장 행정",
+    "middleName": "공공 행정, 국방 및 사회보장 행정",
+    "smallName": "사법 및 공공 질서 행정"
+  },
+  {
+    "majorName": "공공 행정, 국방 및 사회보장 행정",
+    "middleName": "공공 행정, 국방 및 사회보장 행정",
+    "smallName": "사회보장 행정"
+  },
+  {
+    "majorName": "공공 행정, 국방 및 사회보장 행정",
+    "middleName": "공공 행정, 국방 및 사회보장 행정",
+    "smallName": "사회보장보험업 및 연금업"
+  },
+  {
+    "majorName": "교육 서비스업",
+    "middleName": "교육 서비스업",
+    "smallName": "초등 교육기관"
+  },
+  {
+    "majorName": "교육 서비스업",
+    "middleName": "교육 서비스업",
+    "smallName": "중등 교육기관"
+  },
+  {
+    "majorName": "교육 서비스업",
+    "middleName": "교육 서비스업",
+    "smallName": "고등 교육기관"
+  },
+  {
+    "majorName": "교육 서비스업",
+    "middleName": "교육 서비스업",
+    "smallName": "특수학교, 외국인학교 및 대안학교"
+  },
+  {
+    "majorName": "교육 서비스업",
+    "middleName": "교육 서비스업",
+    "smallName": "일반 교습학원"
+  },
+  {
+    "majorName": "교육 서비스업",
+    "middleName": "교육 서비스업",
+    "smallName": "기타 교육기관"
+  },
+  {
+    "majorName": "교육 서비스업",
+    "middleName": "교육 서비스업",
+    "smallName": "교육 지원 서비스업"
+  },
+  {
+    "majorName": "보건업 및 사회복지 서비스업",
+    "middleName": "보건업",
+    "smallName": "병원"
+  },
+  {
+    "majorName": "보건업 및 사회복지 서비스업",
+    "middleName": "보건업",
+    "smallName": "의원"
+  },
+  {
+    "majorName": "보건업 및 사회복지 서비스업",
+    "middleName": "보건업",
+    "smallName": "공중 보건 의료업"
+  },
+  {
+    "majorName": "보건업 및 사회복지 서비스업",
+    "middleName": "보건업",
+    "smallName": "기타 보건업"
+  },
+  {
+    "majorName": "보건업 및 사회복지 서비스업",
+    "middleName": "사회복지 서비스업",
+    "smallName": "거주 복지시설 운영업"
+  },
+  {
+    "majorName": "보건업 및 사회복지 서비스업",
+    "middleName": "사회복지 서비스업",
+    "smallName": "비거주 복지시설 운영업"
+  },
+  {
+    "majorName": "예술, 스포츠 및 여가 관련 서비스업",
+    "middleName": "창작, 예술 및 여가관련 서비스업",
+    "smallName": "창작 및 예술관련 서비스업"
+  },
+  {
+    "majorName": "예술, 스포츠 및 여가 관련 서비스업",
+    "middleName": "창작, 예술 및 여가관련 서비스업",
+    "smallName": "도서관, 사적지 및 유사 여가관련 서비스업"
+  },
+  {
+    "majorName": "예술, 스포츠 및 여가 관련 서비스업",
+    "middleName": "스포츠 및 오락관련 서비스업",
+    "smallName": "스포츠 서비스업"
+  },
+  {
+    "majorName": "예술, 스포츠 및 여가 관련 서비스업",
+    "middleName": "스포츠 및 오락관련 서비스업",
+    "smallName": "유원지 및 기타 오락관련 서비스업"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "협회 및 단체",
+    "smallName": "산업 및 전문가 단체"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "협회 및 단체",
+    "smallName": "노동조합"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "협회 및 단체",
+    "smallName": "기타 협회 및 단체"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "개인 및 소비용품 수리업",
+    "smallName": "컴퓨터 및 통신장비 수리업"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "개인 및 소비용품 수리업",
+    "smallName": "자동차 및 모터사이클 수리업"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "개인 및 소비용품 수리업",
+    "smallName": "개인 및 가정용품 수리업"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "기타 개인 서비스업",
+    "smallName": "미용, 욕탕 및 유사 서비스업"
+  },
+  {
+    "majorName": "협회 및 단체, 수리 및 기타 개인 서비스업",
+    "middleName": "기타 개인 서비스업",
+    "smallName": "그 외 기타 개인 서비스업"
+  },
+  {
+    "majorName": "가구 내 고용 활동 및 달리 분류되지 않은 자가 소비 생산 활동",
+    "middleName": "가구 내 고용활동",
+    "smallName": "가구 내 고용활동"
+  },
+  {
+    "majorName": "가구 내 고용 활동 및 달리 분류되지 않은 자가 소비 생산 활동",
+    "middleName": "달리 분류되지 않은 자가 소비를 위한 가구의 재화 및 서비스 생산활동",
+    "smallName": "자가 소비를 위한 가사 생산 활동"
+  },
+  {
+    "majorName": "가구 내 고용 활동 및 달리 분류되지 않은 자가 소비 생산 활동",
+    "middleName": "달리 분류되지 않은 자가 소비를 위한 가구의 재화 및 서비스 생산활동",
+    "smallName": "자가 소비를 위한 가사 서비스 활동"
+  },
+  {
+    "majorName": "국제 및 외국기관",
+    "middleName": "국제 및 외국기관",
+    "smallName": "국제 및 외국기관"
+  }
+]

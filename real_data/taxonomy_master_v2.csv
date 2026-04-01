@@ -1,0 +1,55 @@
+﻿code,name,short_name,name_en,type,parent_code,level,sort_order,active_flag,version,created_at
+IT_TECH,정보통신업 (IT),J. IT·정보통신,ICT,industry,,1,10,True,v1,2026-03-17T00:59:43
+MANUFACTURING,제조업,C. 제조,Manufacturing,industry,,1,3,True,v1,2026-03-17T00:59:43
+FINANCE,금융·보험업,K. 금융·보험,Finance & Insurance,industry,,1,11,True,v1,2026-03-17T00:59:43
+RETAIL_TRADE,도매·소매업,G. 도소매·유통,Retail & Wholesale,industry,,1,7,True,v1,2026-03-17T00:59:43
+HEALTHCARE,보건·사회복지,Q. 보건·의료·복지,Healthcare & Social,industry,,1,17,True,v1,2026-03-17T00:59:43
+EDUCATION,교육서비스업,P. 교육,Education,industry,,1,16,True,v1,2026-03-17T00:59:43
+CONSTRUCTION,건설·부동산,F. 건설·부동산,Construction,industry,,1,6,True,v1,2026-03-17T00:59:43
+LOGISTICS,운수·창고업,H. 물류·운송,Logistics & Transport,industry,,1,8,True,v1,2026-03-17T00:59:43
+HOSPITALITY,숙박·음식·여행,I. 숙박·음식·여행,Hospitality,industry,,1,9,True,v1,2026-03-17T00:59:43
+PROFESSIONAL_SVC,전문·과학·기술 서비스,M. 전문서비스,Professional Services,industry,,1,13,True,v1,2026-03-17T00:59:43
+PUBLIC_ADMIN,공공행정·국방,O. 공공행정,Public Administration,industry,,1,15,True,v1,2026-03-17T00:59:43
+ARTS_SPORTS,문화·예술·스포츠,R. 문화·예술,Arts & Sports,industry,,1,18,True,v1,2026-03-17T00:59:43
+ENERGY,전기·가스·에너지,D. 에너지,Energy,industry,,1,4,True,v1,2026-03-17T00:59:43
+ENVIRONMENT,환경·폐기물 처리,E. 환경,Environment,industry,,1,5,True,v1,2026-03-17T00:59:43
+REAL_ESTATE,부동산업,L. 부동산,Real Estate,industry,,1,12,True,v1,2026-03-17T00:59:43
+BUSINESS_SVC,사업지원 서비스업,N. 사업지원,Business Support,industry,,1,14,True,v1,2026-03-17T00:59:43
+AGRICULTURE,농업·임업·어업,A. 농업·임업,Agriculture,industry,,1,1,True,v1,2026-03-17T00:59:43
+MINING,광업,B. 광업,Mining,industry,,1,2,True,v1,2026-03-17T00:59:43
+LV_INTERN,인턴,인턴,Intern,level,,1,1,True,v1,2026-03-17T00:59:43
+LV_JUNIOR,사원·주임,사원·주임,Junior Staff,level,,1,2,True,v1,2026-03-17T00:59:43
+LV_ASSOCIATE,대리,대리,Associate,level,,1,3,True,v1,2026-03-17T00:59:43
+LV_MANAGER,과장·차장,과장·차장,Manager,level,,1,4,True,v1,2026-03-17T00:59:43
+LV_SENIOR_MGR,팀장·부장,팀장·부장,Senior Manager,level,,1,5,True,v1,2026-03-17T00:59:43
+LV_DIRECTOR,임원·이사,임원·이사,Director,level,,1,6,True,v1,2026-03-17T00:59:43
+LV_VP,VP·본부장,VP·본부장,VP,level,,1,7,True,v1,2026-03-17T00:59:43
+LV_EXEC,대표·C-Level,대표·C-Level,Executive,level,,1,8,True,v1,2026-03-17T00:59:43
+LV_SPECIALIST,전문직,전문직,Specialist,level,,1,3,True,v1,2026-03-17T00:59:43
+RL_IC_JR,IC 주니어,IC 주니어,IC Junior,role_level,,1,1,True,v1,2026-03-17T00:59:43
+RL_IC_MID,IC 미드,IC 미드,IC Mid,role_level,,1,2,True,v1,2026-03-17T00:59:43
+RL_IC_SR,시니어,시니어,Senior IC,role_level,,1,3,True,v1,2026-03-17T00:59:43
+RL_LEAD,리드·스태프,리드·스태프,Lead/Staff,role_level,,1,4,True,v1,2026-03-17T00:59:43
+RL_MGR,매니저,매니저,Manager,role_level,,1,5,True,v1,2026-03-17T00:59:43
+RL_HEAD,헤드·임원,헤드·임원,Head/Executive,role_level,,1,6,True,v1,2026-03-17T00:59:43
+TB_0,1년 미만,0~1년,Entry,tenure_band,,1,0,True,v1,2026-03-17T00:59:43
+TB_1,1~2년,1~2년,Early,tenure_band,,1,1,True,v1,2026-03-17T00:59:43
+TB_3,3~4년,3~4년,Mid-Early,tenure_band,,1,3,True,v1,2026-03-17T00:59:43
+TB_5,5~7년,5~7년,Mid,tenure_band,,1,5,True,v1,2026-03-17T00:59:43
+TB_8,8~10년,8~10년,Mid-Senior,tenure_band,,1,8,True,v1,2026-03-17T00:59:43
+TB_11,11~15년,11~15년,Senior,tenure_band,,1,11,True,v1,2026-03-17T00:59:43
+TB_16,16년 이상,16년+,Expert,tenure_band,,1,16,True,v1,2026-03-17T00:59:43
+SZ_STARTUP,스타트업,스타트업,Startup,company_size,,1,1,True,v1,2026-03-17T00:59:43
+SZ_SME,중소기업,중소기업,SME,company_size,,1,2,True,v1,2026-03-17T00:59:43
+SZ_MID,중견기업,중견기업,Mid-size,company_size,,1,4,True,v1,2026-03-17T00:59:43
+SZ_LARGE,대기업,대기업,Large,company_size,,1,5,True,v1,2026-03-17T00:59:43
+CT_PRIVATE,일반 사기업,일반 사기업,Private,company_type,,1,1,True,v1,2026-03-17T00:59:43
+CT_PUBLIC,공기업·공공기관,공기업·공공기관,Public Enterprise,company_type,,1,2,True,v1,2026-03-17T00:59:43
+CT_FOREIGN,외국계 기업,외국계 기업,Foreign,company_type,,1,3,True,v1,2026-03-17T00:59:43
+CT_STARTUP,스타트업·벤처,스타트업·벤처,Startup/Venture,company_type,,1,4,True,v1,2026-03-17T00:59:43
+CT_NONPROFIT,비영리·NGO,비영리·NGO,Non-profit,company_type,,1,5,True,v1,2026-03-17T00:59:43
+GOAL_PROMO,승진 준비,승진 준비,Promotion Prep,diagnosis_goal,,1,1,True,v1,2026-03-17T00:59:43
+GOAL_TRANSFER,이직·전직 준비,이직·전직 준비,Job Change,diagnosis_goal,,1,2,True,v1,2026-03-17T00:59:43
+GOAL_SKILL,직무 스킬 향상,직무 스킬 향상,Skill Improvement,diagnosis_goal,,1,3,True,v1,2026-03-17T00:59:43
+GOAL_CAREER,커리어 전환,커리어 전환,Career Change,diagnosis_goal,,1,4,True,v1,2026-03-17T00:59:43
+ASSOC_ORG,"협회 및 단체, 수리업",S. 협회·단체,Associations & Organizations,industry,,1,19,True,v1,2026-03-17T02:05:19

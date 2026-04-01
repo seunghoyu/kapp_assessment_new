@@ -1,0 +1,151 @@
+{
+  "version": "v1",
+  "created_at": "2026-03-17T01:01:33",
+  "description": "KAPP 점수 산식 및 벤치마크 그룹 규칙 v1",
+  "domain_definitions": {
+    "K": "직무 수행에 필요한 개념·절차·규정·도구 지식 이해",
+    "A": "실제 업무 상황에서의 상황판단·우선순위결정·문제해결·협업판단",
+    "P1": "KPI 기반 목표달성 전략 — KPI해석·갭분석·개선액션·트레이드오프",
+    "P2": "디지털·AI 활용 실행 효율 — 인바스켓·AI활용·결과검증"
+  },
+  "scoring_rules": {
+    "K": {
+      "type": "binary",
+      "correct": 1.0,
+      "incorrect": 0.0,
+      "unanswered": 0.0,
+      "difficulty_weight": true,
+      "note": "난이도 가중치 반영 가능. MVP에서는 동일 가중치로 시작"
+    },
+    "A": {
+      "type": "partial_credit",
+      "best_action": 1.0,
+      "good_action": 0.7,
+      "partial_action": 0.3,
+      "poor_action": 0.1,
+      "harmful_action": 0.0,
+      "unanswered": 0.0,
+      "note": "전문가 루브릭 기반. 위험한 선택(책임회피·월권·수동성)은 0점"
+    },
+    "P1": {
+      "type": "partial_credit",
+      "kpi_optimal": 1.0,
+      "kpi_good": 0.6,
+      "kpi_neutral": 0.3,
+      "kpi_harmful": 0.0,
+      "unanswered": 0.0,
+      "note": "KPI 정합성 + 실행 현실성 + 트레이드오프 판단 기준"
+    },
+    "P2": {
+      "type": "event_log",
+      "components": {
+        "priority_accuracy": 0.35,
+        "action_appropriateness": 0.3,
+        "time_efficiency": 0.2,
+        "validation_quality": 0.15
+      },
+      "note": "행동 로그 기반. MVP에서는 선택지 기반 부분점수로 시작 가능"
+    }
+  },
+  "domain_aggregation": {
+    "method": "weighted_average_scaled_to_100",
+    "weights": {
+      "K": 0.25,
+      "A": 0.25,
+      "P1": 0.25,
+      "P2": 0.25
+    },
+    "note": "MVP는 동일 가중치. 이후 직무별 가중치 차등 적용 가능",
+    "total_score": "optional — 4개 도메인 평균"
+  },
+  "score_bands": {
+    "expert": {
+      "min": 85,
+      "label": "전문가",
+      "color": "#f59e0b"
+    },
+    "advanced": {
+      "min": 70,
+      "label": "고급",
+      "color": "#10b981"
+    },
+    "proficient": {
+      "min": 55,
+      "label": "숙련",
+      "color": "#3b82f6"
+    },
+    "developing": {
+      "min": 40,
+      "label": "발전 중",
+      "color": "#8b5cf6"
+    },
+    "foundational": {
+      "min": 0,
+      "label": "기초",
+      "color": "#ef4444"
+    }
+  },
+  "benchmark_group_rules": {
+    "priority_1": {
+      "dimensions": [
+        "jf_code",
+        "role_level_id",
+        "kapp_industry_tag"
+      ],
+      "label": "동일 직무+레벨+산업",
+      "min_sample": 30
+    },
+    "priority_2": {
+      "dimensions": [
+        "jf_code",
+        "role_level_id"
+      ],
+      "label": "동일 직무+레벨",
+      "min_sample": 30
+    },
+    "priority_3": {
+      "dimensions": [
+        "family_group_id",
+        "role_level_id"
+      ],
+      "label": "동일 직무군+레벨",
+      "min_sample": 30
+    },
+    "priority_4": {
+      "dimensions": [
+        "kapp_industry_tag",
+        "role_level_id"
+      ],
+      "label": "동일 산업+레벨",
+      "min_sample": 20
+    },
+    "fallback": {
+      "dimensions": [
+        "role_level_id"
+      ],
+      "label": "전체 동일 레벨",
+      "min_sample": 10
+    },
+    "global_fallback": {
+      "dimensions": [],
+      "label": "전체 집합",
+      "note": "표본 부족시 최종 폴백"
+    }
+  },
+  "version_management": {
+    "fields_to_version": [
+      "taxonomy_version",
+      "blueprint_version",
+      "item_version",
+      "scoring_version",
+      "benchmark_version",
+      "ai_model_version"
+    ],
+    "rule": "세션마다 사용된 모든 버전을 context_snapshot에 저장",
+    "comparison_rule": "다른 버전 간 점수 직접 비교 불가. 대시보드에서 버전 표시"
+  },
+  "unanswered_policy": {
+    "time_limit_exceeded": "마지막 선택 유지 또는 0점 처리 (MVP: 0점)",
+    "skipped": 0.0
+  }
+}

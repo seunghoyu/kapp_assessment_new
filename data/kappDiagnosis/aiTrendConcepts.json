@@ -1,0 +1,122 @@
+{
+  "version": "2026-04",
+  "concepts": [
+    {
+      "id": "prompt_engineering",
+      "nameKo": "프롬프트 엔지니어링",
+      "nameEn": "Prompt Engineering",
+      "description": "모델에 넣는 지시문(프롬프트)을 설계·수정해, 원하는 형식·톤·깊이의 답을 이끌어내는 일입니다. 같은 모델이라도 문장 구조·역할 지정·예시 넣기만 바꿔도 결과가 크게 달라집니다.",
+      "workplaceExample": "보고서 초안을 “불릿 5개, 결론 먼저, 존댓말”처럼 형식을 고정하거나, 이메일 요약 시 “보낸 사람·마감일만 추출”하도록 문장을 다듬는 식으로 씁니다.",
+      "firstAppeared": "2021-03",
+      "category": "Application Layer"
+    },
+    {
+      "id": "context_engineering",
+      "nameKo": "컨텍스트 엔지니어링",
+      "nameEn": "Context Engineering",
+      "description": "한 번의 질문 문장만 다루는 수준을 넘어, 모델이 참고할 정보(문서 조각, 대화 이력, 규칙, 사용자 메모 등)를 골라 넣고 길이·순서를 맞추는 설계입니다. “무엇을 컨텍스트 창에 넣을지”가 품질과 비용을 좌우합니다.",
+      "workplaceExample": "사내 규정 PDF 일부, 최근 티켓 요약, 고객 등급을 한 번에 붙여 고객 응대 초안을 만들게 하거나, 코드 리뷰 시 관련 파일만 잘라 넣는 식입니다.",
+      "firstAppeared": "2024-06",
+      "category": "AI System Design"
+    },
+    {
+      "id": "harness_engineering",
+      "nameKo": "하네스 엔지니어링",
+      "nameEn": "Harness Engineering",
+      "description": "언어 모델·에이전트 “본체”와 별개로, 프로덕션에서 믿고 쓰기 위해 감싸는 실행 계층을 만드는 일입니다. 컨텍스트 조립, 도구 호출·재시도, 권한·비용 한도, 검증·관측(로그·트레이스) 등 데모와 운영의 차이를 메우는 뼈대를 뜻합니다. (단순히 여러 AI를 이어 주는 “오케스트레이션” 전체와 동일한 말은 아닙니다.)",
+      "workplaceExample": "사내 챗봇에 API 도구 호출 실패 시 백오프, 민감 정보 마스킹, 승인 단계, 감사 로그를 붙여 실제 서비스로 올리는 작업에 가깝습니다.",
+      "firstAppeared": "2023-09",
+      "category": "AI System Design"
+    },
+    {
+      "id": "ai_orchestration",
+      "nameKo": "AI 오케스트레이션",
+      "nameEn": "AI Orchestration",
+      "description": "여러 단계의 AI 처리·전문 에이전트·외부 도구를 업무 흐름에 맞게 배치하고, 순서·분기·병렬·상태 전달·실패 처리를 설계하는 일입니다. “누가 언제 실행되고, 결과를 어디로 넘기는지”를 조율하는 층에 가깝습니다.",
+      "workplaceExample": "문의 메일을 분류한 뒤 요약 → 티켓 생성 → 담당 팀 초안 답장까지, 그래프나 워크플로 엔진으로 단계를 자동 연결하는 식입니다.",
+      "firstAppeared": "2023-01",
+      "category": "AI System Design"
+    },
+    {
+      "id": "llm_engineering",
+      "nameKo": "LLM 엔지니어링",
+      "nameEn": "LLM Engineering",
+      "description": "대규모 언어 모델을 제품에 붙이기 위한 선택·연결·운영 전반입니다. 어떤 모델/API를 쓸지, 지연·비용·품질 목표에 맞춰 스트리밍·캐시·폴백·라우팅을 두는 일이 포함됩니다.",
+      "workplaceExample": "트래픽이 몰릴 때 저비용 모델로 먼저 분류하고, 어려운 요청만 고성능 모델로 넘기거나, SLA에 맞춰 타임아웃·재시도 정책을 짜는 식입니다.",
+      "firstAppeared": "2022-11",
+      "category": "Foundation & Serving"
+    },
+    {
+      "id": "rag",
+      "nameKo": "RAG",
+      "nameEn": "Retrieval-Augmented Generation",
+      "description": "질문이 들어오면 먼저 관련 문서(또는 데이터 조각)를 검색해 프롬프트에 붙인 뒤, 그 근거를 바탕으로 생성하는 방식입니다. 최신·사내 지식을 반영하고 환각을 줄이기 위해 널리 쓰입니다.",
+      "workplaceExample": "인트라넷 규정·제품 매뉴얼을 벡터 DB에 올려 두고, 직원 질문에 “인용 구절 + 답변” 형태로 답하게 하는 사내 Q&A 봇입니다.",
+      "firstAppeared": "2020-05",
+      "category": "Application Layer"
+    },
+    {
+      "id": "ai_agent",
+      "nameKo": "AI 에이전트",
+      "nameEn": "AI Agent",
+      "description": "목표만 주면 단계를 스스로 나누고, 검색·코드 실행·브라우저·메일 초안 등 도구를 호출하며 진행하는 AI 형태를 가리키는 말이 많습니다. 한 번의 질답이 아니라 여러 행동을 묶을 때 이야기합니다.",
+      "workplaceExample": "“이번 분기 경쟁사 공시에서 매출 변화만 표로 정리해 줘”처럼 검색·추출·스프레드시트 작성까지 시도하는 업무 비서형 흐름입니다.",
+      "firstAppeared": "2023-04",
+      "category": "Application Layer"
+    },
+    {
+      "id": "fine_tuning",
+      "nameKo": "파인튜닝",
+      "nameEn": "Fine-tuning",
+      "description": "이미 학습된 거대 모델을, 특정 도메인·톤·형식에 맞게 추가 학습시키는 방식입니다. 사내 Q&A 스타일, 용어, 금지 표현 등을 데이터로 넣어 “우리 회사 말투”에 가깝게 맞출 때 자주 씁니다. (프롬프트만 바꾸는 것과는 목적이 다릅니다.)",
+      "workplaceExample": "고객 지원 티켓과 모범 답변을 모아 두고, 같은 톤으로 초안을 쓰게 하거나, 법무·의료처럼 표현 규칙이 빡센 분야에서 용어를 고정할 때 씁니다.",
+      "firstAppeared": "2021-08",
+      "category": "Foundation & Serving"
+    },
+    {
+      "id": "model_context_protocol",
+      "nameKo": "모델 컨텍스트 프로토콜",
+      "nameEn": "Model Context Protocol (MCP)",
+      "description": "AI 앱이 외부 데이터·도구(파일, DB, Git, 슬랙 등)와 **표준 방식**으로 연결되도록 만든 개방형 프로토콜입니다. 데이터마다 매번 전용 커넥터를 새로 짜던 부담을 줄이고, “MCP 서버” 단위로 재사용하는 그림이 많습니다.",
+      "workplaceExample": "IDE나 사내 챗봇에서 MCP 서버 하나로 사내 위키·티켓 시스템을 붙여, 검색·요약 시 최신 티켓 내용을 가져오게 하는 식입니다.",
+      "firstAppeared": "2024-11",
+      "category": "AI System Design"
+    },
+    {
+      "id": "multimodal_ai",
+      "nameKo": "멀티모달 AI",
+      "nameEn": "Multimodal AI",
+      "description": "텍스트뿐 아니라 **이미지, 표, 음성, 영상** 등 여러 형태의 입력을 함께 이해하거나 생성하는 AI를 말합니다. “글만 넣는 챗봇”과 달리, 슬라이드·사진·녹취를 같이 넣는 업무에 맞습니다.",
+      "workplaceExample": "회의 녹취와 화이트보드 사진을 같이 넣어 회의록을 만들거나, 제품 사진과 스펙 표를 함께 주고 마케팅 문구 초안을 뽑는 식입니다.",
+      "firstAppeared": "2023-09",
+      "category": "Application Layer"
+    },
+    {
+      "id": "reasoning_model",
+      "nameKo": "추론 특화 모델",
+      "nameEn": "Reasoning-focused LLM",
+      "description": "답을 바로 한 방에 내기보다, **단계를 나누어 생각**하도록 설계·학습된 모델 계열을 가리키는 말이 많습니다. 수학·논리·복잡한 정책 해석처럼 “중간 과정이 중요한” 질문에서 씁니다. (일반 챗과 달리 응답이 더 길고 느릴 수 있습니다.)",
+      "workplaceExample": "예산·조건이 여러 개인 견적 시나리오를 단계별로 풀게 하거나, 계약 조항 간 충돌을 짚어보게 할 때 활용합니다.",
+      "firstAppeared": "2024-09",
+      "category": "Foundation & Serving"
+    },
+    {
+      "id": "hallucination",
+      "nameKo": "할루시네이션",
+      "nameEn": "Hallucination",
+      "description": "언어 모델이 **그럴듯하게 보이지만 사실이 아니거나 근거가 없는 내용**을 만들어 내는 현상을 말합니다. 존재하지 않는 논문·법 조항을 꾸며 내거나, 숫자·날짜를 틀리게 확신에 차서 말하는 경우가 대표적입니다. “AI가 틀렸다”와 비슷하지만, 특히 **마치 진짜인 것처럼 포장**될 때 이 용어를 씁니다.",
+      "workplaceExample": "사내 규정 질문에 없는 조항 번호를 제시하거나, 경쟁사 실적을 인용한다며 출처 없는 수치를 적는 경우입니다. RAG·출처 표시·사람 검토로 줄이는 경우가 많습니다.",
+      "firstAppeared": "2021-05",
+      "category": "Application Layer"
+    },
+    {
+      "id": "guardrails",
+      "nameKo": "가드레일",
+      "nameEn": "Guardrails",
+      "description": "모델 입·출력 전후에 걸어 두는 **정책·필터·검증** 계층입니다. 금지 주제 차단, 개인정보·기밀 유출 방지, 금지 표현 제거, 인간 승인 단계로 넘기기 등이 여기에 해당합니다. “모델이 똑똑한지”와 별개로, **조직이 안전하게 쓰기 위한 울타리**에 가깝습니다.",
+      "workplaceExample": "고객과 채팅하기 전에 카드번호·주민번호 패턴을 마스킹하거나, 사외 반출 금지 문서가 프롬프트에 섞이면 요청을 거절·경고하는 식입니다.",
+      "firstAppeared": "2023-02",
+      "category": "AI System Design"
+    }
+  ]
+}

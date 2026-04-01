@@ -379,6 +379,10 @@ export default function DiagnosisPage() {
           merged.aiExploration.scenarioChoice = merged.ai;
           merged.aiExploration.phase = "scenario";
         }
+      } else {
+        if (!merged.aiExploration.trendResponses) merged.aiExploration.trendResponses = {};
+        if (typeof merged.aiExploration.trendStepIndex !== "number") merged.aiExploration.trendStepIndex = 0;
+        if (typeof merged.aiExploration.surveyFreeText !== "string") merged.aiExploration.surveyFreeText = "";
       }
       setAnswers(merged);
     }
@@ -695,7 +699,9 @@ export default function DiagnosisPage() {
                     <Bot className="h-5 w-5 text-violet-600 shrink-0" aria-hidden />
                     <h1 className="text-lg font-bold text-gray-900 shrink-0">AI 활용 탐색</h1>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5">산업별 AI 업무 시나리오에서 활용 방식을 선택하세요.</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    도구 탐색·AI 트렌드 이해도·AI 활용도 설문·상황 판단까지 진행하며, 응답은 진단 맥락 분석에 활용됩니다.
+                  </p>
                 </div>
               </div>
             ) : null}

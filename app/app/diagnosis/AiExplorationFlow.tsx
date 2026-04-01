@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect, type ComponentType } from "react";
+import { useMemo, useState, useCallback, useEffect, type ComponentType, type ReactNode } from "react";
 import {
   Sparkles,
   ChevronLeft,
@@ -24,6 +24,7 @@ import TwemojiIcon from "@/components/common/TwemojiIcon";
 import { countryCodeToFlagEmoji } from "@/lib/countryFlagEmoji";
 import aiToolsCatalog from "@/data/kappDiagnosis/aiToolsCatalog.json";
 import aiExplorationScenarios from "@/data/kappDiagnosis/aiExplorationScenarios.json";
+import aiTrendConcepts from "@/data/kappDiagnosis/aiTrendConcepts.json";
 
 /** 카드에 `참고용` 배지가 붙는 경우의 의미(데이터 기준 + UI 툴팁). */
 const REFERENCE_ONLY_TITLE =
@@ -32,15 +33,36 @@ const REFERENCE_ONLY_TITLE =
 /** `사내 서버·전용` 분류 클릭 시 바로 목록에 넣는 카탈로그 도구 ID */
 const INTERNAL_ONPREM_TOOL_ID = "internal_llm_placeholder";
 
-export type AiExplorationPhase = "catalog" | "survey" | "scenario";
+/** `aiTrendConcepts` JSON의 `**강조**` 마크다운을 굵게 렌더링 (내부에 `*` 없음 가정) */
+function renderTrendTextWithBold(text: string, strongClassName: string): ReactNode {
+  const segments = text.split(/(\*\*[^*]+\*\*)/g);
+  return segments.map((seg, i) => {
+    if (seg.startsWith("**") && seg.endsWith("**") && seg.length > 4) {
+      return (
+        <strong key={i} className={strongClassName}>
+          {seg.slice(2, -2)}
+        </strong>
+      );
+    }
+    return <span key={i}>{seg}</span>;
+  });
+}
+
+export type AiExplorationPhase = "catalog" | "trend" | "survey" | "scenario";
 
 export type AiExplorationPayload = {
   phase: AiExplorationPhase;
   toolsUsed: string[];
+  /** AI 트렌드 이해도: concept id → 1~5 또는 미선택 */
+  trendResponses: Record<string, number | null>;
+  /** 트렌드 문항 현재 인덱스 (세션 복원용) */
+  trendStepIndex: number;
   s1Frequency: string[];
   s2Pain: string[];
   s4Learning: string[];
   s5OrgSupport: string | null;
+  /** AI 활용도 설문: 추가 의견(선택, S5 화면 하단) */
+  surveyFreeText: string;
   scenarioChoice: number | null;
   cardsOpened: string[];
 };
@@ -49,10 +71,13 @@ export function defaultAiExploration(): AiExplorationPayload {
   return {
     phase: "catalog",
     toolsUsed: [],
+    trendResponses: {},
+    trendStepIndex: 0,
     s1Frequency: [],
     s2Pain: [],
     s4Learning: [],
     s5OrgSupport: null,
+    surveyFreeText: "",
     scenarioChoice: null,
     cardsOpened: [],
   };
@@ -196,10 +221,17 @@ const S1_OPTIONS = [
   { id: "data", label: "데이터·분석" },
   { id: "ads", label: "광고·캠페인" },
   { id: "meeting", label: "회의·녹취 요약" },
+  { id: "strategy", label: "기획·전략·기안" },
+  { id: "customer", label: "고객응대·CS" },
+  { id: "edu", label: "교육·연구·자료" },
 ];
 
 const S2_OPTIONS = [
   { id: "hallucination", label: "환각·사실 오류" },
+  { id: "evidence", label: "근거·출처·최신성 확인" },
+  { id: "quality", label: "품질·톤·반복 수정" },
+  { id: "prompt_design", label: "프롬프트·역할 설계" },
+  { id: "integration", label: "도구·연동·환경(API·승인)" },
   { id: "policy", label: "사내 정책·승인 불명확" },
   { id: "security", label: "데이터 반출·보안" },
   { id: "cost", label: "비용·과금" },
@@ -208,7 +240,9 @@ const S2_OPTIONS = [
 
 const S4_OPTIONS = [
   { id: "prompt", label: "프롬프트·RAG 기초" },
+  { id: "rag_kb", label: "사내 데이터·지식 RAG" },
   { id: "gov", label: "거버넌스·로그" },
+  { id: "approval", label: "승인·감사 프로세스" },
   { id: "agent", label: "에이전트·자동화" },
   { id: "eval", label: "모델·출력 검증" },
 ];
@@ -221,6 +255,17 @@ const S5_OPTIONS = [
 ];
 
 const SURVEY_STEP_COUNT = 4;
+const SURVEY_FREE_TEXT_MAX = 200;
+
+type TrendConcept = (typeof aiTrendConcepts.concepts)[number];
+
+const TREND_LIKERT_OPTIONS: { value: number; label: string }[] = [
+  { value: 1, label: "전혀 모른다" },
+  { value: 2, label: "들어본 적 있다" },
+  { value: 3, label: "개념은 이해한다" },
+  { value: 4, label: "일부 활용할 줄 안다" },
+  { value: 5, label: "능숙하게 활용 가능하다" },
+];
 
 type Props = {
   industry: string;
@@ -280,6 +325,34 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
     return m;
   }, [catalog.tools]);
 
+  const trendConcepts = useMemo(() => aiTrendConcepts.concepts as TrendConcept[], []);
+  const trendTotal = trendConcepts.length;
+  const trendIdx = trendTotal === 0 ? 0 : Math.min(Math.max(0, value.trendStepIndex), trendTotal - 1);
+  const currentTrend = trendConcepts[trendIdx];
+
+  const surveyCanProceed = useMemo(() => {
+    if (value.phase !== "survey") return true;
+    switch (surveyStep) {
+      case 0:
+        return value.s1Frequency.length >= 1;
+      case 1:
+        return value.s2Pain.length >= 1;
+      case 2:
+        return value.s4Learning.length >= 1;
+      case 3:
+        return value.s5OrgSupport !== null;
+      default:
+        return false;
+    }
+  }, [
+    value.phase,
+    surveyStep,
+    value.s1Frequency,
+    value.s2Pain,
+    value.s4Learning,
+    value.s5OrgSupport,
+  ]);
+
   const explorationPoints = value.cardsOpened.length;
   const uniqueCategoriesVisited = useMemo(() => {
     const set = new Set<string>();
@@ -330,6 +403,12 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
 
   const setPhase = (phase: AiExplorationPhase) => patch({ phase });
 
+  const setTrendScore = (conceptId: string, score: number) => {
+    patch({
+      trendResponses: { ...value.trendResponses, [conceptId]: score },
+    });
+  };
+
   const deploymentLabel = (d: string) => {
     if (d === "cloud") return "클라우드";
     if (d === "on_prem") return "온프레미스";
@@ -351,10 +430,18 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
           <ChevronRight className="w-3.5 h-3.5 text-gray-400" aria-hidden />
           <span
             className={`rounded-full px-2.5 py-1 font-medium transition-colors ${
+              value.phase === "trend" ? "bg-violet-600 text-white" : "bg-gray-100 text-gray-600"
+            }`}
+          >
+            ② AI 트렌드 이해도
+          </span>
+          <ChevronRight className="w-3.5 h-3.5 text-gray-400" aria-hidden />
+          <span
+            className={`rounded-full px-2.5 py-1 font-medium transition-colors ${
               value.phase === "survey" ? "bg-violet-600 text-white" : "bg-gray-100 text-gray-600"
             }`}
           >
-            ② 짧은 설문
+            ③ AI 활용도 설문
           </span>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400" aria-hidden />
           <span
@@ -362,7 +449,7 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
               value.phase === "scenario" ? "bg-violet-600 text-white" : "bg-gray-100 text-gray-600"
             }`}
           >
-            ③ 상황 판단
+            ④ 상황 판단
           </span>
           <span className="ml-auto text-gray-500">
             탐색 {explorationPoints}장 · 분류 {uniqueCategoriesVisited}개
@@ -625,15 +712,103 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
           </div>
         )}
 
+        {value.phase === "trend" && currentTrend && (
+          <div className="max-w-[1200px] mx-auto flex flex-col gap-8 pb-2 min-h-0 w-full">
+            <header className="shrink-0">
+              <p className="text-xs font-medium text-violet-600 mb-2">
+                문항 {trendIdx + 1} / {trendTotal}
+              </p>
+              <h2 className="text-lg font-bold text-gray-900">AI 트렌드 이해도 측정</h2>
+              <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                개념을 하나씩만 살펴보고, 지금 나의 이해도에 가장 가까운 항목을 골라 주세요.
+              </p>
+              <div className="mt-3 flex gap-1">
+                {Array.from({ length: trendTotal }, (_, i) => (
+                  <div
+                    key={i}
+                    className={`h-1 flex-1 rounded-full transition-colors ${
+                      i <= trendIdx ? "bg-violet-500" : "bg-gray-200"
+                    }`}
+                  />
+                ))}
+              </div>
+            </header>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 xl:gap-16 items-start min-h-0">
+              {/* 좌: 개념 카드 + 실무 예시 */}
+              <div className="flex flex-col gap-5 min-w-0">
+                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
+                  <div>
+                    <p className="text-xs font-medium text-violet-700 mb-1">{currentTrend.nameEn}</p>
+                    <h3 className="text-lg font-bold text-gray-900 leading-snug">{currentTrend.nameKo}</h3>
+                  </div>
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {renderTrendTextWithBold(currentTrend.description, "font-semibold text-gray-900")}
+                  </p>
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <span className="inline-flex items-center rounded-md bg-violet-50 px-2 py-1 font-medium text-violet-900 border border-violet-100">
+                      최초 등장 {currentTrend.firstAppeared}
+                    </span>
+                    <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 font-medium text-gray-800 border border-gray-100">
+                      {currentTrend.category}
+                    </span>
+                  </div>
+                </div>
+
+                {currentTrend.workplaceExample ? (
+                  <div className="rounded-xl border border-violet-100 bg-violet-50/60 p-5 shadow-sm">
+                    <p className="text-xs font-semibold text-violet-900 mb-2">실무 예시</p>
+                    <p className="text-sm text-violet-950/90 leading-relaxed">
+                      {renderTrendTextWithBold(currentTrend.workplaceExample, "font-semibold text-violet-950")}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+
+              {/* 우: 질문 + 객관식 */}
+              <div className="flex flex-col gap-4 min-w-0 border-t border-gray-100 pt-8 lg:border-t-0 lg:pt-0 lg:border-l lg:border-gray-100 lg:pl-10 xl:pl-14">
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 leading-snug">이 개념에 대해 어느 쪽에 가깝나요?</p>
+                  <p className="text-xs text-gray-500 mt-1.5">아래 번호 중 하나를 선택해 주세요.</p>
+                </div>
+                <div className="grid gap-2.5">
+                  {TREND_LIKERT_OPTIONS.map((opt) => {
+                    const cid = currentTrend.id;
+                    const sel = value.trendResponses[cid];
+                    const active = sel === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setTrendScore(cid, opt.value)}
+                        className={`w-full text-left rounded-xl border px-4 py-3 text-sm transition-all duration-200 ${
+                          active
+                            ? "border-violet-500 bg-violet-50 text-violet-950 shadow-sm"
+                            : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
+                        }`}
+                      >
+                        <span className="font-semibold text-violet-700 mr-2 tabular-nums">{opt.value}</span>
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {value.phase === "survey" && (
           <div className="max-w-[560px] mx-auto space-y-6 pb-4">
             <header>
               <p className="text-xs font-medium text-violet-600 mb-2">
                 질문 {surveyStep + 1} / {SURVEY_STEP_COUNT}
               </p>
-              <h2 className="text-lg font-bold text-gray-900">짧은 설문</h2>
+              <h2 className="text-lg font-bold text-gray-900">AI 활용도 설문</h2>
               <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                방금 살펴본 도구를 떠올리며, 한 번에 질문 하나씩만 편하게 골라 주세요.
+                아까 탐색한 도구를 떠올리며 답해 주세요.{" "}
+                <span className="font-medium text-gray-700">최근 실제 업무에서 쓰신 경험</span>을 기준으로 하면
+                좋아요. 한 화면에 질문 하나씩입니다.
               </p>
               <div className="mt-3 flex gap-1">
                 {Array.from({ length: SURVEY_STEP_COUNT }, (_, i) => (
@@ -650,9 +825,11 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
             {surveyStep === 0 && (
               <section className="transition-opacity duration-200">
                 <h3 className="text-base font-semibold text-gray-900 mb-1">
-                  가장 자주 쓰는 용도는 무엇인가요?
+                  요즘 업무에서 AI를 가장 자주 쓰는 용도는 무엇인가요?
                 </h3>
-                <p className="text-xs text-gray-500 mb-4">해당하는 만큼 골라 주세요.</p>
+                <p className="text-xs text-gray-500 mb-4">
+                  복수 선택 가능합니다. 해당되는 것을 모두 골라 주세요.
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {S1_OPTIONS.map((o) => (
                     <button
@@ -669,13 +846,18 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
                     </button>
                   ))}
                 </div>
+                {value.s1Frequency.length === 0 ? (
+                  <p className="text-xs text-amber-800 mt-3">한 가지 이상 선택하면 다음으로 넘어갈 수 있어요.</p>
+                ) : null}
               </section>
             )}
 
             {surveyStep === 1 && (
               <section className="transition-opacity duration-200">
-                <h3 className="text-base font-semibold text-gray-900 mb-1">막히는 지점은 어디인가요?</h3>
-                <p className="text-xs text-gray-500 mb-4">해당하는 만큼 골라 주세요.</p>
+                <h3 className="text-base font-semibold text-gray-900 mb-1">그때 가장 잘 막히거나 불안한 지점은 무엇인가요?</h3>
+                <p className="text-xs text-gray-500 mb-4">
+                  품질·정책·환경 등 여러 개가 겹칠 수 있어요. 해당하는 만큼 골라 주세요.
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {S2_OPTIONS.map((o) => (
                     <button
@@ -692,15 +874,18 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
                     </button>
                   ))}
                 </div>
+                {value.s2Pain.length === 0 ? (
+                  <p className="text-xs text-amber-800 mt-3">한 가지 이상 선택하면 다음으로 넘어갈 수 있어요.</p>
+                ) : null}
               </section>
             )}
 
             {surveyStep === 2 && (
               <section className="transition-opacity duration-200">
                 <h3 className="text-base font-semibold text-gray-900 mb-1">
-                  3개월 안에 배우고 싶은 것
+                  막힌 부분을 줄이려면, 3개월 안에 무엇을 배우고 싶으신가요?
                 </h3>
-                <p className="text-xs text-gray-500 mb-4">최대 2개까지 골라 주세요.</p>
+                <p className="text-xs text-gray-500 mb-4">우선순위가 높은 것 최대 2개까지 골라 주세요.</p>
                 <div className="flex flex-wrap gap-2">
                   {S4_OPTIONS.map((o) => (
                     <button
@@ -717,35 +902,68 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
                     </button>
                   ))}
                 </div>
+                {value.s4Learning.length === 0 ? (
+                  <p className="text-xs text-amber-800 mt-3">한 가지 이상 선택하면 다음으로 넘어갈 수 있어요.</p>
+                ) : null}
               </section>
             )}
 
             {surveyStep === 3 && (
-              <section className="transition-opacity duration-200">
-                <h3 className="text-base font-semibold text-gray-900 mb-1">
-                  조직에서 지원해 주면 가장 도움이 되는 것은 무엇인가요?
-                </h3>
-                <p className="text-xs text-gray-500 mb-4">하나만 선택해 주세요.</p>
-                <div className="space-y-2">
-                  {S5_OPTIONS.map((o) => (
-                    <label
-                      key={o.id}
-                      className={`flex items-center gap-3 rounded-xl border p-4 cursor-pointer transition-all duration-200 ${
-                        value.s5OrgSupport === o.id
-                          ? "border-violet-500 bg-violet-50 shadow-sm"
-                          : "border-gray-200 bg-white hover:bg-gray-50"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="s5"
-                        checked={value.s5OrgSupport === o.id}
-                        onChange={() => patch({ s5OrgSupport: o.id })}
-                        className="text-violet-600 focus:ring-violet-500"
-                      />
-                      <span className="text-sm text-gray-800">{o.label}</span>
-                    </label>
-                  ))}
+              <section className="transition-opacity duration-200 space-y-6">
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 mb-1">
+                    조직에서 지원해 주면 가장 도움이 되는 것은 무엇인가요?
+                  </h3>
+                  <p className="text-xs text-gray-500 mb-4">
+                    지금 당장 시급한 한 가지만 골라 주세요.
+                  </p>
+                  <div className="space-y-2">
+                    {S5_OPTIONS.map((o) => (
+                      <label
+                        key={o.id}
+                        className={`flex items-center gap-3 rounded-xl border p-4 cursor-pointer transition-all duration-200 ${
+                          value.s5OrgSupport === o.id
+                            ? "border-violet-500 bg-violet-50 shadow-sm"
+                            : "border-gray-200 bg-white hover:bg-gray-50"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="s5"
+                          checked={value.s5OrgSupport === o.id}
+                          onChange={() => patch({ s5OrgSupport: o.id })}
+                          className="text-violet-600 focus:ring-violet-500"
+                        />
+                        <span className="text-sm text-gray-800">{o.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {value.s5OrgSupport === null ? (
+                    <p className="text-xs text-amber-800 mt-3">한 가지를 선택하면 다음으로 넘어갈 수 있어요.</p>
+                  ) : null}
+                </div>
+                <div>
+                  <label htmlFor="survey-free-text" className="block text-sm font-semibold text-gray-900 mb-1.5">
+                    추가로 남기고 싶은 말이 있나요? <span className="font-normal text-gray-500">(선택)</span>
+                  </label>
+                  <p className="text-xs text-gray-500 mb-2">
+                    더 자세히 질문해 주었으면 하는 점이나, 막히는 상황을 적어 주셔도 돼요.
+                  </p>
+                  <textarea
+                    id="survey-free-text"
+                    rows={3}
+                    maxLength={SURVEY_FREE_TEXT_MAX}
+                    value={value.surveyFreeText ?? ""}
+                    onChange={(e) => {
+                      const t = e.target.value.slice(0, SURVEY_FREE_TEXT_MAX);
+                      patch({ surveyFreeText: t });
+                    }}
+                    placeholder="예: 사내 승인 절차를 설문에 더 물어봤으면 좋겠어요."
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 resize-y min-h-[88px]"
+                  />
+                  <p className="text-[11px] text-gray-400 mt-1.5 tabular-nums">
+                    {(value.surveyFreeText ?? "").length} / {SURVEY_FREE_TEXT_MAX}
+                  </p>
                 </div>
               </section>
             )}
@@ -797,20 +1015,71 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
         {value.phase === "catalog" && (
           <>
             <p className="text-xs text-gray-500 max-w-md leading-relaxed">
-              카드를 열어보면 탐색 기록이 쌓여요. 골라 두신 AI가 있으면 설문으로 넘어가 주세요.
+              카드를 열어보면 탐색 기록이 쌓여요. 준비되면 AI 트렌드 이해도 측정으로 넘어가 주세요.
             </p>
             <button
               type="button"
               onClick={() => {
                 setSurveyStep(0);
-                setPhase("survey");
+                patch({ phase: "trend", trendStepIndex: 0 });
                 setHubView("hub");
               }}
               className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-violet-700 transition-colors"
             >
-              다음: 짧은 설문
+              다음: AI 트렌드 이해도
               <ChevronRight className="w-4 h-4" />
             </button>
+          </>
+        )}
+
+        {value.phase === "trend" && currentTrend && (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                if (trendIdx <= 0) {
+                  patch({ phase: "catalog" });
+                } else {
+                  patch({ trendStepIndex: trendIdx - 1 });
+                }
+              }}
+              className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              이전
+            </button>
+            {(() => {
+              const cid = currentTrend.id;
+              const answered = typeof value.trendResponses[cid] === "number";
+              const isLast = trendIdx >= trendTotal - 1;
+              return (
+                <button
+                  type="button"
+                  disabled={!answered}
+                  onClick={() => {
+                    if (isLast) {
+                      setSurveyStep(0);
+                      patch({ phase: "survey" });
+                    } else {
+                      patch({ trendStepIndex: trendIdx + 1 });
+                    }
+                  }}
+                  className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-violet-700 ml-auto transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                >
+                  {isLast ? (
+                    <>
+                      다음: AI 활용도 설문
+                      <ChevronRight className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      다음 문항
+                      <ChevronRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              );
+            })()}
           </>
         )}
 
@@ -820,7 +1089,7 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
               type="button"
               onClick={() => {
                 if (surveyStep <= 0) {
-                  setPhase("catalog");
+                  patch({ phase: "trend", trendStepIndex: Math.max(0, trendTotal - 1) });
                 } else {
                   setSurveyStep((s) => s - 1);
                 }
@@ -833,8 +1102,9 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
             {surveyStep < SURVEY_STEP_COUNT - 1 ? (
               <button
                 type="button"
+                disabled={!surveyCanProceed}
                 onClick={() => setSurveyStep((s) => Math.min(s + 1, SURVEY_STEP_COUNT - 1))}
-                className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-violet-700 ml-auto transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-violet-700 ml-auto transition-colors disabled:opacity-40 disabled:pointer-events-none"
               >
                 다음 질문
                 <ChevronRight className="w-4 h-4" />
@@ -842,8 +1112,9 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
             ) : (
               <button
                 type="button"
+                disabled={!surveyCanProceed}
                 onClick={() => setPhase("scenario")}
-                className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-violet-700 ml-auto transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-violet-700 ml-auto transition-colors disabled:opacity-40 disabled:pointer-events-none"
               >
                 다음: 상황 판단
                 <ChevronRight className="w-4 h-4" />

@@ -131,26 +131,17 @@ function initialsFromName(name: string): string {
 }
 
 const LOGO_PUBLIC_DIR = "/kapp/ai-tools-logos";
-const LOGO_FALLBACK_EXTS = ["webp", "png", "svg", "jpg", "jpeg"] as const;
 
-/** JSON 경로 + 동일 베이스명의 webp/png 등 후보. logoPublicPath가 없으면 toolId 기준 자동 후보. */
-function logoSrcCandidates(logoPublicPath: string | null | undefined, toolId?: string): string[] {
-  const seen = new Set<string>();
-  const add = (u: string) => {
-    if (u) seen.add(u);
-  };
+/** 로고는 WebP만 사용. JSON에 png 등으로 적혀 있어도 동일 베이스명 .webp로 정규화. */
+function logoWebpSrc(logoPublicPath: string | null | undefined, toolId?: string): string | null {
   if (logoPublicPath) {
-    add(logoPublicPath);
     const base = logoPublicPath.replace(/\.(webp|png|svg|jpe?g)$/i, "");
-    for (const ext of LOGO_FALLBACK_EXTS) {
-      add(`${base}.${ext}`);
-    }
-  } else if (toolId) {
-    for (const ext of LOGO_FALLBACK_EXTS) {
-      add(`${LOGO_PUBLIC_DIR}/${toolId}.${ext}`);
-    }
+    return `${base}.webp`;
   }
-  return [...seen];
+  if (toolId) {
+    return `${LOGO_PUBLIC_DIR}/${toolId}.webp`;
+  }
+  return null;
 }
 
 function ToolLogoSlot({
@@ -161,32 +152,28 @@ function ToolLogoSlot({
 }: {
   displayName: string;
   logoPublicPath?: string | null;
-  /** 없으면 logoPublicPath가 null일 때 `toolId.webp` 등만 시도 */
+  /** 없으면 `/kapp/ai-tools-logos/{toolId}.webp`만 사용 */
   toolId?: string;
   size?: "lg" | "sm";
 }) {
-  const candidates = useMemo(
-    () => logoSrcCandidates(logoPublicPath ?? null, toolId),
-    [logoPublicPath, toolId]
-  );
-  const [attempt, setAttempt] = useState(0);
+  const src = useMemo(() => logoWebpSrc(logoPublicPath ?? null, toolId), [logoPublicPath, toolId]);
+  const [imgFailed, setImgFailed] = useState(false);
 
   useEffect(() => {
-    setAttempt(0);
+    setImgFailed(false);
   }, [logoPublicPath, toolId]);
 
   const box = size === "lg" ? "h-16 w-16 min-h-16 min-w-16" : "h-12 w-12 min-h-12 min-w-12";
   const textSize = size === "lg" ? "text-base" : "text-sm";
 
-  const src = candidates[attempt];
-  const showImg = attempt < candidates.length && Boolean(src);
+  const showImg = Boolean(src) && !imgFailed;
 
   return (
     <div
       className={`${box} rounded-lg bg-gray-100 border border-gray-200/80 flex items-center justify-center overflow-hidden shrink-0`}
     >
-      {showImg ? (
-        // eslint-disable-next-line @next/next/no-img-element -- 로컬 public 경로(webp·png 등), 실패 시 후보 순회
+      {showImg && src ? (
+        // eslint-disable-next-line @next/next/no-img-element -- public WebP만 사용
         <img
           key={src}
           src={src}
@@ -194,7 +181,7 @@ function ToolLogoSlot({
           width={size === "lg" ? 64 : 48}
           height={size === "lg" ? 64 : 48}
           className="h-full w-full object-contain p-1.5"
-          onError={() => setAttempt((a) => a + 1)}
+          onError={() => setImgFailed(true)}
         />
       ) : (
         <span className={`${textSize} font-bold text-violet-700/90 tabular-nums`}>{initialsFromName(displayName)}</span>

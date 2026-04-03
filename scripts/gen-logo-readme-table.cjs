@@ -13,9 +13,9 @@ let table = "| 표시 이름 | toolId | 이 폴더에 넣을 파일명 |\n| --- 
 for (const t of j.tools) {
   const fn = t.logoPublicPath
     ? t.logoPublicPath.split("/").pop()
-    : `${t.toolId}.webp · ${t.toolId}.png … (동일 이름)`;
+    : `${t.toolId}.webp`;
   const name = String(t.displayName).replace(/\|/g, "\\|");
-  table += `| ${name} | \`${t.toolId}\` | ${t.logoPublicPath ? `\`${fn}\`` : fn} |\n`;
+  table += `| ${name} | \`${t.toolId}\` | \`${fn}\` |\n`;
 }
 
 const readme = `# AI 도구 로고 (수기 배치)
@@ -24,9 +24,9 @@ const readme = `# AI 도구 로고 (수기 배치)
 
 ## 규칙
 
-- **파일명:** \`toolId\`와 같은 이름 + 확장자. **WebP·PNG·SVG·JPG** 모두 사용 가능합니다. 화면에서는 같은 베이스 이름이면 **webp → png → svg → jpg** 순으로 자동 시도합니다. \`logoPublicPath\`가 비어 있으면 \`/kapp/ai-tools-logos/{toolId}.webp\`부터 찾습니다.
-- **JSON:** \`data/kappDiagnosis/aiToolsCatalog.json\`의 \`logoPublicPath\` — 예: \`/kapp/ai-tools-logos/chatgpt_team.webp\` 또는 \`.png\`
-- **권장:** 정사각형, 투명 배경, 가로세로 **최소 128px** (UI에서는 약 48~56px)
+- **파일명:** \`toolId.webp\` (화면은 **WebP만** 로드). \`logoPublicPath\`가 비어 있으면 \`/kapp/ai-tools-logos/{toolId}.webp\`를 씁니다.
+- **JSON:** \`data/kappDiagnosis/aiToolsCatalog.json\`의 \`logoPublicPath\` — 예: \`/kapp/ai-tools-logos/chatgpt_team.webp\`
+- **권장:** 정사각형, 투명 배경, 가로세로 **최소 128px** (UI에서는 그리드 약 48px·모달 약 64px)
 - 저작권·상표는 각 벤더 정책을 따릅니다. 파일이 없으면 카드에는 **이니셜 플레이스홀더**가 나옵니다.
 
 ## 도구별로 넣을 파일명 (catalog 기준)

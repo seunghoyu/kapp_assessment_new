@@ -1,37 +1,13 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect, type ComponentType, type ReactNode } from "react";
-import {
-  Sparkles,
-  ChevronLeft,
-  ChevronRight,
-  MessageCircle,
-  Code,
-  Search,
-  Pen,
-  Mic,
-  Presentation,
-  Target,
-  BarChart3,
-  Bot,
-  Lock,
-  Github,
-  RotateCcw,
-  Check,
-  X,
-} from "lucide-react";
+import { useMemo, useState, useCallback, useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { Sparkles, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import TwemojiIcon from "@/components/common/TwemojiIcon";
 import { countryCodeToFlagEmoji } from "@/lib/countryFlagEmoji";
 import aiToolsCatalog from "@/data/kappDiagnosis/aiToolsCatalog.json";
 import aiExplorationScenarios from "@/data/kappDiagnosis/aiExplorationScenarios.json";
 import aiTrendConcepts from "@/data/kappDiagnosis/aiTrendConcepts.json";
-
-/** 카드에 `참고용` 배지가 붙는 경우의 의미(데이터 기준 + UI 툴팁). */
-const REFERENCE_ONLY_TITLE =
-  "우리가 바로 쓰거나 사서 도입하는 목록이 아니라, ‘세상에 이런 사례가 있다’ 정도로 보는 항목이에요. 특정 나라·앱 전용이거나, 규칙·개인정보 때문에 조심해야 하거나, 회사용 정식 제품이 아닌 참고 예시일 수 있습니다.";
-
-/** `사내 서버·전용` 분류 클릭 시 바로 목록에 넣는 카탈로그 도구 ID */
-const INTERNAL_ONPREM_TOOL_ID = "internal_llm_placeholder";
 
 /** `aiTrendConcepts` JSON의 `**강조**` 마크다운을 굵게 렌더링 (내부에 `*` 없음 가정) */
 function renderTrendTextWithBold(text: string, strongClassName: string): ReactNode {
@@ -87,21 +63,8 @@ type CatalogTool = (typeof aiToolsCatalog.tools)[number] & {
   logoPublicPath?: string | null;
   /** 오픈소스 항목 등, 공개 저장소 링크(선택). */
   githubRepo?: string;
-};
-type CatalogCategory = (typeof aiToolsCatalog.categories)[number];
-
-const ICON_MAP: Record<string, ComponentType<{ className?: string }>> = {
-  chat: MessageCircle,
-  code: Code,
-  search: Search,
-  pen: Pen,
-  mic: Mic,
-  presentation: Presentation,
-  target: Target,
-  chart: BarChart3,
-  bot: Bot,
-  lock: Lock,
-  opensource: Github,
+  /** 특화·강점 한 줄(카탈로그 데이터, 공개 자료 기반 요약). */
+  focusStrengths?: string;
 };
 
 const HQ_LABEL: Record<string, string> = {
@@ -128,6 +91,31 @@ const HQ_LABEL: Record<string, string> = {
   NO: "노르웨이",
   XX: "기타",
 };
+
+/** 국가명 + 국기(다른 메타 라벨과 구분되도록 배경·테두리) */
+function CountryLabel({
+  countryCode,
+  className = "",
+  compact = false,
+}: {
+  countryCode: string;
+  className?: string;
+  compact?: boolean;
+}) {
+  const hq = HQ_LABEL[countryCode] ?? countryCode;
+  const flagEmoji = countryCodeToFlagEmoji(countryCode);
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-md bg-slate-100 border border-slate-200/90 font-semibold text-slate-800 shadow-sm ${compact ? "px-1.5 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs"} ${className}`}
+    >
+      <TwemojiIcon icon={flagEmoji} size={compact ? "0.75rem" : "0.875rem"} className="shrink-0 leading-none" />
+      <span className="sr-only">{hq}</span>
+      <span aria-hidden className="tracking-tight">
+        {hq}
+      </span>
+    </span>
+  );
+}
 
 const INDUSTRY_KEYS = ["IT", "금융", "의료", "마케팅/광고", "기타"] as const;
 
@@ -187,8 +175,8 @@ function ToolLogoSlot({
     setAttempt(0);
   }, [logoPublicPath, toolId]);
 
-  const box = size === "lg" ? "h-12 w-12 min-h-12 min-w-12" : "h-9 w-9 min-h-9 min-w-9";
-  const textSize = size === "lg" ? "text-sm" : "text-xs";
+  const box = size === "lg" ? "h-16 w-16 min-h-16 min-w-16" : "h-12 w-12 min-h-12 min-w-12";
+  const textSize = size === "lg" ? "text-base" : "text-sm";
 
   const src = candidates[attempt];
   const showImg = attempt < candidates.length && Boolean(src);
@@ -203,9 +191,9 @@ function ToolLogoSlot({
           key={src}
           src={src}
           alt=""
-          width={size === "lg" ? 48 : 36}
-          height={size === "lg" ? 48 : 36}
-          className="h-full w-full object-contain p-1"
+          width={size === "lg" ? 64 : 48}
+          height={size === "lg" ? 64 : 48}
+          className="h-full w-full object-contain p-1.5"
           onError={() => setAttempt((a) => a + 1)}
         />
       ) : (
@@ -275,13 +263,12 @@ type Props = {
 };
 
 export default function AiExplorationFlow({ industry, value, onChange, onRequestResult }: Props) {
-  const [hubView, setHubView] = useState<"hub" | "list">("hub");
-  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
-  const [flipToolId, setFlipToolId] = useState<string | null>(null);
+  /** 상세 모달에 표시할 도구 id */
+  const [modalToolId, setModalToolId] = useState<string | null>(null);
   /** 설문: 0=S1 … 3=S5, 한 화면에 한 질문 */
   const [surveyStep, setSurveyStep] = useState(0);
 
-  const catalog = aiToolsCatalog as { version: string; categories: CatalogCategory[]; tools: CatalogTool[] };
+  const catalog = aiToolsCatalog as { version: string; tools: CatalogTool[] };
   const scenarios = aiExplorationScenarios as {
     byIndustry: Record<
       string,
@@ -299,24 +286,6 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
   const industryKey = resolveIndustryKey(industry);
   const scenario = scenarios.byIndustry[industryKey] ?? scenarios.byIndustry["기타"];
 
-  const categoriesSorted = useMemo(
-    () => [...catalog.categories].sort((a, b) => a.order - b.order),
-    [catalog.categories]
-  );
-
-  const countByCategory = useMemo(() => {
-    const m: Record<string, number> = {};
-    catalog.categories.forEach((c) => {
-      m[c.id] = catalog.tools.filter((t) => t.primaryCategory === c.id).length;
-    });
-    return m;
-  }, [catalog.categories, catalog.tools]);
-
-  const filteredTools = useMemo(() => {
-    if (!activeCategoryId) return [];
-    return catalog.tools.filter((t) => t.primaryCategory === activeCategoryId);
-  }, [catalog.tools, activeCategoryId]);
-
   const toolById = useMemo(() => {
     const m: Record<string, CatalogTool> = {};
     catalog.tools.forEach((t) => {
@@ -324,6 +293,29 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
     });
     return m;
   }, [catalog.tools]);
+
+  const modalTool = useMemo(
+    () => (modalToolId ? (toolById[modalToolId] ?? null) : null),
+    [modalToolId, toolById]
+  );
+
+  useEffect(() => {
+    if (!modalToolId) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setModalToolId(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [modalToolId]);
+
+  useEffect(() => {
+    if (!modalToolId) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [modalToolId]);
 
   const trendConcepts = useMemo(() => aiTrendConcepts.concepts as TrendConcept[], []);
   const trendTotal = trendConcepts.length;
@@ -354,14 +346,6 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
   ]);
 
   const explorationPoints = value.cardsOpened.length;
-  const uniqueCategoriesVisited = useMemo(() => {
-    const set = new Set<string>();
-    value.cardsOpened.forEach((tid) => {
-      const t = catalog.tools.find((x) => x.toolId === tid);
-      if (t) set.add(t.primaryCategory);
-    });
-    return set.size;
-  }, [value.cardsOpened, catalog.tools]);
 
   const patch = useCallback(
     (partial: Partial<AiExplorationPayload>) => {
@@ -409,13 +393,6 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
     });
   };
 
-  const deploymentLabel = (d: string) => {
-    if (d === "cloud") return "클라우드";
-    if (d === "on_prem") return "온프레미스";
-    if (d === "hybrid") return "하이브리드";
-    return d;
-  };
-
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-6">
@@ -451,9 +428,7 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
           >
             ④ 상황 판단
           </span>
-          <span className="ml-auto text-gray-500">
-            탐색 {explorationPoints}장 · 분류 {uniqueCategoriesVisited}개
-          </span>
+          <span className="ml-auto text-gray-500">탐색 {explorationPoints}장</span>
         </div>
 
         {value.phase === "catalog" && (
@@ -474,212 +449,70 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
                       돼요.
                     </p>
                     <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-                      아래 분류를 눌러 보면 비슷한 도구들이 모여 있어요. 이름만 알고 지나가도 되고, 카드를
-                      펼쳐 보면서 가볍게 탐색해 보세요.
+                      카드를 눌러 상세를 보고, 모달에서 &quot;지금 쓰고 있어요&quot;를 눌러 목록에 담을 수
+                      있어요. 이름만 알고 지나가도 되고, 가볍게 탐색해 보세요.
                     </p>
                   </div>
                 </div>
-                <div className="rounded-2xl border border-gray-100 bg-gray-50/80 px-4 py-3 text-xs text-gray-600 leading-relaxed">
-                  보안 때문에 <span className="font-medium text-gray-800">사내 전용 AI만</span> 쓰는
-                  경우에는{" "}
-                  <span className="font-medium text-violet-800">「사내 서버·전용」</span> 분류만 눌러도 돼요.
-                  그러면 대표 항목이 <span className="font-medium">내가 쓰는 AI</span> 목록에 바로
-                  담깁니다. (다른 분류는 카드에서 &quot;지금 쓰고 있어요&quot;를 눌러 주세요.)
-                </div>
               </header>
 
-              {hubView === "hub" ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {categoriesSorted.map((cat) => {
-                    const Icon = ICON_MAP[cat.icon] ?? MessageCircle;
-                    const n = countByCategory[cat.id] ?? 0;
-                    return (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => {
-                          if (cat.id === "onprem") {
-                            if (!value.toolsUsed.includes(INTERNAL_ONPREM_TOOL_ID)) {
-                              patch({ toolsUsed: [...value.toolsUsed, INTERNAL_ONPREM_TOOL_ID] });
-                            }
-                            openCard(INTERNAL_ONPREM_TOOL_ID);
-                            setActiveCategoryId("onprem");
-                            setHubView("list");
-                            setFlipToolId(null);
-                            return;
-                          }
-                          setActiveCategoryId(cat.id);
-                          setHubView("list");
-                        }}
-                        className="flex flex-col items-start gap-2 rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm hover:border-violet-300 hover:bg-violet-50/40 hover:shadow-md hover:scale-[1.02] transition-all duration-200"
-                      >
-                        <Icon className="h-6 w-6 text-violet-600" aria-hidden />
-                        <span className="text-sm font-semibold text-gray-900 leading-tight">{cat.labelKo}</span>
-                        <span className="text-xs text-gray-500">{n}개 도구</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setHubView("hub");
-                      setActiveCategoryId(null);
-                      setFlipToolId(null);
-                    }}
-                    className="inline-flex items-center gap-1 text-sm font-medium text-violet-700 hover:text-violet-900 transition-colors"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    분류 목록으로
-                  </button>
-                  <h3 className="text-base font-semibold text-gray-800">
-                    {categoriesSorted.find((c) => c.id === activeCategoryId)?.labelKo}
-                  </h3>
-                  <ul className="space-y-4">
-                    {filteredTools.map((tool, idx) => {
-                      const flipped = flipToolId === tool.toolId;
-                      const hq = HQ_LABEL[tool.hqCountryCode] ?? tool.hqCountryCode;
-                      const flagEmoji = countryCodeToFlagEmoji(tool.hqCountryCode);
-                      const used = value.toolsUsed.includes(tool.toolId);
-                      return (
-                        <li
-                          key={tool.toolId}
-                          className={`ai-tool-card-enter rounded-xl border bg-white shadow-sm overflow-hidden transition-shadow duration-200 ${
-                            used ? "border-violet-400 ring-2 ring-violet-200 shadow-md" : "border-gray-200 hover:shadow-md"
-                          }`}
-                          style={{ animationDelay: `${Math.min(idx, 8) * 45}ms` }}
-                        >
-                          <div className="p-4">
-                            <div className="flex gap-3 mb-3">
-                              <ToolLogoSlot
-                                displayName={tool.displayName}
-                                logoPublicPath={tool.logoPublicPath}
-                                toolId={tool.toolId}
-                                size="lg"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span className="font-semibold text-gray-900">{tool.displayName}</span>
-                                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-900">
-                                    <TwemojiIcon icon={flagEmoji} size="1.125rem" className="leading-none" />
-                                    <span className="sr-only">{hq}</span>
-                                    <span aria-hidden className="tracking-tight">
-                                      {hq}
-                                    </span>
-                                  </span>
-                                  {tool.isReferenceOnly && (
-                                    <span
-                                      className="cursor-help border-b border-dotted border-amber-600/70 text-[10px] font-medium text-amber-900"
-                                      title={REFERENCE_ONLY_TITLE}
-                                    >
-                                      참고용
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-xs text-gray-500 mt-0.5">{tool.vendor}</p>
-                                {tool.githubRepo ? (
-                                  <a
-                                    href={tool.githubRepo}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-xs text-gray-600 underline decoration-gray-300 underline-offset-2 hover:text-gray-900"
-                                  >
-                                    GitHub 저장소
-                                  </a>
-                                ) : null}
-                              </div>
-                              <span className="text-[10px] rounded border border-gray-200 px-2 py-0.5 text-gray-600 self-start shrink-0">
-                                {deploymentLabel(tool.deployment)}
-                              </span>
-                            </div>
+              {/* 분류 허브와 동일: 그리드 + 컴팩트 카드(로고·제목·하단 한 줄). 상세는 모달 */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {catalog.tools.map((tool, idx) => {
+                  const used = value.toolsUsed.includes(tool.toolId);
+                  return (
+                    <button
+                      key={tool.toolId}
+                      type="button"
+                      aria-label={`${tool.displayName} 상세 보기`}
+                      onClick={() => {
+                        openCard(tool.toolId);
+                        setModalToolId(tool.toolId);
+                      }}
+                      className={`ai-tool-card-enter relative flex flex-col items-start gap-2 rounded-xl border bg-white p-4 text-left shadow-sm transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 ${
+                        used
+                          ? "border-violet-400 ring-2 ring-violet-200 shadow-md scale-[1.01]"
+                          : "border-gray-200 hover:border-violet-300 hover:bg-violet-50/40 hover:shadow-md hover:scale-[1.02]"
+                      }`}
+                      style={{ animationDelay: `${Math.min(idx, 8) * 45}ms` }}
+                    >
+                      <span className="absolute top-3 right-3 z-[1] max-w-[calc(100%-4rem)] flex justify-end">
+                        <CountryLabel countryCode={tool.hqCountryCode} compact />
+                      </span>
 
-                            {!flipped ? (
-                              <div className="space-y-2">
-                                {tool.cardLines.map((line, i) => (
-                                  <p key={i} className="text-sm text-gray-700 leading-relaxed">
-                                    {line}
-                                  </p>
-                                ))}
-                                <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 pt-3">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      openCard(tool.toolId);
-                                      setFlipToolId(tool.toolId);
-                                    }}
-                                    className="text-xs font-medium text-violet-700 hover:underline transition-colors"
-                                  >
-                                    팁·유의사항 보기
-                                  </button>
-                                  <button
-                                    type="button"
-                                    role="checkbox"
-                                    aria-checked={used}
-                                    onClick={() => {
-                                      openCard(tool.toolId);
-                                      toggleToolUsed(tool.toolId);
-                                    }}
-                                    className={`ml-auto w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
-                                      used
-                                        ? "border-violet-600 bg-violet-600 text-white shadow-lg shadow-violet-600/25 scale-[1.01]"
-                                        : "border-gray-200 bg-white text-gray-800 hover:border-violet-300 hover:bg-violet-50/50"
-                                    }`}
-                                  >
-                                    <span
-                                      className={`flex h-6 w-6 items-center justify-center rounded-md border-2 ${
-                                        used ? "border-white bg-white/20" : "border-gray-300 bg-white"
-                                      }`}
-                                    >
-                                      {used && <Check className="h-4 w-4 text-white" strokeWidth={3} />}
-                                    </span>
-                                    지금 쓰고 있어요
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="rounded-lg bg-violet-50/80 border border-violet-100 p-3 space-y-2 transition-all duration-200">
-                                <p className="text-xs font-semibold text-violet-900">코치 팁</p>
-                                <p className="text-sm text-violet-950">{tool.coachTip}</p>
-                                <p className="text-xs font-semibold text-gray-700 pt-1">흔한 실수</p>
-                                <p className="text-sm text-gray-700">{tool.commonPitfall}</p>
-                                <button
-                                  type="button"
-                                  onClick={() => setFlipToolId(null)}
-                                  className="inline-flex items-center gap-1 text-xs font-medium text-violet-800 mt-1 hover:underline"
-                                >
-                                  <RotateCcw className="w-3.5 h-3.5" />
-                                  앞면으로
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
+                      <ToolLogoSlot
+                        displayName={tool.displayName}
+                        logoPublicPath={tool.logoPublicPath}
+                        toolId={tool.toolId}
+                        size="sm"
+                      />
+
+                      <span className="text-sm font-semibold text-gray-900 leading-tight pr-14 line-clamp-3">
+                        {tool.displayName}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-2 order-2 space-y-3">
               <div className="rounded-xl border border-violet-200 bg-violet-50/50 p-4 shadow-sm">
                 <h3 className="text-sm font-bold text-violet-900 mb-1">내가 쓰는 AI</h3>
                 <p className="text-xs text-violet-800/80 mb-3 leading-relaxed">
-                  골라 둔 도구가 여기 모여요. 위에서부터 고른 순서예요. 사내 전용만 쓰시면 왼쪽에서
-                  「사내 서버·전용」만 눌러도 이 목록에 담겨요.
+                  골라 둔 도구가 여기 모여요. 위에서부터 고른 순서예요. 카드를 열고 모달에서
+                  &quot;지금 쓰고 있어요&quot;를 눌러 담을 수 있어요.
                 </p>
                 <div className="max-h-[min(60vh,420px)] overflow-y-auto space-y-2 pr-1">
                   {value.toolsUsed.length === 0 ? (
                     <p className="text-xs text-gray-500 py-6 text-center rounded-lg border border-dashed border-gray-200 bg-white/80">
-                      아직 선택한 도구가 없습니다. 카드에서 &quot;지금 쓰고 있어요&quot;를 눌러 보세요.
+                      아직 선택한 도구가 없습니다. 카드를 눌러 상세를 연 뒤 &quot;지금 쓰고 있어요&quot;를 눌러
+                      보세요.
                     </p>
                   ) : (
                     value.toolsUsed.map((tid, i) => {
                       const t = toolById[tid];
                       if (!t) return null;
-                      const flagEmoji = countryCodeToFlagEmoji(t.hqCountryCode);
                       return (
                         <div
                           key={`${tid}-${i}`}
@@ -689,10 +522,9 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
                           <ToolLogoSlot displayName={t.displayName} logoPublicPath={t.logoPublicPath} toolId={tid} size="sm" />
                           <div className="min-w-0 flex-1">
                             <p className="text-xs font-semibold text-gray-900 truncate">{t.displayName}</p>
-                            <span className="mt-0.5 inline-flex max-w-full items-center gap-1 text-[11px] font-medium text-gray-800">
-                              <TwemojiIcon icon={flagEmoji} size="0.875rem" className="shrink-0 leading-none" />
-                              <span className="truncate">{HQ_LABEL[t.hqCountryCode] ?? t.hqCountryCode}</span>
-                            </span>
+                            <div className="mt-1">
+                              <CountryLabel countryCode={t.hqCountryCode} compact />
+                            </div>
                           </div>
                           <button
                             type="button"
@@ -1011,6 +843,131 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
         )}
       </div>
 
+      {typeof window !== "undefined" &&
+        modalTool &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="ai-tool-modal-title"
+          >
+            <button
+              type="button"
+              className="absolute inset-0 z-0 bg-black/45 cursor-default"
+              aria-label="닫기"
+              onClick={() => setModalToolId(null)}
+            />
+            <div
+              className="relative z-10 flex h-[min(94dvh,calc(100dvh-1rem))] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl shadow-black/15"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="shrink-0 flex items-start justify-between gap-3 border-b border-gray-100 bg-white px-5 py-4">
+                <div className="flex min-w-0 flex-1 items-start gap-3">
+                  <ToolLogoSlot
+                    displayName={modalTool.displayName}
+                    logoPublicPath={modalTool.logoPublicPath}
+                    toolId={modalTool.toolId}
+                    size="lg"
+                  />
+                      <div className="min-w-0">
+                        <h3 id="ai-tool-modal-title" className="text-lg font-bold text-gray-900 leading-snug">
+                          {modalTool.displayName}
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-0.5">{modalTool.vendor}</p>
+                      </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setModalToolId(null)}
+                  className="shrink-0 rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                  aria-label="모달 닫기"
+                >
+                  <X className="h-5 w-5" strokeWidth={2.5} />
+                </button>
+              </div>
+
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 sm:px-8 py-6 space-y-6 sm:space-y-8">
+                <div>
+                  <CountryLabel countryCode={modalTool.hqCountryCode} />
+                </div>
+
+                <section className="space-y-3">
+                  <h4 className="text-sm font-bold text-gray-900">소개</h4>
+                  <div className="space-y-3 text-base text-gray-800 leading-relaxed">
+                    {modalTool.cardLines.map((line, i) => (
+                      <p key={i}>{line}</p>
+                    ))}
+                  </div>
+                </section>
+
+                {modalTool.focusStrengths ? (
+                  <section className="space-y-2">
+                    <h4 className="text-sm font-bold text-gray-900">특화·강점</h4>
+                    <p className="text-base text-gray-800 leading-relaxed">{modalTool.focusStrengths}</p>
+                  </section>
+                ) : null}
+
+                {modalTool.coachTip ? (
+                  <section className="space-y-2 rounded-xl border border-violet-100 bg-violet-50/60 px-4 py-4">
+                    <h4 className="text-sm font-bold text-violet-900">용어설명</h4>
+                    <p className="text-base text-violet-950 leading-relaxed">{modalTool.coachTip}</p>
+                  </section>
+                ) : null}
+
+                {modalTool.githubRepo ? (
+                  <a
+                    href={modalTool.githubRepo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex text-sm font-medium text-violet-700 hover:underline"
+                  >
+                    GitHub 저장소 열기
+                  </a>
+                ) : null}
+
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2 border-t border-gray-100">
+                  <button
+                    type="button"
+                    role="checkbox"
+                    aria-checked={value.toolsUsed.includes(modalTool.toolId)}
+                    onClick={() => {
+                      openCard(modalTool.toolId);
+                      toggleToolUsed(modalTool.toolId);
+                    }}
+                    className={`inline-flex min-h-[48px] min-w-[220px] items-center justify-center gap-2 rounded-xl border-2 px-5 py-3 text-base font-semibold transition-all duration-200 ${
+                      value.toolsUsed.includes(modalTool.toolId)
+                        ? "border-violet-600 bg-violet-600 text-white shadow-lg shadow-violet-600/25"
+                        : "border-gray-200 bg-white text-gray-800 hover:border-violet-300 hover:bg-violet-50/50"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-7 w-7 items-center justify-center rounded-md border-2 ${
+                        value.toolsUsed.includes(modalTool.toolId)
+                          ? "border-white bg-white/20"
+                          : "border-gray-300 bg-white"
+                      }`}
+                    >
+                      {value.toolsUsed.includes(modalTool.toolId) && (
+                        <Check className="h-4 w-4 text-white" strokeWidth={3} />
+                      )}
+                    </span>
+                    지금 쓰고 있어요
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModalToolId(null)}
+                    className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                  >
+                    닫기
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
       <div className="flex-shrink-0 border-t border-gray-100 bg-white/95 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         {value.phase === "catalog" && (
           <>
@@ -1021,8 +978,8 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
               type="button"
               onClick={() => {
                 setSurveyStep(0);
+                setModalToolId(null);
                 patch({ phase: "trend", trendStepIndex: 0 });
-                setHubView("hub");
               }}
               className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-violet-700 transition-colors"
             >

@@ -263,6 +263,20 @@ const SURVEY_FREE_TEXT_MAX = 200;
 
 type TrendConcept = (typeof aiTrendConcepts.concepts)[number];
 
+/** AI 트렌드 이해도: 10문항만 사용 (JSON 전체 중 선별 순서) */
+const TREND_QUIZ_IDS_ORDER = [
+  "hallucination",
+  "llm_engineering",
+  "rag",
+  "prompt_engineering",
+  "multimodal_ai",
+  "ai_agent",
+  "context_engineering",
+  "fine_tuning",
+  "reasoning_model",
+  "model_context_protocol",
+] as const;
+
 const TREND_LIKERT_OPTIONS: { value: number; label: string }[] = [
   { value: 1, label: "전혀 모른다" },
   { value: 2, label: "들어본 적 있다" },
@@ -282,6 +296,8 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
   const [modalToolId, setModalToolId] = useState<string | null>(null);
   /** 설문: 0=S1 … 3=S5, 한 화면에 한 질문 */
   const [surveyStep, setSurveyStep] = useState(0);
+  /** 트렌드 문항 전환: 다음(답 선택)=오른쪽에서 슬라이드 인, 이전 문항=왼쪽에서 슬라이드 인 */
+  const [trendSlideDir, setTrendSlideDir] = useState<"next" | "prev">("next");
 
   const catalog = aiToolsCatalog as { version: string; tools: CatalogTool[] };
 
@@ -316,7 +332,21 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
     };
   }, [modalToolId]);
 
-  const trendConcepts = useMemo(() => aiTrendConcepts.concepts as TrendConcept[], []);
+  const trendConceptById = useMemo(() => {
+    const m: Record<string, TrendConcept> = {};
+    (aiTrendConcepts.concepts as TrendConcept[]).forEach((c) => {
+      m[c.id] = c;
+    });
+    return m;
+  }, []);
+
+  const trendConcepts = useMemo(
+    () =>
+      TREND_QUIZ_IDS_ORDER.map((id) => trendConceptById[id]).filter(
+        (c): c is TrendConcept => c != null
+      ),
+    [trendConceptById]
+  );
   const trendTotal = trendConcepts.length;
   const trendIdx = trendTotal === 0 ? 0 : Math.min(Math.max(0, value.trendStepIndex), trendTotal - 1);
   const currentTrend = trendConcepts[trendIdx];
@@ -384,10 +414,23 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
     patch({ [field]: [...set] } as Partial<AiExplorationPayload>);
   };
 
-  const setTrendScore = (conceptId: string, score: number) => {
-    patch({
-      trendResponses: { ...value.trendResponses, [conceptId]: score },
-    });
+  /** 선택 즉시 다음 문항(마지막이면 설문 단계)으로 이동 */
+  const selectTrendAndAdvance = (conceptId: string, score: number) => {
+    setTrendSlideDir("next");
+    const nextResponses = { ...value.trendResponses, [conceptId]: score };
+    const isLast = trendIdx >= trendTotal - 1;
+    if (isLast) {
+      setSurveyStep(0);
+      patch({
+        trendResponses: nextResponses,
+        phase: "survey",
+      });
+    } else {
+      patch({
+        trendResponses: nextResponses,
+        trendStepIndex: trendIdx + 1,
+      });
+    }
   };
 
   return (
@@ -541,7 +584,7 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
               </p>
               <h2 className="text-lg font-bold text-gray-900">AI 트렌드 이해도 측정</h2>
               <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                개념을 하나씩만 살펴보고, 지금 나의 이해도에 가장 가까운 항목을 골라 주세요.
+                개념을 하나씩만 살펴보고, 가장 가까운 항목을 고르면 바로 다음 문항으로 넘어가요.
               </p>
               <div className="mt-3 flex gap-1">
                 {Array.from({ length: trendTotal }, (_, i) => (
@@ -555,7 +598,13 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
               </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 xl:gap-16 items-start min-h-0">
+            <div className="overflow-hidden min-h-0">
+              <div
+                key={`trend-q-${trendIdx}-${currentTrend.id}`}
+                className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 xl:gap-16 items-start min-h-0 ${
+                  trendSlideDir === "prev" ? "trend-question-slide-prev" : "trend-question-slide-next"
+                }`}
+              >
               {/* 좌: 개념 카드 + 실무 예시 */}
               <div className="flex flex-col gap-5 min-w-0">
                 <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
@@ -590,7 +639,7 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
               <div className="flex flex-col gap-4 min-w-0 border-t border-gray-100 pt-8 lg:border-t-0 lg:pt-0 lg:border-l lg:border-gray-100 lg:pl-10 xl:pl-14">
                 <div>
                   <p className="text-sm font-semibold text-gray-900 leading-snug">이 개념에 대해 어느 쪽에 가깝나요?</p>
-                  <p className="text-xs text-gray-500 mt-1.5">아래 번호 중 하나를 선택해 주세요.</p>
+                  <p className="text-xs text-gray-500 mt-1.5">항목을 누르면 곧바로 다음 문항으로 이동합니다.</p>
                 </div>
                 <div className="grid gap-2.5">
                   {TREND_LIKERT_OPTIONS.map((opt) => {
@@ -601,7 +650,7 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
                       <button
                         key={opt.value}
                         type="button"
-                        onClick={() => setTrendScore(cid, opt.value)}
+                        onClick={() => selectTrendAndAdvance(cid, opt.value)}
                         className={`w-full text-left rounded-xl border px-4 py-3 text-sm transition-all duration-200 ${
                           active
                             ? "border-violet-500 bg-violet-50 text-violet-950 shadow-sm"
@@ -614,6 +663,7 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
                     );
                   })}
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -947,6 +997,7 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
             <button
               type="button"
               onClick={() => {
+                setTrendSlideDir("next");
                 setSurveyStep(0);
                 setModalToolId(null);
                 patch({ phase: "trend", trendStepIndex: 0 });
@@ -960,54 +1011,21 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
         )}
 
         {value.phase === "trend" && currentTrend && (
-          <>
-            <button
-              type="button"
-              onClick={() => {
-                if (trendIdx <= 0) {
-                  patch({ phase: "catalog" });
-                } else {
-                  patch({ trendStepIndex: trendIdx - 1 });
-                }
-              }}
-              className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              이전
-            </button>
-            {(() => {
-              const cid = currentTrend.id;
-              const answered = typeof value.trendResponses[cid] === "number";
-              const isLast = trendIdx >= trendTotal - 1;
-              return (
-                <button
-                  type="button"
-                  disabled={!answered}
-                  onClick={() => {
-                    if (isLast) {
-                      setSurveyStep(0);
-                      patch({ phase: "survey" });
-                    } else {
-                      patch({ trendStepIndex: trendIdx + 1 });
-                    }
-                  }}
-                  className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-violet-700 ml-auto transition-colors disabled:opacity-40 disabled:pointer-events-none"
-                >
-                  {isLast ? (
-                    <>
-                      다음: AI 활용도 설문
-                      <ChevronRight className="w-4 h-4" />
-                    </>
-                  ) : (
-                    <>
-                      다음 문항
-                      <ChevronRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              );
-            })()}
-          </>
+          <button
+            type="button"
+            onClick={() => {
+              if (trendIdx <= 0) {
+                patch({ phase: "catalog" });
+              } else {
+                setTrendSlideDir("prev");
+                patch({ trendStepIndex: trendIdx - 1 });
+              }
+            }}
+            className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            {trendIdx <= 0 ? "이전 단계" : "이전 문항"}
+          </button>
         )}
 
         {value.phase === "survey" && (
@@ -1016,6 +1034,7 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
               type="button"
               onClick={() => {
                 if (surveyStep <= 0) {
+                  setTrendSlideDir("prev");
                   patch({ phase: "trend", trendStepIndex: Math.max(0, trendTotal - 1) });
                 } else {
                   setSurveyStep((s) => s - 1);

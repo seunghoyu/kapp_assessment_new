@@ -99,3 +99,41 @@ body {
 .ai-tool-card-enter {
   animation: ai-tool-card-enter 0.3s ease-out both;
 }
+
+/* AI 트렌드 이해도: 다음 문항 = 화면 오른쪽에서 슬라이드 인, 이전 문항 = 왼쪽에서 슬라이드 인 */
+@keyframes trend-slide-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes trend-slide-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.trend-question-slide-next {
+  animation: trend-slide-from-right 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.trend-question-slide-prev {
+  animation: trend-slide-from-left 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trend-question-slide-next,
+  .trend-question-slide-prev {
+    animation: none;
+  }
+}

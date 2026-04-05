@@ -30,7 +30,8 @@ import InbasketSimulation from "./InbasketSimulation";
 import type { IndustryNode } from "./industryTypes";
 import IndustrySelectModal from "./IndustrySelectModal";
 import DiagnosisStartStep from "./DiagnosisStartStep";
-import AiExplorationFlow, { defaultAiExploration, type AiExplorationPayload } from "./AiExplorationFlow";
+import { defaultAiExploration, type AiExplorationPayload } from "./AiExplorationFlow";
+import DiagnosisAiExplorationStep from "./DiagnosisAiExplorationStep";
 import ProgressHeader from "@/components/diagnosis/ProgressHeader";
 import DiagnosisInfoInputLeftPanel from "@/components/diagnosis/DiagnosisInfoInputLeftPanel";
 import { ROUTES } from "@/lib/routes";
@@ -48,8 +49,16 @@ const STEPS = [
   { id: 7, title: "결과", short: "결과" },
 ];
 
-/** sessionStorage 진단 상태 스키마 버전 (2: AI 단계 분리 이후, 구버전은 step 6 = 결과) */
-const DIAGNOSIS_FLOW_VERSION = 2;
+/**
+ * sessionStorage 진단 상태 스키마 버전.
+ * - 2: AI 단계(step 6) 분리
+ * - 3: AI 단계에서 상황 판단(시나리오) 제거, 전환 인트로 키 정리
+ * flowVersion 없음 또는 1만: 예전에는 step 6이 결과 → 복원 시 7로 올림 (아래 fv < 2 분기)
+ */
+const DIAGNOSIS_FLOW_VERSION = 3;
+
+/** AI 단계 도입 이전 스키마 (step 6 = 결과 화면) */
+const FLOW_VERSION_BEFORE_AI_STEP = 2;
 
 /** 단계별 상세 로직 (KAPP_DIAGNOSIS_QUESTION_LOGIC + KAPP_DIAGNOSIS_DATA_REFERENCE + kapp_origin 동일) */
 const STEP_DETAILS: Record<number, { title: string; what: string; criteria: string; logic: string[] }> = {
@@ -100,21 +109,24 @@ const STEP_DETAILS: Record<number, { title: string; what: string; criteria: stri
     criteria: "직무·산업에 맞는 인바스켓 문항 목록에서 시뮬레이션을 완료한다.",
     logic: [
       "기록: 문항별 완료는 `answers.etray`에 저장.",
-      "완료 후 다음 단계로 이동하여 산업별 AI 시나리오를 푼다.",
+      "완료 후 다음 단계로 이동하여 AI 활용 탐색(도구·트렌드·설문)을 진행한다.",
     ],
   },
   6: {
     title: "AI 활용 탐색",
-    what: "산업별 AI 업무 시나리오(객관식)로 활용 방식을 선택한다.",
-    criteria: "입력 산업에 따라 `aiWorkflowByIndustry.json` 시나리오 1개가 로드된다.",
-    logic: ["선택·해설은 `answers.ai`에 저장."],
+    what: "AI 도구 카탈로그 탐색, 트렌드 이해도, 실무 활용 설문으로 역량 진단과 학습 힌트를 함께 수집한다.",
+    criteria: "`AiExplorationFlow`: ① 도구 탐색 → ② AI 트렌드 이해도 → ③ AI 활용도 설문 후 결과 단계로 이어진다.",
+    logic: [
+      "기록: `answers.aiExploration`(phase, toolsUsed, trendResponses, 설문 필드 등). 레거시 `answers.ai`는 사용하지 않는다.",
+      "최초 진입 시 전환 인트로(`DiagnosisAiExplorationStep` → `AiExplorationIntro`, sessionStorage `kapp_diagnosis_ai_intro_v3`).",
+    ],
   },
   7: {
     title: "진단 결과",
     what: "영역별·종합 점수, 지식 수준, 강점/개선 영역 표시. 결과 해석·추천에 진단 목표 활용.",
     criteria: "결과 해석·추천 시 산업/직무/직급/연차/진단 목표 모두 참고.",
     logic: [
-      "포함: 입력 정보, 영역별 점수, 문항별 답, 인바스켓 기록, AI 탐색(`answers.aiExploration`, `answers.ai`).",
+      "포함: 입력 정보, 영역별 점수, 문항별 답, 인바스켓 기록, AI 탐색(`answers.aiExploration`).",
       "저장: 한 번의 진단을 한 덩어리로 정규화 저장.",
     ],
   },
@@ -348,7 +360,7 @@ export default function DiagnosisPage() {
     if (!saved || saved.step === undefined) return;
     let nextStep = saved.step;
     const fv = saved.flowVersion ?? 1;
-    if (fv < DIAGNOSIS_FLOW_VERSION && nextStep === 6) {
+    if (fv < FLOW_VERSION_BEFORE_AI_STEP && nextStep === 6) {
       nextStep = 7;
     }
     if (saved.step === 5 && saved.inbasketSelectedId === "ai-workflow") {
@@ -373,16 +385,23 @@ export default function DiagnosisPage() {
     if (saved.inbasketSelectedId !== undefined) setInbasketSelectedId(saved.inbasketSelectedId);
     if (saved.answers) {
       const merged = { ...initialAnswers, ...saved.answers };
+      const defaults = defaultAiExploration();
       if (!merged.aiExploration) {
-        merged.aiExploration = defaultAiExploration();
-        if (typeof merged.ai === "number" && merged.ai >= 0) {
-          merged.aiExploration.scenarioChoice = merged.ai;
-          merged.aiExploration.phase = "scenario";
-        }
+        merged.aiExploration = defaults;
       } else {
-        if (!merged.aiExploration.trendResponses) merged.aiExploration.trendResponses = {};
-        if (typeof merged.aiExploration.trendStepIndex !== "number") merged.aiExploration.trendStepIndex = 0;
-        if (typeof merged.aiExploration.surveyFreeText !== "string") merged.aiExploration.surveyFreeText = "";
+        const raw = merged.aiExploration as AiExplorationPayload & {
+          scenarioChoice?: number | null;
+          phase?: string;
+        };
+        const { scenarioChoice: _legacyScenario, ...withoutScenario } = raw;
+        let ae: AiExplorationPayload = { ...defaults, ...withoutScenario };
+        if ((ae.phase as string) === "scenario") {
+          ae = { ...ae, phase: "survey" };
+        }
+        if (!ae.trendResponses) ae.trendResponses = {};
+        if (typeof ae.trendStepIndex !== "number") ae.trendStepIndex = 0;
+        if (typeof ae.surveyFreeText !== "string") ae.surveyFreeText = "";
+        merged.aiExploration = ae;
       }
       setAnswers(merged);
     }
@@ -1230,23 +1249,20 @@ export default function DiagnosisPage() {
 
           {/* 6: AI 활용 탐색 — 기획서 §4.11 (카탈로그·설문·시나리오), 구 aiWorkflowByIndustry 미사용 */}
           {step === 6 && STEP_DETAILS[6] && (
-            <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative">
-              <AiExplorationFlow
-                industry={form.industry}
-                value={answers.aiExploration}
-                onChange={(payload) =>
-                  setAnswers((a) => ({
-                    ...a,
-                    aiExploration: payload,
-                    ai: payload.scenarioChoice,
-                  }))
-                }
-                onRequestResult={() => {
-                  setStepTransitionDir("right");
-                  setAnalysisLoading(true);
-                }}
-              />
-            </div>
+            <DiagnosisAiExplorationStep
+              value={answers.aiExploration}
+              onChange={(payload) =>
+                setAnswers((a) => ({
+                  ...a,
+                  aiExploration: payload,
+                  ai: null,
+                }))
+              }
+              onRequestResult={() => {
+                setStepTransitionDir("right");
+                setAnalysisLoading(true);
+              }}
+            />
           )}
 
           {/* 7: 결과 — 결과 확인하기 버튼만 표시 */}

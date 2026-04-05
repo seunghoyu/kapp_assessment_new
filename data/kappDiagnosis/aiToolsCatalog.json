@@ -1162,7 +1162,7 @@
       ],
       "coachTip": "허용 데이터 범위·보존 기간을 팀에서 문서로 정해 두면 프롬프트 작성이 일관됩니다.",
       "commonPitfall": "",
-      "logoPublicPath": "/kapp/ai-tools-logos/internal_llm_placeholder.webp",
+      "logoPublicPath": null,
       "isReferenceOnly": false,
       "airGapFriendly": true,
       "focusStrengths": "외부 전송 없이 사내 규정·보안에 맞춘 전용 배포에 특화합니다(성능은 구축에 따라 다름)."

@@ -6,7 +6,6 @@ import { Sparkles, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import TwemojiIcon from "@/components/common/TwemojiIcon";
 import { countryCodeToFlagEmoji } from "@/lib/countryFlagEmoji";
 import aiToolsCatalog from "@/data/kappDiagnosis/aiToolsCatalog.json";
-import aiExplorationScenarios from "@/data/kappDiagnosis/aiExplorationScenarios.json";
 import aiTrendConcepts from "@/data/kappDiagnosis/aiTrendConcepts.json";
 
 /** `aiTrendConcepts` JSON의 `**강조**` 마크다운을 굵게 렌더링 (내부에 `*` 없음 가정) */
@@ -24,7 +23,7 @@ function renderTrendTextWithBold(text: string, strongClassName: string): ReactNo
   });
 }
 
-export type AiExplorationPhase = "catalog" | "trend" | "survey" | "scenario";
+export type AiExplorationPhase = "catalog" | "trend" | "survey";
 
 export type AiExplorationPayload = {
   phase: AiExplorationPhase;
@@ -39,7 +38,6 @@ export type AiExplorationPayload = {
   s5OrgSupport: string | null;
   /** AI 활용도 설문: 추가 의견(선택, S5 화면 하단) */
   surveyFreeText: string;
-  scenarioChoice: number | null;
   cardsOpened: string[];
 };
 
@@ -54,7 +52,6 @@ export function defaultAiExploration(): AiExplorationPayload {
     s4Learning: [],
     s5OrgSupport: null,
     surveyFreeText: "",
-    scenarioChoice: null,
     cardsOpened: [],
   };
 }
@@ -138,12 +135,6 @@ function CountryLabel({
   );
 }
 
-const INDUSTRY_KEYS = ["IT", "금융", "의료", "마케팅/광고", "기타"] as const;
-
-function resolveIndustryKey(industry: string): string {
-  return INDUSTRY_KEYS.includes(industry as (typeof INDUSTRY_KEYS)[number]) ? industry : "기타";
-}
-
 function initialsFromName(name: string): string {
   const s = name.replace(/[()]/g, " ").trim();
   const parts = s.split(/\s+/).filter(Boolean);
@@ -152,6 +143,10 @@ function initialsFromName(name: string): string {
 }
 
 const LOGO_PUBLIC_DIR = "/kapp/ai-tools-logos";
+
+/** WebP 대신 Twemoji로 보안 아이콘 표시 (가명·폐쇄망 항목). */
+const INTERNAL_LLM_TOOL_ID = "internal_llm_placeholder";
+const INTERNAL_LLM_SECURITY_EMOJI = "🔒";
 
 /** 로고는 WebP만 사용. JSON에 png 등으로 적혀 있어도 동일 베이스명 .webp로 정규화. */
 function logoWebpSrc(logoPublicPath: string | null | undefined, toolId?: string): string | null {
@@ -186,6 +181,19 @@ function ToolLogoSlot({
 
   const box = size === "lg" ? "h-16 w-16 min-h-16 min-w-16" : "h-12 w-12 min-h-12 min-w-12";
   const textSize = size === "lg" ? "text-base" : "text-sm";
+
+  if (toolId === INTERNAL_LLM_TOOL_ID) {
+    const emojiSize = size === "lg" ? "2.25rem" : "1.625rem";
+    return (
+      <div
+        className={`${box} rounded-lg bg-violet-50/90 border border-violet-200/80 flex items-center justify-center overflow-hidden shrink-0`}
+        role="img"
+        aria-label={`${displayName} · 보안·폐쇄망`}
+      >
+        <TwemojiIcon icon={INTERNAL_LLM_SECURITY_EMOJI} size={emojiSize} className="shrink-0 leading-none" />
+      </div>
+    );
+  }
 
   const showImg = Boolean(src) && !imgFailed;
 
@@ -264,35 +272,18 @@ const TREND_LIKERT_OPTIONS: { value: number; label: string }[] = [
 ];
 
 type Props = {
-  industry: string;
   value: AiExplorationPayload;
   onChange: (next: AiExplorationPayload) => void;
   onRequestResult: () => void;
 };
 
-export default function AiExplorationFlow({ industry, value, onChange, onRequestResult }: Props) {
+export default function AiExplorationFlow({ value, onChange, onRequestResult }: Props) {
   /** 상세 모달에 표시할 도구 id */
   const [modalToolId, setModalToolId] = useState<string | null>(null);
   /** 설문: 0=S1 … 3=S5, 한 화면에 한 질문 */
   const [surveyStep, setSurveyStep] = useState(0);
 
   const catalog = aiToolsCatalog as { version: string; tools: CatalogTool[] };
-  const scenarios = aiExplorationScenarios as {
-    byIndustry: Record<
-      string,
-      {
-        id: string;
-        industry: string;
-        title: string;
-        situation: string;
-        options: { id: string; label: string }[];
-        referenceNote?: string;
-      }
-    >;
-  };
-
-  const industryKey = resolveIndustryKey(industry);
-  const scenario = scenarios.byIndustry[industryKey] ?? scenarios.byIndustry["기타"];
 
   const toolById = useMemo(() => {
     const m: Record<string, CatalogTool> = {};
@@ -393,8 +384,6 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
     patch({ [field]: [...set] } as Partial<AiExplorationPayload>);
   };
 
-  const setPhase = (phase: AiExplorationPhase) => patch({ phase });
-
   const setTrendScore = (conceptId: string, score: number) => {
     patch({
       trendResponses: { ...value.trendResponses, [conceptId]: score },
@@ -428,14 +417,6 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
           >
             ③ AI 활용도 설문
           </span>
-          <ChevronRight className="w-3.5 h-3.5 text-gray-400" aria-hidden />
-          <span
-            className={`rounded-full px-2.5 py-1 font-medium transition-colors ${
-              value.phase === "scenario" ? "bg-violet-600 text-white" : "bg-gray-100 text-gray-600"
-            }`}
-          >
-            ④ 상황 판단
-          </span>
           <span className="ml-auto text-gray-500">탐색 {explorationPoints}장</span>
         </div>
 
@@ -449,16 +430,17 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
                   </span>
                   <div>
                     <h2 className="text-lg font-bold text-gray-900 leading-snug">
-                      내가 쓰는 AI를 골라 볼까요?
+                      어떤 AI들이 있는지, 같이 둘러볼까요?
                     </h2>
                     <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">
-                      회사에서만 쓰는지, 사이드 프로젝트인지, 개인으로 쓰는지는 가리지 않아요.{" "}
-                      <span className="font-medium text-gray-800">지금 실제로 쓰는 AI</span>라면 골라 주시면
-                      돼요.
+                      카드를 눌러 설명을 읽다 보면 &quot;아, 이런 AI도 있구나&quot;, &quot;이건 이런 일에
+                      쓰이는구나&quot;가 하나씩 잡혀요. 그러다 &quot;우리 업무에도 이런 걸 써 볼 수
+                      있겠다&quot; 같은 생각이 드는지도 천천히 확인해 보세요.
                     </p>
                     <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-                      카드를 눌러 상세를 보고, 모달에서 &quot;지금 쓰고 있어요&quot;를 눌러 목록에 담을 수
-                      있어요. 이름만 알고 지나가도 되고, 가볍게 탐색해 보세요.
+                      회사·개인 어디서 쓰는지는 가리지 않아요.{" "}
+                      <span className="font-medium text-gray-700">지금 쓰는 AI</span>가 있으면 모달에서
+                      &quot;지금 쓰고 있어요&quot;를 눌러 오른쪽 목록에 넣으면 됩니다. 구경만 하셔도 괜찮아요.
                     </p>
                   </div>
                 </div>
@@ -508,14 +490,13 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
               <div className="rounded-xl border border-violet-200 bg-violet-50/50 p-4 shadow-sm">
                 <h3 className="text-sm font-bold text-violet-900 mb-1">내가 쓰는 AI</h3>
                 <p className="text-xs text-violet-800/80 mb-3 leading-relaxed">
-                  골라 둔 도구가 여기 모여요. 위에서부터 고른 순서예요. 카드를 열고 모달에서
-                  &quot;지금 쓰고 있어요&quot;를 눌러 담을 수 있어요.
+                  실제로 쓰는 도구만 여기 모아 두면 돼요. 위에서부터 고른 순서예요. 카드 → 모달 →
+                  &quot;지금 쓰고 있어요&quot;로 넣을 수 있어요.
                 </p>
                 <div className="max-h-[min(60vh,420px)] overflow-y-auto space-y-2 pr-1">
                   {value.toolsUsed.length === 0 ? (
-                    <p className="text-xs text-gray-500 py-6 text-center rounded-lg border border-dashed border-gray-200 bg-white/80">
-                      아직 선택한 도구가 없습니다. 카드를 눌러 상세를 연 뒤 &quot;지금 쓰고 있어요&quot;를 눌러
-                      보세요.
+                    <p className="text-xs text-gray-500 py-6 text-center rounded-lg border border-dashed border-gray-200 bg-white/80 leading-relaxed px-2">
+                      아직 없어요. 마음에 드는 카드를 열고 &quot;지금 쓰고 있어요&quot;를 눌러 보세요.
                     </p>
                   ) : (
                     value.toolsUsed.map((tid, i) => {
@@ -810,45 +791,6 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
           </div>
         )}
 
-        {value.phase === "scenario" && (
-          <div className="max-w-[900px] mx-auto space-y-6">
-            <header>
-              <h2 className="text-lg font-bold text-gray-900">상황 판단 · {scenario.industry}</h2>
-              <p className="text-sm text-gray-500">입력하신 산업({industryKey})에 맞춘 짧은 시나리오입니다.</p>
-            </header>
-            <div className="rounded-xl border border-violet-100 bg-gradient-to-br from-violet-50/90 to-white p-5 shadow-sm transition-shadow duration-200 hover:shadow-md">
-              <h3 className="text-base font-semibold text-gray-900 mb-3">{scenario.title}</h3>
-              <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{scenario.situation}</p>
-            </div>
-            <div className="space-y-3">
-              {scenario.options.map((opt, idx) => {
-                const selected = value.scenarioChoice === idx;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => {
-                      patch({ scenarioChoice: idx });
-                    }}
-                    className={`w-full text-left rounded-xl border p-4 transition-all duration-200 ${
-                      selected
-                        ? "border-violet-500 bg-violet-50 shadow-md scale-[1.01]"
-                        : "border-gray-200 hover:border-violet-300 bg-white hover:shadow-sm"
-                    }`}
-                  >
-                    <span className="text-sm font-medium text-gray-900 leading-snug">{opt.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-            {value.scenarioChoice !== null && scenario.referenceNote && (
-              <div className="rounded-lg border border-amber-200 bg-amber-50/90 p-4 text-sm text-amber-950">
-                <span className="font-semibold">참고: </span>
-                {scenario.referenceNote}
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {typeof window !== "undefined" &&
@@ -999,8 +941,8 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
       <div className="flex-shrink-0 border-t border-gray-100 bg-white/95 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         {value.phase === "catalog" && (
           <>
-            <p className="text-xs text-gray-500 max-w-md leading-relaxed">
-              카드를 열어보면 탐색 기록이 쌓여요. 준비되면 AI 트렌드 이해도 측정으로 넘어가 주세요.
+            <p className="text-xs text-gray-500 max-w-lg leading-relaxed">
+              카드를 열어볼 때마다 탐색 기록이 쌓여요. 충분히 둘러보셨다면 다음으로 넘어가 주세요.
             </p>
             <button
               type="button"
@@ -1098,38 +1040,13 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
               <button
                 type="button"
                 disabled={!surveyCanProceed}
-                onClick={() => setPhase("scenario")}
-                className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-violet-700 ml-auto transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                onClick={onRequestResult}
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-5 py-2.5 text-sm font-semibold shadow-lg shadow-blue-600/20 hover:bg-blue-700 ml-auto transition-colors disabled:opacity-40 disabled:pointer-events-none"
               >
-                다음: 상황 판단
+                분석하고 결과 보기
                 <ChevronRight className="w-4 h-4" />
               </button>
             )}
-          </>
-        )}
-
-        {value.phase === "scenario" && (
-          <>
-            <button
-              type="button"
-              onClick={() => {
-                setSurveyStep(SURVEY_STEP_COUNT - 1);
-                setPhase("survey");
-              }}
-              className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              이전
-            </button>
-            <button
-              type="button"
-              disabled={value.scenarioChoice === null}
-              onClick={onRequestResult}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-5 py-2.5 text-sm font-semibold shadow-lg shadow-blue-600/20 hover:bg-blue-700 disabled:opacity-40 disabled:pointer-events-none ml-auto transition-colors"
-            >
-              결과 보기
-              <ChevronRight className="w-4 h-4" />
-            </button>
           </>
         )}
       </div>

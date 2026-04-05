@@ -135,12 +135,14 @@
   - **일반 시뮬 (`InbasketSimulation` + `SimulationContent`)**
     - `question.category` → `inbasket-simulations/index.tsx`의 `CATEGORY_COMPONENTS`(16종 + `PlaceholderSimulation`)
     - **완료:** `answers.etray[qId] = "completed"` 후 `inbasketView=list`, `inbasketSelectedId=null`
-  - **AI 시뮬:** `page.tsx` 인라인 — 시나리오 `task`, 라디오 4지선다, `answers.ai = 옵션 인덱스`, 선택 후 `explanation` 표시
-  - **진행률:** `total = questions.length + (aiWorkflow ? 1 : 0)` (테스트 기준 최대 **49**). `completed` = `etray`에 비어 있지 않은 문항 수 + (`answers.ai != null` ? 1 : 0).
+  - **AI 시뮬:** 인바스켓 목록의 **AI 행(`ai-workflow`)** 은 구현에 따라 생략될 수 있음. AI 본문은 **step 6 `AiExplorationFlow`** 에서 진행한다.
+  - **진행률:** `total`·`completed`는 `InbasketList` 구현 기준(문항 완료 수 등). `answers.ai`는 레거시 필드(미사용).
   - **네이밍 주의:** `answers.etray` 키는 **인바스켓 문항 id**이며, 값은 완료 문자열(현행 `"completed"`). E-tray JSON 파일명과 혼동되기 쉬움(레거시).
-- step 6: 결과
+- step 6: AI 활용 탐색
+  - `AiExplorationIntro` → `AiExplorationFlow` → 설문 마지막에서 **분석 로딩** → step 7
+- step 7: 결과
   - **`결과 확인하기`** → `/app/dashboard`
-  - **`종합분석 리포트 다운로드`** → 새 창 `/report/preview?payload=...` (step 6에 **두 버튼 모두 존재**, 코드 확인)
+  - **`종합분석 리포트 다운로드`** → 새 창 `/report/preview?payload=...`
 
 ### [Page] `/app/dashboard` : 소비자 마이 대시보드
 - 입력: 탭 전환(내 역량/성장 로드맵), 뷰 전환(차트/표/레이더), 산업군/직무 옵션 변경(로드맵)
@@ -220,7 +222,7 @@
       - `InbasketSimulation` (인바스켓 문항 id)
         - SimulationContent
           - `CATEGORY_COMPONENTS[question.category]` → Email/Messenger/Report/…/Production
-    - (step6) **page.tsx 인라인** AI 워크플로우 라디오 UI (`answers.ai`), 완료 후 분석 로딩 → step7
+    - (step6) `DiagnosisAiExplorationStep` — `AiExplorationIntro`(최초 진입 브리핑, sessionStorage `kapp_diagnosis_ai_intro_v3`) → `AiExplorationFlow`(`answers.aiExploration`): ① 도구 탐색 → ② AI 트렌드 이해도 → ③ AI 활용도 설문 → `onRequestResult`로 분석 로딩 → step7
     - (step7) ResultActions
       - DashboardButton -> `/app/dashboard`
       - ReportPreviewButton -> `/report/preview?payload=...`
@@ -264,14 +266,15 @@
 - state 생성 위치: `DiagnosisPage` (`app/app/diagnosis/page.tsx`)
 - 저장/복원 방식
   - 저장: `useEffect`에서 `flowVersion`, `step`, `infoInputStep`, `form`, `selectedEtrayId`, `inbasketView`, `inbasketSelectedId`, `answers` 등 변화 시 `sessionStorage("kapp_diagnosis_state")`
-  - 복원: 마운트 시 `loadPersistedState()` (구버전 `flowVersion` 없음·`step===6`이면 결과 단계로 간주해 step7로 마이그레이션)
-- 디지털 인바스켓 전용 필드
-  - `inbasketView`, `inbasketSelectedId`, `answers.etray`, `answers.ai`(step6에서 확정)
+  - 복원: 마운트 시 `loadPersistedState()` (구버전 `flowVersion` 1 이하·`step===6`이면 예전 스키마상 결과 단계로 간주해 step7로 마이그레이션; `flowVersion` 3에서 `aiExploration.phase==="scenario"` 레거시는 `survey`로 정규화)
+- 디지털 인바스켓·AI 단계 필드
+  - `inbasketView`, `inbasketSelectedId`, `answers.etray`, `answers.aiExploration`(step6 본문)
+  - `answers.ai`: 레거시 필드(현재 미사용, `null` 유지)
   - `selectedEtrayId`: `etrayByIndustry`와 동기화용(현재 시뮬에 미사용)
 - props 전달 방식
   - `InbasketList`: `questions`, `aiWorkflow?`, `onStart(id)`, `completedCount`, `totalCount`, `onNextToResult`
   - `inbasketSelectedId`가 일반 문항 id면 `selectedInbasketQuestion = questions.find(...)` 후 `InbasketSimulation`에 `question` 전달
-  - 완료 콜백: 인바스켓 문항은 `answers.etray[qId]="completed"`; AI 선택은 step6에서 `answers.ai` 저장
+  - 완료 콜백: 인바스켓 문항은 `answers.etray[qId]="completed"`; AI 단계는 `answers.aiExploration` 갱신 후 설문 완료 시 `onRequestResult`
 
 ### 소비자: 대시보드 반영
 - `ConsumerDashboardPage`는 `sessionStorage("kapp_diagnosis_state")`에서 `form.industry`를 읽어 로드맵 시뮬레이터 기본값을 설정
@@ -343,8 +346,8 @@
 ### 1) 소비자: 진단(전체) -> 대시보드
 User -> `GET /` -> Click `KAPP 진단 시작하기` -> `GET /app/diagnosis` (변경: 게이트에서 직행)
 User -> (선택) `GET /login` 직접 접근 -> Submit 로그인 -> `router.push(/app/diagnosis)` (변경)
-User -> `GET /app/diagnosis` (step 0~6 진행)
-User -> step6 Click `결과 확인하기` -> `router.push(/app/dashboard)`
+User -> `GET /app/diagnosis` (step 0~7 진행)
+User -> step7 Click `결과 확인하기` -> `router.push(/app/dashboard)`
 UI -> Dashboard 탭/차트/로드맵 렌더링
 
 ### 2) 소비자: step5 디지털 인바스켓 진행
@@ -357,19 +360,14 @@ User -> 시뮬 UI 조작
 User -> `완료하고 다음 단계로`
 DiagnosisPage -> `answers.etray[qId]="completed"`, `inbasketView="list"`, `inbasketSelectedId=null`
 
-**AI 워크플로우 (`ai-workflow`)**
-User -> AI 행 `진행하기` 또는 AI 상세 모달에서 진행
-DiagnosisPage -> 동일하게 `simulation` 뷰, **인라인** 라디오 UI (`answers.ai`)
-User -> 옵션 선택(및 필요 시 하단 완료 흐름) -> 목록 복귀
-
 **step 5 탈출(정식/테스트)**
-User -> 하단 네비 `다음` / `완료하고 결과 보기` -> 로딩 -> step 6
+User -> 하단 네비 `다음` / `완료하고 결과 보기` -> step 6 (AI 활용 탐색)
 
 (테스트 편의)
 User -> 테스트 환경 펼침 후 `다음 →` -> `onNextToResult`/`goNext` -> step 6 (미완료 허용)
 
 ### 3) 소비자: 리포트 PDF 다운로드
-User -> step6 Click `종합분석 리포트 다운로드`
+User -> step7 Click `종합분석 리포트 다운로드`
 UI -> `window.open(/report/preview?payload=...)`
 ReportPreviewPage -> server buildReportModel
 ReportPreviewClient -> ReportDocument 렌더링 + PDF 링크 노출

@@ -1,7 +1,7 @@
 # AI 활용 탐색 — 문항·경험 개편 제안서
 
 > **문서 목적:** (구) **AI 워크플로우** 영역을 **디지털 인바스켓과 분리**한 독립 단계 **「AI 활용 탐색」**으로 두고, 평가 중심에서 **정보 제공 + 수요·학습 데이터 수집**으로 확장할 때의 **마케팅 / 기획 / 개발** 방향을 정리한다.  
-> **데이터 근거:** 진단 `step 6`은 **`aiToolsCatalog.json`(S0 카드) + `aiExplorationScenarios.json`(S3 시나리오)** 를 사용한다. 레거시 `aiWorkflowByIndustry.json`은 **진단 UI에서 제거**되었다(인바스켓 `step 5`의 `ai-workflow` 행·시뮬 내장 UI도 제거됨).
+> **데이터 근거:** 진단 `step 6`은 **`aiToolsCatalog.json`(도구 카드) + `aiTrendConcepts.json`(트렌드) + 설문 필드**를 사용한다. `aiExplorationScenarios.json`은 **현재 진단 UI에서 사용하지 않음**(기획 보관용). 레거시 `aiWorkflowByIndustry.json`은 **진단 UI에서 제거**되었다(인바스켓 `step 5`의 `ai-workflow` 행·시뮬 내장 UI도 제거됨).
 
 ---
 
@@ -18,14 +18,14 @@
 | 순서 | 단계명 (UI) | 역할 |
 |------|-------------|------|
 | 5 | 디지털 인바스켓 | 시뮬 문항만 (자동화 행 **없음**) |
-| **6** | **AI 활용 탐색** | 산업별 시나리오 객관식 + (추후) 카드·설문 |
+| **6** | **AI 활용 탐색** | 도구 카탈로그 · 트렌드 이해도 · 활용도 설문(전환 인트로 포함) |
 | 7 | 결과 | 기존 결과 화면 (`step` 번호 +1) |
 
 ### 0.3 이 문서를 보고 실행할 때의 권장 순서 (팀 워크플로우)
 
 1. **본 MD 전체를 읽고** 구조 변경(§0)·로드맵(§0.4)에 동의한다.  
-2. **기획·디자인:** `AI 활용 탐색` 화면의 **와이어프레임** — 상단 요약 → (데이터 우선) 시나리오 본문 → 선택지 → 해설 → (추후) 카드/설문 영역.  
-3. **데이터:** **`aiToolsCatalog.json` · `aiExplorationScenarios.json`** 로 §4.11 반영(구 `aiWorkflowByIndustry.json`은 진단 미사용).  
+2. **기획·디자인:** `AI 활용 탐색` 화면의 **와이어프레임** — 전환 인트로 → 도구 탐색 → 트렌드 → 설문 → 결과.  
+3. **데이터:** **`aiToolsCatalog.json` · `aiTrendConcepts.json`** 및 설문 상태로 §4.11 반영(`aiExplorationScenarios.json`은 진단 미사용, 구 `aiWorkflowByIndustry.json`은 진단 미사용).  
 4. **개발:** 아래 §5·§7 및 **§0.4** 절차대로 **코드에서 인바스켓과 분리**한다.  
 5. **프론트 톤:** 기존 진단 화면과 동일하게 **흰 카드·파랑/보라 포인트·ProgressHeader** 리듬을 맞춘다.
 
@@ -683,7 +683,7 @@ steps:
 
 ### 5.5 JSON 스키마 (기존 + 확장)
 
-- **`aiToolsCatalog.json` · `aiExplorationScenarios.json`:** **step 6** 전용. `answers.aiExploration`에 S0~S5·phase 저장, `answers.ai`는 시나리오 선택 인덱스와 동기화.  
+- **`aiToolsCatalog.json` · `aiTrendConcepts.json` + 설문:** **step 6** 전용. `answers.aiExploration`에 phase·도구·트렌드·설문 필드 저장. `answers.ai`는 레거시(현재 미사용).  
 - 레거시 **`aiWorkflowByIndustry.json`:** 진단에서 **로드하지 않음** (보관만).  
 - 확장: 모드 A/B/C·`contentMode` 등은 후속.
 
@@ -722,8 +722,8 @@ steps:
 
 | 항목 | 경로 / 비고 |
 |------|-------------|
-| AI 탐색 데이터 | `data/kappDiagnosis/aiToolsCatalog.json`, `data/kappDiagnosis/aiExplorationScenarios.json` |
-| 진단 오케스트레이션 | `app/app/diagnosis/page.tsx` — **step 6 = AI 활용 탐색** (`AiExplorationFlow.tsx`), step 7 = 결과 |
+| AI 탐색 데이터 | `data/kappDiagnosis/aiToolsCatalog.json`, `data/kappDiagnosis/aiTrendConcepts.json` (+ `aiExplorationScenarios.json`은 미연동 보관) |
+| 진단 오케스트레이션 | `app/app/diagnosis/page.tsx` — **step 6 = AI 활용 탐색** (`DiagnosisAiExplorationStep.tsx` → `AiExplorationIntro` + `AiExplorationFlow`), step 7 = 결과 |
 | 인바스켓 목록 | `app/app/diagnosis/InbasketList.tsx` — **AI 행 비표시** (optional `aiWorkflow`) |
 | 진행 헤더 | `components/diagnosis/ProgressHeader.tsx` — **7단계** 반영 |
 | 시작 화면 문구 | `app/app/diagnosis/DiagnosisStartStep.tsx` |

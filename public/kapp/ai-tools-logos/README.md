@@ -4,7 +4,7 @@
 
 ## 규칙
 
-- **파일명:** `toolId.webp` (화면은 **WebP만** 로드). `logoPublicPath`가 비어 있으면 `/kapp/ai-tools-logos/{toolId}.webp`를 씁니다.
+- **파일명:** `toolId.webp` (화면은 **WebP만** 로드). `logoPublicPath`가 비어 있으면 `/kapp/ai-tools-logos/{toolId}.webp`를 씁니다. 예외: `internal_llm_placeholder`는 WebP 없이 **Twemoji 🔒**(보안) 아이콘을 씁니다.
 - **JSON:** `data/kappDiagnosis/aiToolsCatalog.json`의 `logoPublicPath` — 예: `/kapp/ai-tools-logos/chatgpt_team.webp`
 - **권장:** 정사각형, 투명 배경, 가로세로 **최소 128px** (UI에서는 그리드 약 48px·모달 약 64px)
 - 저작권·상표는 각 벤더 정책을 따릅니다. 파일이 없으면 카드에는 **이니셜 플레이스홀더**가 나옵니다.
@@ -46,7 +46,7 @@
 | Microsoft Copilot | `microsoft_copilot` | `microsoft_copilot.webp` |
 | Zapier | `zapier` | `zapier.webp` |
 | n8n | `n8n` | `n8n.webp` |
-| 사내 전용 LLM | `internal_llm_placeholder` | `internal_llm_placeholder.webp` |
+| 사내 전용 LLM | `internal_llm_placeholder` | `— (Twemoji 🔒, `AiExplorationFlow`)` |
 
 ---
 *도구가 추가·변경되면 `node scripts/gen-logo-readme-table.cjs`로 이 README를 다시 생성할 수 있습니다.*

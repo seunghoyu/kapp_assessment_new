@@ -23,7 +23,7 @@ function getProgressDescription(step: number): string {
   if (step >= 1 && step <= 2) return "기초 정보를 분석하고 있어요";
   if (step >= 3 && step <= 4) return "핵심 역량을 분석하고 있어요";
   if (step === 5) return "실전 역량을 분석 중입니다";
-  if (step === 6) return "AI 활용 방식을 탐색하고 있어요";
+  if (step === 6) return "AI 도구·트렌드·활용 패턴을 점검하고 학습 힌트를 모으고 있어요";
   return "최종 결과를 확인하세요";
 }
 

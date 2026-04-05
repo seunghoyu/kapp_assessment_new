@@ -40,7 +40,6 @@ const KEEP = new Set([
   "chatty_kr",
   "lg_exaone",
   "liner_ai",
-  "samsung_gauss",
   "microsoft_copilot",
   "zapier",
   "n8n",

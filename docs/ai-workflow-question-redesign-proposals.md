@@ -328,7 +328,7 @@
   "tools": [
     {
       "toolId": "chatgpt_team",
-      "displayName": "ChatGPT (Team/Enterprise)",
+      "displayName": "ChatGPT",
       "vendor": "OpenAI",
       "hqCountryCode": "US",
       "primaryCategory": "assistant",

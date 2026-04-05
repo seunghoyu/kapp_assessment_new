@@ -59,12 +59,33 @@ export function defaultAiExploration(): AiExplorationPayload {
   };
 }
 
+/**
+ * 카탈로그 `glossaryCards` / 향후 프롬프트로 채울 용어 카드 공통 형식.
+ * 필드만 맞추면 UI 톤(violet)은 `AI_TOOL_MODAL_EDU_VIOLET`로 통일됩니다.
+ */
+type GlossaryCard = {
+  title: string;
+  lines: string[];
+};
+
+/** 도구 상세 모달 — 용어설명 카드·활용 팁 등 교육용 강조 블록 (보라 톤 통일) */
+const AI_TOOL_MODAL_EDU_VIOLET = {
+  surfaceCard: "rounded-xl border border-violet-100 bg-violet-50/60 px-4 py-3 shadow-sm",
+  surfaceBlock: "rounded-xl border border-violet-100 bg-violet-50/60 px-4 py-4",
+  heading: "text-sm font-bold text-violet-900",
+  cardTitle: "text-sm font-bold text-violet-900 leading-snug",
+  bodySm: "text-sm text-violet-950 leading-relaxed",
+  bodyBase: "text-base text-violet-950 leading-relaxed",
+} as const;
+
 type CatalogTool = (typeof aiToolsCatalog.tools)[number] & {
   logoPublicPath?: string | null;
   /** 오픈소스 항목 등, 공개 저장소 링크(선택). */
   githubRepo?: string;
   /** 특화·강점 한 줄(카탈로그 데이터, 공개 자료 기반 요약). */
   focusStrengths?: string;
+  /** 용어설명 — 모달에서 카드 그리드로 표시. */
+  glossaryCards?: GlossaryCard[];
 };
 
 const HQ_LABEL: Record<string, string> = {
@@ -891,14 +912,34 @@ export default function AiExplorationFlow({ industry, value, onChange, onRequest
                 {modalTool.focusStrengths ? (
                   <section className="space-y-2">
                     <h4 className="text-sm font-bold text-gray-900">특화·강점</h4>
-                    <p className="text-base text-gray-800 leading-relaxed">{modalTool.focusStrengths}</p>
+                    <p className="text-base text-gray-800 leading-relaxed whitespace-pre-line">
+                      {modalTool.focusStrengths}
+                    </p>
+                  </section>
+                ) : null}
+
+                {modalTool.glossaryCards && modalTool.glossaryCards.length > 0 ? (
+                  <section className="space-y-3">
+                    <h4 className={AI_TOOL_MODAL_EDU_VIOLET.heading}>용어설명</h4>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {modalTool.glossaryCards.map((card, gi) => (
+                        <div key={gi} className={AI_TOOL_MODAL_EDU_VIOLET.surfaceCard}>
+                          <h5 className={AI_TOOL_MODAL_EDU_VIOLET.cardTitle}>{card.title}</h5>
+                          <div className={`mt-2 space-y-2 ${AI_TOOL_MODAL_EDU_VIOLET.bodySm}`}>
+                            {card.lines.map((line, li) => (
+                              <p key={li}>{line}</p>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </section>
                 ) : null}
 
                 {modalTool.coachTip ? (
-                  <section className="space-y-2 rounded-xl border border-violet-100 bg-violet-50/60 px-4 py-4">
-                    <h4 className="text-sm font-bold text-violet-900">용어설명</h4>
-                    <p className="text-base text-violet-950 leading-relaxed">{modalTool.coachTip}</p>
+                  <section className={`space-y-2 ${AI_TOOL_MODAL_EDU_VIOLET.surfaceBlock}`}>
+                    <h4 className={AI_TOOL_MODAL_EDU_VIOLET.heading}>활용 팁</h4>
+                    <p className={AI_TOOL_MODAL_EDU_VIOLET.bodyBase}>{modalTool.coachTip}</p>
                   </section>
                 ) : null}
 

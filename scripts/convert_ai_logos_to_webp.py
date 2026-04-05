@@ -1,5 +1,5 @@
 """
-public/kapp/ai-tools-logos 내 png, jpg, jpeg, svg → 동일 베이스명 .webp 변환.
+public/kapp/ai-tools-logos 내 png, jpg, jpeg, svg → 동일 베이스명 .webp 변환 후 원본 삭제.
 
 실행: python scripts/convert_ai_logos_to_webp.py
 
@@ -76,7 +76,8 @@ def main() -> int:
                     continue
                 svg_to_webp(p, out)
             converted.append(out)
-            print(f"OK  {p.name} -> {out.name}")
+            p.unlink()
+            print(f"OK  {p.name} -> {out.name} (원본 삭제)")
         except Exception as e:  # noqa: BLE001
             errors.append((p, str(e)))
 

@@ -13,41 +13,40 @@
 
 | 표시 이름 | toolId | 이 폴더에 넣을 파일명 |
 | --- | --- | --- |
-| ChatGPT (Team/Enterprise) | `chatgpt_team` | `chatgpt_team.webp` |
+| ChatGPT | `chatgpt_team` | `chatgpt_team.webp` |
 | GitHub Copilot | `copilot_github` | `copilot_github.webp` |
 | Cursor | `cursor` | `cursor.webp` |
 | Perplexity | `perplexity` | `perplexity.webp` |
 | Notion AI | `notion_ai` | `notion_ai.webp` |
 | Gamma | `gamma` | `gamma.webp` |
 | Google Gemini | `google_gemini` | `google_gemini.webp` |
-| Claude (Anthropic) | `anthropic_claude` | `anthropic_claude.webp` |
+| Claude | `anthropic_claude` | `anthropic_claude.webp` |
 | Amazon Bedrock | `aws_bedrock` | `aws_bedrock.webp` |
 | Mistral AI | `mistral_ai` | `mistral_ai.webp` |
 | Aleph Alpha | `aleph_alpha` | `aleph_alpha.webp` |
-| SAP Generative AI (Joule 등) | `sap_generative_ai` | `sap_generative_ai.webp` |
+| SAP Generative AI | `sap_generative_ai` | `sap_generative_ai.webp` |
 | Cohere | `cohere_command` | `cohere_command.webp` |
 | AI21 Studio | `ai21_studio` | `ai21_studio.webp` |
 | CLOVA X | `naver_clova_x` | `naver_clova_x.webp` |
-| 뤼튼 (Wrtn) | `wrtn_ai` | `wrtn_ai.webp` |
-| Solar (Upstage) | `upstage_solar` | `upstage_solar.webp` |
+| 뤼튼 | `wrtn_ai` | `wrtn_ai.webp` |
+| Solar | `upstage_solar` | `upstage_solar.webp` |
 | 이루다/캐릭터 AI | `scatterlab_hello` | `scatterlab_hello.webp` |
-| Stable Diffusion (Stability AI) | `stability_ai` | `stability_ai.webp` |
+| Stable Diffusion | `stability_ai` | `stability_ai.webp` |
 | Synthesia | `synthesia` | `synthesia.webp` |
 | Canva Magic Studio | `canva_magic` | `canva_magic.webp` |
 | Sarvam AI | `sarvam_ai` | `sarvam_ai.webp` |
 | Jais Chat | `g42_jais` | `g42_jais.webp` |
 | Leonardo.Ai | `leonardo_ai` | `leonardo_ai.webp` |
 | Grok | `xai_grok` | `xai_grok.webp` |
-| 제타 (Zeta) | `zeta_ai_kr` | `zeta_ai_kr.webp` |
-| 크랙 (Crack) | `crack_ai` | `crack_ai.webp` |
-| 채티 (Chatty) | `chatty_kr` | `chatty_kr.webp` |
-| EXAONE (LG AI Research) | `lg_exaone` | `lg_exaone.webp` |
-| Liner (라이너) | `liner_ai` | `liner_ai.webp` |
-| Samsung Gauss | `samsung_gauss` | `samsung_gauss.webp` |
+| 제타 | `zeta_ai_kr` | `zeta_ai_kr.webp` |
+| 크랙 | `crack_ai` | `crack_ai.webp` |
+| 채티 | `chatty_kr` | `chatty_kr.webp` |
+| EXAONE | `lg_exaone` | `lg_exaone.webp` |
+| Liner | `liner_ai` | `liner_ai.webp` |
 | Microsoft Copilot | `microsoft_copilot` | `microsoft_copilot.webp` |
 | Zapier | `zapier` | `zapier.webp` |
 | n8n | `n8n` | `n8n.webp` |
-| 사내 전용 LLM (가명) | `internal_llm_placeholder` | `internal_llm_placeholder.webp` |
+| 사내 전용 LLM | `internal_llm_placeholder` | `internal_llm_placeholder.webp` |
 
 ---
 *도구가 추가·변경되면 `node scripts/gen-logo-readme-table.cjs`로 이 README를 다시 생성할 수 있습니다.*

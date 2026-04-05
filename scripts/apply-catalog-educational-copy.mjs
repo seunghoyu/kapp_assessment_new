@@ -24,6 +24,11 @@ for (const t of raw.tools) {
   t.focusStrengths = p.focusStrengths;
   t.coachTip = p.coachTip ?? "";
   t.commonPitfall = "";
+  if ("glossaryCards" in p) {
+    t.glossaryCards = p.glossaryCards;
+  } else {
+    delete t.glossaryCards;
+  }
 }
 
 raw.version = "2026-Q2-gen-ai-edu-copy";

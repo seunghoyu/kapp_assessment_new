@@ -24,26 +24,24 @@
 | Amazon Bedrock | `aws_bedrock` | `aws_bedrock.webp` |
 | Mistral AI | `mistral_ai` | `mistral_ai.webp` |
 | Aleph Alpha | `aleph_alpha` | `aleph_alpha.webp` |
-| SAP Generative AI | `sap_generative_ai` | `sap_generative_ai.webp` |
-| Cohere | `cohere_command` | `cohere_command.webp` |
-| AI21 Studio | `ai21_studio` | `ai21_studio.webp` |
+| Joule (SAP AI) | `sap_generative_ai` | `sap_generative_ai.webp` |
+| Cohere AI | `cohere_command` | `cohere_command.webp` |
+| AI21 Labs | `ai21_studio` | `ai21_studio.webp` |
 | CLOVA X | `naver_clova_x` | `naver_clova_x.webp` |
-| 뤼튼 | `wrtn_ai` | `wrtn_ai.webp` |
+| 뤼튼 (Wrtn) | `wrtn_ai` | `wrtn_ai.webp` |
 | Solar | `upstage_solar` | `upstage_solar.webp` |
-| 이루다/캐릭터 AI | `scatterlab_hello` | `scatterlab_hello.webp` |
 | Stable Diffusion | `stability_ai` | `stability_ai.webp` |
 | Synthesia | `synthesia` | `synthesia.webp` |
-| Canva Magic Studio | `canva_magic` | `canva_magic.webp` |
+| Canva Magic | `canva_magic` | `canva_magic.webp` |
 | Sarvam AI | `sarvam_ai` | `sarvam_ai.webp` |
 | Jais Chat | `g42_jais` | `g42_jais.webp` |
 | Leonardo.Ai | `leonardo_ai` | `leonardo_ai.webp` |
-| Grok | `xai_grok` | `xai_grok.webp` |
-| 제타 | `zeta_ai_kr` | `zeta_ai_kr.webp` |
-| 크랙 | `crack_ai` | `crack_ai.webp` |
-| 채티 | `chatty_kr` | `chatty_kr.webp` |
-| EXAONE | `lg_exaone` | `lg_exaone.webp` |
-| Liner | `liner_ai` | `liner_ai.webp` |
-| Microsoft Copilot | `microsoft_copilot` | `microsoft_copilot.webp` |
+| Grok (xAI) | `xai_grok` | `xai_grok.webp` |
+| Zeta | `zeta_ai_kr` | `zeta_ai_kr.webp` |
+| Crack | `crack_ai` | `crack_ai.webp` |
+| LG EXAONE | `lg_exaone` | `lg_exaone.webp` |
+| Liner AI | `liner_ai` | `liner_ai.webp` |
+| Microsoft 365 Copilot | `microsoft_copilot` | `microsoft_copilot.webp` |
 | Zapier | `zapier` | `zapier.webp` |
 | n8n | `n8n` | `n8n.webp` |
 | 사내 전용 LLM | `internal_llm_placeholder` | `— (Twemoji 🔒, `AiExplorationFlow`)` |

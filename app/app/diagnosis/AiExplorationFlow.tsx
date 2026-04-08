@@ -7,6 +7,7 @@ import TwemojiIcon from "@/components/common/TwemojiIcon";
 import { countryCodeToFlagEmoji } from "@/lib/countryFlagEmoji";
 import aiToolsCatalog from "@/data/kappDiagnosis/aiToolsCatalog.json";
 import aiTrendConcepts from "@/data/kappDiagnosis/aiTrendConcepts.json";
+import AiCatalogExploreSection from "./AiCatalogExploreSection";
 
 /** `aiTrendConcepts` JSON의 `**강조**` 마크다운을 굵게 렌더링 (내부에 `*` 없음 가정) */
 function renderTrendTextWithBold(text: string, strongClassName: string): ReactNode {
@@ -65,6 +66,10 @@ type GlossaryCard = {
   lines: string[];
 };
 
+/** 도구 상세 모달 — 소개·특화 블록 (ChatGPT 등과 동일한 중립 정보 면) */
+const AI_TOOL_MODAL_INFO_SURFACE =
+  "rounded-xl border border-gray-100 bg-slate-50/50 px-4 py-4 sm:px-5 shadow-sm";
+
 /** 도구 상세 모달 — 용어설명 카드·활용 팁 등 교육용 강조 블록 (보라 톤 통일) */
 const AI_TOOL_MODAL_EDU_VIOLET = {
   surfaceCard: "rounded-xl border border-violet-100 bg-violet-50/60 px-4 py-3 shadow-sm",
@@ -74,6 +79,8 @@ const AI_TOOL_MODAL_EDU_VIOLET = {
   bodySm: "text-sm text-violet-950 leading-relaxed",
   bodyBase: "text-base text-violet-950 leading-relaxed",
 } as const;
+
+const AI_TOOL_MODAL_SECTION_HEADING = "text-sm font-bold text-gray-900";
 
 type CatalogTool = (typeof aiToolsCatalog.tools)[number] & {
   logoPublicPath?: string | null;
@@ -219,6 +226,54 @@ function ToolLogoSlot({
   );
 }
 
+/** 메인 그리드와 동일한 카드; `muted`는 하단 「AI 더 둘러보기」용 기본 톤을 살짝 낮출 때 사용 */
+function AiCatalogToolCard({
+  tool,
+  idx,
+  used,
+  onOpen,
+  muted,
+}: {
+  tool: CatalogTool;
+  idx: number;
+  used: boolean;
+  onOpen: () => void;
+  muted?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={`${tool.displayName} 상세 보기`}
+      onClick={onOpen}
+      className={`ai-tool-card-enter relative flex flex-col items-start gap-2 rounded-xl border bg-white p-4 text-left shadow-sm transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 ${
+        used
+          ? "border-violet-400 ring-2 ring-violet-200 shadow-md scale-[1.01]"
+          : "border-gray-200 hover:border-violet-300 hover:bg-violet-50/40 hover:shadow-md hover:scale-[1.02]"
+      } ${muted && !used ? "opacity-90 hover:opacity-100" : ""}`}
+      style={{ animationDelay: `${Math.min(idx, 8) * 45}ms` }}
+    >
+      <span className="absolute top-3 right-3 z-[1] max-w-[calc(100%-4rem)] flex justify-end">
+        <CountryLabel countryCode={tool.hqCountryCode} compact />
+      </span>
+
+      <ToolLogoSlot
+        displayName={tool.displayName}
+        logoPublicPath={tool.logoPublicPath}
+        toolId={tool.toolId}
+        size="sm"
+      />
+
+      <span className="text-sm font-semibold text-gray-900 leading-tight pr-14 line-clamp-3">
+        {tool.displayName}
+      </span>
+    </button>
+  );
+}
+
+/** 메인 카드 그리드보다 낮은 우선순위로 아래에 두는 탐색용 도구 (제타, 크랙 등) */
+const EXPLORE_MORE_TOOL_IDS = new Set<string>(["zeta_ai_kr", "crack_ai"]);
+const EXPLORE_MORE_ORDER = ["zeta_ai_kr", "crack_ai"] as const;
+
 const S1_OPTIONS = [
   { id: "doc", label: "문서·메일 초안" },
   { id: "code", label: "코드·SQL" },
@@ -307,6 +362,16 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
       m[t.toolId] = t;
     });
     return m;
+  }, [catalog.tools]);
+
+  const mainCatalogTools = useMemo(
+    () => catalog.tools.filter((t) => !EXPLORE_MORE_TOOL_IDS.has(t.toolId)),
+    [catalog.tools]
+  );
+
+  const exploreMoreCatalogTools = useMemo(() => {
+    const byId = new Map(catalog.tools.map((t) => [t.toolId, t]));
+    return EXPLORE_MORE_ORDER.map((id) => byId.get(id)).filter((t): t is CatalogTool => t != null);
   }, [catalog.tools]);
 
   const modalTool = useMemo(
@@ -491,42 +556,50 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
 
               {/* 분류 허브와 동일: 그리드 + 컴팩트 카드(로고·제목·하단 한 줄). 상세는 모달 */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {catalog.tools.map((tool, idx) => {
+                {mainCatalogTools.map((tool, idx) => {
                   const used = value.toolsUsed.includes(tool.toolId);
                   return (
-                    <button
+                    <AiCatalogToolCard
                       key={tool.toolId}
-                      type="button"
-                      aria-label={`${tool.displayName} 상세 보기`}
-                      onClick={() => {
+                      tool={tool}
+                      idx={idx}
+                      used={used}
+                      onOpen={() => {
                         openCard(tool.toolId);
                         setModalToolId(tool.toolId);
                       }}
-                      className={`ai-tool-card-enter relative flex flex-col items-start gap-2 rounded-xl border bg-white p-4 text-left shadow-sm transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 ${
-                        used
-                          ? "border-violet-400 ring-2 ring-violet-200 shadow-md scale-[1.01]"
-                          : "border-gray-200 hover:border-violet-300 hover:bg-violet-50/40 hover:shadow-md hover:scale-[1.02]"
-                      }`}
-                      style={{ animationDelay: `${Math.min(idx, 8) * 45}ms` }}
-                    >
-                      <span className="absolute top-3 right-3 z-[1] max-w-[calc(100%-4rem)] flex justify-end">
-                        <CountryLabel countryCode={tool.hqCountryCode} compact />
-                      </span>
-
-                      <ToolLogoSlot
-                        displayName={tool.displayName}
-                        logoPublicPath={tool.logoPublicPath}
-                        toolId={tool.toolId}
-                        size="sm"
-                      />
-
-                      <span className="text-sm font-semibold text-gray-900 leading-tight pr-14 line-clamp-3">
-                        {tool.displayName}
-                      </span>
-                    </button>
+                    />
                   );
                 })}
               </div>
+
+              {exploreMoreCatalogTools.length > 0 ? (
+                <AiCatalogExploreSection
+                  title="AI 더 둘러보기"
+                  description={
+                    "업무용도 외에 다양한 AI들이 있습니다.\n아이디어를 얻거나 가볍게 탐색해보세요."
+                  }
+                >
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {exploreMoreCatalogTools.map((tool, idx) => {
+                      const used = value.toolsUsed.includes(tool.toolId);
+                      return (
+                        <AiCatalogToolCard
+                          key={tool.toolId}
+                          tool={tool}
+                          idx={idx}
+                          used={used}
+                          muted
+                          onOpen={() => {
+                            openCard(tool.toolId);
+                            setModalToolId(tool.toolId);
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                </AiCatalogExploreSection>
+              ) : null}
             </div>
 
             <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-2 order-2 space-y-3">
@@ -888,27 +961,36 @@ export default function AiExplorationFlow({ value, onChange, onRequestResult }: 
               </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 sm:px-8 py-6 space-y-6 sm:space-y-8">
-                <div>
+                <section className="space-y-2">
+                  <h4 className={AI_TOOL_MODAL_SECTION_HEADING}>국가</h4>
                   <CountryLabel countryCode={modalTool.hqCountryCode} />
-                </div>
-
-                <section className="space-y-3">
-                  <h4 className="text-sm font-bold text-gray-900">소개</h4>
-                  <div className="space-y-3 text-base text-gray-800 leading-relaxed">
-                    {modalTool.cardLines.map((line, i) => (
-                      <p key={i}>{line}</p>
-                    ))}
-                  </div>
                 </section>
 
-                {modalTool.focusStrengths ? (
-                  <section className="space-y-2">
-                    <h4 className="text-sm font-bold text-gray-900">특화·강점</h4>
-                    <p className="text-base text-gray-800 leading-relaxed whitespace-pre-line">
-                      {modalTool.focusStrengths}
-                    </p>
+                <div className={`space-y-5 ${AI_TOOL_MODAL_INFO_SURFACE}`}>
+                  <section className="space-y-3">
+                    <h4 className={AI_TOOL_MODAL_SECTION_HEADING}>소개</h4>
+                    <div className="space-y-3 text-base text-gray-800 leading-relaxed">
+                      {modalTool.cardLines.map((line, i) => (
+                        <p key={i}>{line}</p>
+                      ))}
+                    </div>
                   </section>
-                ) : null}
+
+                  {modalTool.focusStrengths ? (
+                    <section className="space-y-3 pt-1 border-t border-gray-200/80">
+                      <h4 className={AI_TOOL_MODAL_SECTION_HEADING}>특화·강점</h4>
+                      <div className="space-y-3 text-base text-gray-800 leading-relaxed">
+                        {modalTool.focusStrengths
+                          .split(/\r?\n/)
+                          .map((line) => line.trim())
+                          .filter((line) => line.length > 0)
+                          .map((line, i) => (
+                            <p key={i}>{line}</p>
+                          ))}
+                      </div>
+                    </section>
+                  ) : null}
+                </div>
 
                 {modalTool.glossaryCards && modalTool.glossaryCards.length > 0 ? (
                   <section className="space-y-3">

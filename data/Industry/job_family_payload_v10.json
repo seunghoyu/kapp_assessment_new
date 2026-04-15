@@ -664,21 +664,6 @@
     ]
   },
   {
-    "job_family_id": "JF_AI_10",
-    "family_group_id": "FG_AI_DATA",
-    "major_category_num": 7,
-    "major_category_label": "AI·데이터·인프라",
-    "major_category_icon": "🤖",
-    "job_family_name_ko": "IT지원·헬프데스크",
-    "typical_roles": [
-      "IT지원담당",
-      "헬프데스크",
-      "전산담당",
-      "IT운영담당",
-      "기술지원"
-    ]
-  },
-  {
     "job_family_id": "JF_AI_11",
     "family_group_id": "FG_AI_DATA",
     "major_category_num": 7,

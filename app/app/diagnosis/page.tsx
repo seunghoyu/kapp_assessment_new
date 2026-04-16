@@ -36,6 +36,10 @@ import ProgressHeader from "@/components/diagnosis/ProgressHeader";
 import DiagnosisInfoInputLeftPanel from "@/components/diagnosis/DiagnosisInfoInputLeftPanel";
 import { ROUTES } from "@/lib/routes";
 import { serializeReportRequest } from "@/lib/report/report-data";
+import TwemojiIcon from "@/components/common/TwemojiIcon";
+import { getKnowledgeExplanation } from "@/lib/knowledgeExplanationData";
+import KnowledgeExplanationModal from "./KnowledgeExplanationModal";
+import KnowledgePracticalModal from "./KnowledgePracticalModal";
 
 /** KAPP 진단 데이터 안내 + 문항 구성 로직 문서 기준 (kapp_origin flow 동일) */
 const STEPS = [
@@ -173,7 +177,13 @@ const COMPANY_TYPE_OPTIONS = [
   { value: "외국계 기업", label: "외국계 기업" },
   { value: "스타트업·벤처", label: "스타트업·벤처" },
   { value: "비영리·NGO", label: "비영리·NGO" },
-  { value: "전문직", label: "전문직" },
+] as const;
+
+const JOB_TITLE_OPTIONS = [
+  { value: "팀원", label: "팀원" },
+  { value: "파트장", label: "파트장" },
+  { value: "부팀장", label: "부팀장" },
+  { value: "팀장", label: "팀장" },
 ] as const;
 
 type PersistedState = {
@@ -189,6 +199,7 @@ type PersistedState = {
     job: string;
     companyType: string;
     position: string;
+    jobTitle: string;
     experienceYears: string;
     company: string;
     companySize: string;
@@ -253,6 +264,7 @@ const initialForm = {
   job: "",
   companyType: "",
   position: "",
+  jobTitle: "",
   experienceYears: "",
   company: "",
   companySize: "",
@@ -278,6 +290,11 @@ export default function DiagnosisPage() {
   const [knowledgeIndex, setKnowledgeIndex] = useState(0);
   const [applicationIndex, setApplicationIndex] = useState(0);
   const [performanceIndex, setPerformanceIndex] = useState(0);
+  // step 2(지식 문항) 채점/해설 UI 상태
+  const [knowledgeGraded, setKnowledgeGraded] = useState(false);
+  const [knowledgeIsCorrect, setKnowledgeIsCorrect] = useState<boolean | null>(null);
+  const [knowledgeExplanationModalOpen, setKnowledgeExplanationModalOpen] = useState(false);
+  const [knowledgePracticalModalOpen, setKnowledgePracticalModalOpen] = useState(false);
   const industryJobData = userInfoOptions.industryJobData as IndustryJobData;
   const positionLevels = userInfoOptions.positionLevels as OptionItem[];
   const experienceYears = userInfoOptions.experienceYears as OptionItem[];
@@ -513,7 +530,11 @@ export default function DiagnosisPage() {
       industryAndJob: form.industry ? { industry: form.industry, job: form.job } : undefined,
       careerInfo:
         form.position && form.experienceYears
-          ? { position: form.position, experienceYears: form.experienceYears }
+          ? {
+              position: form.position,
+              title: form.jobTitle || undefined,
+              experienceYears: form.experienceYears,
+            }
           : undefined,
       organizationInfo: form.companySize
         ? { company: form.company.trim() || undefined, companySize: form.companySize }
@@ -547,6 +568,7 @@ export default function DiagnosisPage() {
         return !!(
           form.companyType &&
           form.position &&
+          form.jobTitle &&
           form.experienceYears &&
           form.companySize
         );
@@ -587,6 +609,8 @@ export default function DiagnosisPage() {
     if (step === 3) setApplicationIndex(0);
     if (step === 4) setPerformanceIndex(0);
   }, [step]);
+
+  // 지식 문항(step 2) 채점 상태는 "선택 변경/다음 이동" 시점에만 초기화합니다.
 
   return (
     <div className="flex flex-col h-[calc(100vh-0px)] max-h-[100vh] overflow-hidden bg-gray-50">
@@ -887,15 +911,31 @@ export default function DiagnosisPage() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">회사명 (선택)</label>
-                          <input
-                            type="text"
-                            value={form.company}
-                            onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
+                          <label className="block text-sm font-medium text-gray-700 mb-1">직책 *</label>
+                          <select
+                            value={form.jobTitle}
+                            onChange={(e) => setForm((f) => ({ ...f, jobTitle: e.target.value }))}
                             className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                            placeholder="소속 회사"
-                          />
+                          >
+                            <option value="">선택해주세요</option>
+                            {JOB_TITLE_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
                         </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">회사명 (선택)</label>
+                        <input
+                          type="text"
+                          value={form.company}
+                          onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                          placeholder="소속 회사"
+                        />
                       </div>
 
                       <div>
@@ -974,7 +1014,10 @@ export default function DiagnosisPage() {
                 (() => {
                   const q = filteredKnowledge[Math.min(knowledgeIndex, filteredKnowledge.length - 1)];
                   const selected = answers.knowledge[knowledgeIndex];
-                  const canProceed = selected !== undefined;
+                  const canGrade = selected !== undefined;
+                  const canProceed = knowledgeGraded;
+                  const correctIndex = q.answer;
+                  const explanation = getKnowledgeExplanation(q.id);
                   return (
                     <div className="w-full max-w-[900px] px-2 sm:px-6">
                       <div className="flex items-center justify-between gap-4 mb-6">
@@ -997,47 +1040,132 @@ export default function DiagnosisPage() {
                       <div className="space-y-3">
                         {q.options.map((opt, i) => {
                           const isSelected = selected === i;
+                          const isCorrect = i === correctIndex;
+                          const showCorrect = knowledgeGraded && isCorrect;
+                          const showWrong = knowledgeGraded && isSelected && !isCorrect;
+
+                          const ringCls = showCorrect
+                            ? "border-emerald-300 bg-emerald-50"
+                            : showWrong
+                              ? "border-rose-300 bg-rose-50"
+                              : isSelected
+                                ? "border-blue-500 bg-blue-50"
+                                : "border-gray-200 hover:border-blue-400 hover:bg-gray-50";
+
+                          const badge =
+                            showCorrect ? (
+                              <span className="ml-2 inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800">
+                                정답
+                              </span>
+                            ) : showWrong ? (
+                              <span className="ml-2 inline-flex items-center rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-semibold text-rose-800">
+                                오답
+                              </span>
+                            ) : null;
                           return (
                             <button
                               key={i}
                               type="button"
+                              disabled={knowledgeGraded}
                               onClick={() => {
                                 setAnswers((a) => {
                                   const next = [...a.knowledge];
                                   next[knowledgeIndex] = i;
                                   return { ...a, knowledge: next };
                                 });
+                                setKnowledgeGraded(false);
+                                setKnowledgeIsCorrect(null);
                               }}
-                              className={`w-full text-left rounded-lg border p-5 transition-colors ${
-                                isSelected
-                                  ? "border-blue-500 bg-blue-50"
-                                  : "border-gray-200 hover:border-blue-400 hover:bg-gray-50"
+                              className={`w-full text-left rounded-lg border p-5 transition-colors ${ringCls} ${
+                                knowledgeGraded ? "cursor-not-allowed opacity-95" : ""
                               }`}
                             >
-                              <span className="text-base text-gray-900">{opt}</span>
+                              <span className="text-base text-gray-900 inline-flex items-center">
+                                {opt}
+                                {badge}
+                              </span>
                             </button>
                           );
                         })}
                       </div>
 
-                      <div className="mt-8 flex justify-end">
-                        <button
-                          type="button"
-                          disabled={!canProceed}
-                          onClick={() => {
-                            if (knowledgeIndex < filteredKnowledge.length - 1) {
-                              setStepTransitionDir("right");
-                              setKnowledgeIndex((i) => i + 1);
-                            } else {
-                              goNext();
-                            }
-                          }}
-                          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all disabled:opacity-40 disabled:pointer-events-none"
-                        >
-                          다음
-                          <ChevronRight className="w-5 h-5" />
-                        </button>
+                      <div className="mt-8 flex items-center justify-between gap-3 flex-wrap">
+                        {knowledgeGraded ? (
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <button
+                              type="button"
+                              onClick={() => setKnowledgePracticalModalOpen(true)}
+                              className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900 shadow-sm hover:bg-emerald-100 hover:shadow-emerald-600/10 transition-all"
+                            >
+                              <TwemojiIcon icon="🧰" size="1.25rem" className="shrink-0" />
+                              실무에 적용하기
+                            </button>
+
+                            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm hover:bg-amber-100 hover:shadow-amber-600/10 transition-all">
+                              <button
+                                type="button"
+                                onClick={() => setKnowledgeExplanationModalOpen(true)}
+                                className="flex items-center gap-3 text-left"
+                              >
+                                <TwemojiIcon icon="💡" size="1.4rem" className="shrink-0" />
+                                <div className="min-w-0">
+                                  <p className="text-sm font-semibold text-amber-900 text-center">
+                                    더 자세하게 알아볼까요?
+                                  </p>
+                                </div>
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-xs text-gray-500">
+                            선택 후 채점 버튼을 눌러 결과를 확인하세요.
+                          </div>
+                        )}
+
+                        {!knowledgeGraded ? (
+                          <button
+                            type="button"
+                            disabled={!canGrade}
+                            onClick={() => {
+                              const isCorrect = selected === correctIndex;
+                              setKnowledgeIsCorrect(isCorrect);
+                              setKnowledgeGraded(true);
+                            }}
+                            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all disabled:opacity-40 disabled:pointer-events-none"
+                          >
+                            채점
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={!canProceed}
+                            onClick={() => {
+                              if (knowledgeIndex < filteredKnowledge.length - 1) {
+                                setStepTransitionDir("right");
+                                setKnowledgeIndex((i) => i + 1);
+                              } else {
+                                goNext();
+                              }
+                            }}
+                            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white px-6 py-3 text-sm font-semibold shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-blue-600/30 transition-all disabled:opacity-40 disabled:pointer-events-none"
+                          >
+                            다음
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                        )}
                       </div>
+
+                      <KnowledgeExplanationModal
+                        open={knowledgeExplanationModalOpen}
+                        onClose={() => setKnowledgeExplanationModalOpen(false)}
+                        explanation={explanation}
+                      />
+                      <KnowledgePracticalModal
+                        open={knowledgePracticalModalOpen}
+                        onClose={() => setKnowledgePracticalModalOpen(false)}
+                        explanation={explanation}
+                      />
                     </div>
                   );
                 })()

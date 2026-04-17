@@ -62,7 +62,7 @@ export default function SkillTree({ sets, unlockedCount }: Props) {
               <div
                 key={setNo}
                 className={[
-                  "rounded-xl border bg-white px-4 py-3 min-h-[104px]",
+                  "rounded-xl border bg-white px-4 py-3 min-h-[90px]",
                   active ? "border-gray-200" : "border-gray-200 bg-gray-50/40",
                 ].join(" ")}
               >

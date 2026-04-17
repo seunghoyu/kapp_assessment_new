@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "jobId": "sal_b2b",
+      "jobName": "B2B영업담당",
+      "sourceFile": "JF_SAL_01_K.json"
+    }
+  ]
+}
+

@@ -34,8 +34,10 @@ import careerPathData from "@/data/consumer/careerPathByIndustry.json";
 import dailyTipsData from "@/data/consumer/dailyTips.json";
 import DailyTipWidget from "@/components/dashboard/DailyTipWidget";
 import CertificateModal from "./CertificateModal";
+import SkillTree from "@/components/dashboard/SkillTree/SkillTree";
+import { loadSkillTreeSets } from "@/lib/skillTree/loadJobSkillTree";
 
-type DashboardTab = "my-competency" | "roadmap";
+type DashboardTab = "my-competency" | "roadmap" | "skill-tree";
 type CompetencyViewTab = "bar" | "table" | "radar";
 
 type MarketAction = { icon: string; title: string; description: string; priority: string };
@@ -109,6 +111,7 @@ export default function ConsumerDashboardPage() {
   const [tab, setTab] = useState<DashboardTab>("my-competency");
   const [showCoursesModal, setShowCoursesModal] = useState(false);
   const [certModalOpen, setCertModalOpen] = useState(false);
+  const [skillTreeUnlockedCount] = useState(5);
   // 가상 프론트 기본 ON (명시적으로 false일 때만 OFF)
   const isMockFront = process.env.NEXT_PUBLIC_MOCK_FRONT !== "false";
   const [careerIndustry, setCareerIndustry] = useState<string>(() => {
@@ -118,6 +121,8 @@ export default function ConsumerDashboardPage() {
   const [careerPathIndex, setCareerPathIndex] = useState(0);
   const [competencyViewTab, setCompetencyViewTab] = useState<CompetencyViewTab>("radar");
   const [marketBenchmarkView, setMarketBenchmarkView] = useState<CompetencyViewTab>("radar");
+
+  const skillTreeSets = useMemo(() => loadSkillTreeSets("sal_b2b"), []);
   const [selectedMajorIndustryName, setSelectedMajorIndustryName] = useState<string>("");
 
   const ib = industryBenchmark ?? industryBenchmarkFallback;
@@ -259,6 +264,17 @@ export default function ConsumerDashboardPage() {
             }`}
           >
             성장 로드맵
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("skill-tree")}
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              tab === "skill-tree"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-600 hover:text-gray-900"
+            }`}
+          >
+            나의 스킬트리
           </button>
         </div>
         <button
@@ -682,6 +698,13 @@ export default function ConsumerDashboardPage() {
                   </div>
                 </div>
               </section>
+            </div>
+          )}
+
+          {/* ─── 나의 스킬트리 탭 ─── */}
+          {tab === "skill-tree" && (
+            <div className="space-y-6">
+              <SkillTree sets={skillTreeSets} unlockedCount={skillTreeUnlockedCount} />
             </div>
           )}
         </div>

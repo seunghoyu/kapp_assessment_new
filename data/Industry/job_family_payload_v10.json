@@ -36,23 +36,13 @@
     "major_category_num": 1,
     "major_category_label": "기획·전략",
     "major_category_icon": "📊",
-    "job_family_name_ko": "PM·PO",
+    "job_family_name_ko": "PM·PO·상품기획·서비스기획",
     "typical_roles": [
       "프로젝트매니저",
       "PMO담당",
       "애자일코치",
       "스크럼마스터",
-      "프로그램매니저"
-    ]
-  },
-  {
-    "job_family_id": "JF_STR_04",
-    "family_group_id": "FG_STRATEGY",
-    "major_category_num": 1,
-    "major_category_label": "기획·전략",
-    "major_category_icon": "📊",
-    "job_family_name_ko": "상품기획·PO·서비스기획",
-    "typical_roles": [
+      "프로그램매니저",
       "상품기획자",
       "Product Owner",
       "서비스기획자",

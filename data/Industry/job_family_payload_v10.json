@@ -909,20 +909,30 @@
       "고객성공매니저(CSM)",
       "고객센터관리자",
       "고객센터상담원",
-      "아웃바운드상담원",
       "어카운트매니저(AM)",
       "인바운드상담원",
-      "전화영업담당",
       "채팅상담원",
       "콜센터상담원",
       "콜센터운영관리자",
-      "콜영업",
       "키어카운트매니저",
-      "텔레마케터(TM)",
       "CS담당",
       "CS팀장",
       "QA매니저",
       "WFM담당"
+    ]
+  },
+  {
+    "job_family_id": "JF_CS_02",
+    "family_group_id": "FG_CS",
+    "major_category_num": 10,
+    "major_category_label": "고객상담·TM",
+    "major_category_icon": "🎧",
+    "job_family_name_ko": "TM",
+    "typical_roles": [
+      "아웃바운드상담원",
+      "텔레마케터(TM)",
+      "콜영업",
+      "전화영업담당"
     ]
   },
   {

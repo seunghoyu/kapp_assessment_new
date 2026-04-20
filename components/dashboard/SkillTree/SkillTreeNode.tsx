@@ -1,50 +1,37 @@
 "use client";
 
 import { Icon } from "@iconify/react";
+import type { SkillState, SkillVisual } from "@/lib/skillTree/skillVisual.types";
+import SkillIcon from "./SkillIcon";
 
 type Props = {
   title: string;
-  active: boolean;
-  iconId: string;
-  abilityUnits: { label: string; iconId: string }[];
+  skillState: SkillState;
+  visual: SkillVisual;
+  abilityUnits: { label: string; visual: SkillVisual }[];
 };
 
-export default function SkillTreeNode({ title, active, iconId, abilityUnits }: Props) {
+export default function SkillTreeNode({ title, skillState, visual, abilityUnits }: Props) {
+  const locked = skillState === "locked";
+
   return (
     <div className="flex items-stretch gap-3 w-full">
-      <div
-        className={[
-          "relative w-16 h-16 rounded-xl border shadow-sm flex items-center justify-center transition-colors flex-shrink-0",
-          active
-            ? "bg-white border-blue-200 ring-1 ring-blue-100 text-blue-700"
-            : "bg-gray-100 border-gray-200 text-gray-400 opacity-75",
-        ].join(" ")}
-        aria-label={title}
-        title={title}
-      >
-        <Icon icon={iconId} width={30} height={30} />
-        {!active && (
-          <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gray-200 border border-gray-300 flex items-center justify-center text-[10px] text-gray-600">
+      <div className="relative flex-shrink-0" aria-label={title} title={title}>
+        <SkillIcon visual={visual} state={skillState} size="md" />
+        {locked && (
+          <div className="absolute -top-1.5 -right-1.5 z-[4] flex h-6 w-6 items-center justify-center rounded-full border border-slate-600 bg-slate-800 text-[10px] text-slate-200 shadow-md">
             <Icon icon="mdi:lock" width={14} height={14} />
           </div>
         )}
       </div>
 
-      <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <div className="text-sm font-medium text-gray-900 leading-snug line-clamp-1">{title}</div>
+      <div className="flex min-w-0 flex-1 flex-col justify-center">
+        <div className="line-clamp-1 text-sm font-medium leading-snug text-gray-900">{title}</div>
 
-        <div className="mt-2 flex items-center gap-2 flex-wrap">
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           {abilityUnits.map((u, i) => (
-            <span
-              key={`${u.label}-${i}`}
-              className={[
-                "inline-flex w-8 h-8 rounded-full border items-center justify-center",
-                active ? "bg-white border-gray-200 text-gray-700" : "bg-gray-100 border-gray-200 text-gray-400",
-              ].join(" ")}
-              title={u.label}
-              aria-label={u.label}
-            >
-              <Icon icon={u.iconId} width={18} height={18} />
+            <span key={`${u.label}-${i}`} title={u.label} aria-label={u.label}>
+              <SkillIcon visual={u.visual} state={skillState} size="sm" />
             </span>
           ))}
         </div>
@@ -52,4 +39,3 @@ export default function SkillTreeNode({ title, active, iconId, abilityUnits }: P
     </div>
   );
 }
-

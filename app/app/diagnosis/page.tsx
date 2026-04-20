@@ -175,7 +175,6 @@ const COMPANY_TYPE_OPTIONS = [
   { value: "일반 사기업", label: "일반 사기업" },
   { value: "공기업·공공기관", label: "공기업·공공기관" },
   { value: "외국계 기업", label: "외국계 기업" },
-  { value: "스타트업·벤처", label: "스타트업·벤처" },
   { value: "비영리·NGO", label: "비영리·NGO" },
 ] as const;
 

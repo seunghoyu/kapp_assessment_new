@@ -32,7 +32,7 @@
     { "value": "16년 이상", "label": "16년 이상" }
   ],
   "companySizes": [
-    { "value": "소기업", "label": "소기업" },
+    { "value": "소기업", "label": "스타트업" },
     { "value": "중소기업", "label": "중소기업" },
     { "value": "중견기업", "label": "중견기업" },
     { "value": "대기업", "label": "대기업" }

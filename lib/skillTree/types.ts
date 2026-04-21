@@ -9,21 +9,18 @@ export type SkillTreeIndex = {
   jobs: SkillTreeJobMeta[];
 };
 
+/** 한 세트 내 4문항 슬롯 메타 (구 setgroup의 문항1~4 능력단위/세분류/수준) */
+export type SkillTreeQuestionSlotMeta = {
+  slot: number;
+  abilityUnit: string;
+  subCategory: string;
+  level: string;
+};
+
 export type SkillTreeSetRow = {
-  세트번호: number;
-  산업분류: string;
-  세트명: string;
-  "문항1 능력단위"?: string | null;
-  문항1세분류?: string | null;
-  문항1수준?: string | null;
-  "문항2 능력단위"?: string | null;
-  문항2세분류?: string | null;
-  문항2수준?: string | null;
-  "문항3 능력단위"?: string | null;
-  문항3세분류?: string | null;
-  문항3수준?: string | null;
-  "문항4 능력단위"?: string | null;
-  문항4세분류?: string | null;
-  문항4수준?: string | null;
+  setNo: number;
+  industryClass: string;
+  setName: string;
+  questionSlots: SkillTreeQuestionSlotMeta[];
 };
 

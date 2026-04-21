@@ -45,16 +45,16 @@ export default function SkillIcon({ visual, state, size = "md", className = "", 
 
   const stateOverlay =
     state === "locked"
-      ? "bg-black/45 backdrop-blur-[1px]"
+      ? "bg-black/35 backdrop-blur-[1px]"
       : state === "mastered"
-        ? "bg-gradient-to-t from-amber-500/10 via-transparent to-white/5"
+        ? "bg-white/10"
         : state === "active"
-          ? "bg-white/5"
+          ? "bg-white/10"
           : "bg-transparent";
 
   const iconDrop =
     visual.filled && state !== "locked"
-      ? "drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]"
+      ? "drop-shadow-[0_0_8px_rgba(255,255,255,0.35)]"
       : "";
 
   return (
@@ -76,7 +76,7 @@ export default function SkillIcon({ visual, state, size = "md", className = "", 
         <span className={[blob, "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2", s.blob, "rounded-full"].join(" ")} />
       )}
       <span className={[bgExtra, "absolute inset-0", s.rounded].filter(Boolean).join(" ")} />
-      <span className={["absolute inset-0 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]", s.rounded].join(" ")} />
+      <span className={["absolute inset-0 shadow-[inset_0_2px_10px_rgba(0,0,0,0.16)]", s.rounded].join(" ")} />
       <span className={["pointer-events-none absolute inset-0", stateOverlay, s.rounded].join(" ")} />
 
       <Icon
@@ -87,7 +87,16 @@ export default function SkillIcon({ visual, state, size = "md", className = "", 
       />
 
       {state === "mastered" && (
-        <span className="pointer-events-none absolute inset-0 z-[3] rounded-[inherit] ring-1 ring-inset ring-amber-200/20" />
+        <span
+          className={[
+            "pointer-events-none absolute inset-0 z-[3] rounded-[inherit] ring-1 ring-inset",
+            visual.theme === "gold"
+              ? "ring-amber-200/25"
+              : visual.theme === "purple"
+                ? "ring-violet-200/25"
+                : "ring-sky-200/25",
+          ].join(" ")}
+        />
       )}
     </div>
   );

@@ -47,7 +47,7 @@ export default function SkillTree({ sets, unlockedCount }: Props) {
       <div className="p-4">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {sets.map((s) => {
-            const setNo = Number(s.세트번호 ?? 0);
+            const setNo = Number(s.setNo ?? 0);
             const skillState = skillStateForSet(setNo, unlockedCount, totalSets);
             const sanitize = (text: string) =>
               text
@@ -56,15 +56,10 @@ export default function SkillTree({ sets, unlockedCount }: Props) {
                 .replace(/[·•\-–—]+/g, " ")
                 .trim();
 
-            const setTitleRaw = typeof s.세트명 === "string" ? s.세트명 : `세트 ${setNo}`;
+            const setTitleRaw = typeof s.setName === "string" ? s.setName : `세트 ${setNo}`;
             const setTitle = sanitize(setTitleRaw) || setTitleRaw;
-            const abilityLabels = [
-              s["문항1 능력단위"],
-              s["문항2 능력단위"],
-              s["문항3 능력단위"],
-              s["문항4 능력단위"],
-            ]
-              .map((v) => (typeof v === "string" ? v.trim() : ""))
+            const abilityLabels = (s.questionSlots ?? [])
+              .map((slot) => (typeof slot.abilityUnit === "string" ? slot.abilityUnit.trim() : ""))
               .filter((v) => v && v !== "-" && !/O\*NET/i.test(v))
               .map(sanitize)
               .filter((v) => v);

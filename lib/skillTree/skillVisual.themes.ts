@@ -1,52 +1,68 @@
 import type { CSSProperties } from "react";
 import type { BgStyle, FrameRarity, GlowLevel, SkillState, SkillTheme } from "./skillVisual.types";
 
-/** Base tile gradient (dark tech-fantasy). */
+/**
+ * 요구사항:
+ * - 색상은 blue / purple / gold 3계열만 사용(최종은 resolve에서 정규화)
+ * - 배경은 "흰색 기반"이 아니라 색이 도는 그라데이션
+ * - 진하기/강약(불투명도 등)은 계열별로 동일하게 맞춤
+ */
 export const themeSurface: Record<SkillTheme, string> = {
-  blue: "bg-gradient-to-br from-slate-950 via-blue-950/95 to-slate-950",
-  purple: "bg-gradient-to-br from-slate-950 via-purple-950/95 to-slate-950",
-  green: "bg-gradient-to-br from-slate-950 via-emerald-950/95 to-slate-950",
-  orange: "bg-gradient-to-br from-slate-950 via-amber-950/90 to-slate-950",
-  gold: "bg-gradient-to-br from-slate-900 via-amber-900/80 to-slate-950",
-  red: "bg-gradient-to-br from-slate-950 via-rose-950/95 to-slate-950",
-  cyan: "bg-gradient-to-br from-slate-950 via-cyan-950/90 to-slate-950",
+  blue: "bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400/75",
+  purple: "bg-gradient-to-br from-violet-200 via-violet-300 to-violet-400/75",
+  gold: "bg-gradient-to-br from-amber-200 via-amber-300 to-amber-400/75",
+
+  // legacy themes (혹시 rules에 남아있는 값 대비) -> 3계열로 유사 매핑
+  green: "bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400/75",
+  cyan: "bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400/75",
+  orange: "bg-gradient-to-br from-amber-200 via-amber-300 to-amber-400/75",
+  red: "bg-gradient-to-br from-violet-200 via-violet-300 to-violet-400/75",
 };
 
 /** Accent orb / highlight blob (absolute inset, blurred). */
 export const themeAccentBlob: Record<SkillTheme, string> = {
-  blue: "bg-blue-500/35",
-  purple: "bg-purple-500/35",
-  green: "bg-emerald-500/35",
-  orange: "bg-amber-500/30",
-  gold: "bg-amber-400/40",
-  red: "bg-rose-500/35",
-  cyan: "bg-cyan-400/30",
+  // 계열별 "동일 강도"로 맞춤
+  blue: "bg-sky-500/45",
+  purple: "bg-violet-500/45",
+  gold: "bg-amber-500/45",
+
+  // legacy
+  green: "bg-sky-500/45",
+  cyan: "bg-sky-500/45",
+  orange: "bg-amber-500/45",
+  red: "bg-violet-500/45",
 };
 
 export const themeIconTint: Record<SkillTheme, string> = {
-  blue: "text-sky-200",
-  purple: "text-violet-200",
-  green: "text-emerald-200",
-  orange: "text-amber-200",
-  gold: "text-amber-100",
-  red: "text-rose-200",
-  cyan: "text-cyan-200",
+  // 동일 강도의 진한 텍스트 톤(채도만 다르게)
+  blue: "text-sky-950/80",
+  purple: "text-violet-950/80",
+  gold: "text-amber-950/80",
+
+  // legacy
+  green: "text-sky-950/80",
+  cyan: "text-sky-950/80",
+  orange: "text-amber-950/80",
+  red: "text-violet-950/80",
 };
 
 const glowRgb: Record<SkillTheme, string> = {
-  blue: "56, 189, 248",
-  purple: "167, 139, 250",
-  green: "52, 211, 153",
-  orange: "251, 191, 36",
-  gold: "250, 204, 21",
-  red: "251, 113, 133",
-  cyan: "34, 211, 238",
+  blue: "14, 165, 233",
+  purple: "139, 92, 246",
+  gold: "245, 158, 11",
+
+  // legacy
+  green: "14, 165, 233",
+  cyan: "14, 165, 233",
+  orange: "245, 158, 11",
+  red: "139, 92, 246",
 };
 
 const glowSpread: Record<GlowLevel, [number, number, number]> = {
-  soft: [0.25, 12, 20],
-  medium: [0.4, 16, 28],
-  strong: [0.55, 20, 36],
+  // 계열별 차이 없이 고정 (진하기/강약 차이 방지)
+  soft: [0.28, 16, 28],
+  medium: [0.28, 16, 28],
+  strong: [0.28, 16, 28],
 };
 
 function stateGlowMultiplier(state: SkillState): number {
@@ -73,7 +89,7 @@ export function getSkillGlowStyle(
   const [alphaBase, blur1, blur2] = glowSpread[glow];
   const a = alphaBase * stateGlowMultiplier(state);
   const outer = `0 0 ${blur1}px rgba(${rgb}, ${Math.min(a, 0.9).toFixed(2)})`;
-  const inner = `0 0 ${blur2}px rgba(${rgb}, ${(a * 0.45).toFixed(2)})`;
+  const inner = `0 0 ${blur2}px rgba(${rgb}, ${(a * 0.55).toFixed(2)})`;
   return { boxShadow: `${outer}, ${inner}` };
 }
 
@@ -84,29 +100,23 @@ export function frameClasses(
   corner: "rounded-lg" | "rounded-xl" = "rounded-xl"
 ): string {
   const base = corner;
+  // 배경/테두리 계열을 동일하게, 투명도도 동일하게 고정
   const themed =
-    theme === "blue"
-      ? "border-sky-400/55 ring-sky-400/22"
-      : theme === "cyan"
-        ? "border-cyan-400/55 ring-cyan-400/22"
-        : theme === "purple"
-          ? "border-violet-400/55 ring-violet-400/22"
-          : theme === "green"
-            ? "border-emerald-400/55 ring-emerald-400/22"
-            : theme === "orange"
-              ? "border-amber-400/55 ring-amber-400/22"
-              : theme === "gold"
-                ? "border-amber-400/65 ring-amber-400/25"
-                : "border-rose-400/55 ring-rose-400/22";
+    theme === "gold" || theme === "orange"
+      ? "border-amber-500/60 ring-amber-500/25"
+      : theme === "purple" || theme === "red"
+        ? "border-violet-500/60 ring-violet-500/25"
+        : "border-sky-500/60 ring-sky-500/25";
 
   if (state === "locked") {
     return `${base} border ${themed} ring-0`;
   }
   if (state === "mastered") {
-    return `${base} border-2 border-amber-400/70 ring-1 ring-amber-300/25 shadow-[inset_0_0_12px_rgba(250,204,21,0.12)]`;
+    // 상태가 mastered여도 "다른색 고정" 금지: 테마 계열 그대로 + 동일 강도
+    return `${base} border-2 ${themed} ring-1 shadow-[inset_0_0_12px_rgba(255,255,255,0.16)]`;
   }
   if (state === "active") {
-    return `${base} border-2 ${themed} ring-2 shadow-[inset_0_0_10px_rgba(255,255,255,0.10)]`;
+    return `${base} border-2 ${themed} ring-2 shadow-[inset_0_0_10px_rgba(255,255,255,0.12)]`;
   }
   switch (frame) {
     case "epic":
@@ -122,11 +132,14 @@ export function frameClasses(
 export function bgStyleLayerClasses(bgStyle: BgStyle): string {
   switch (bgStyle) {
     case "orb":
+      // 계열별 차이 없이 고정 (색상은 blob/themeSurface가 담당)
       return "pointer-events-none absolute -inset-[35%] rounded-full opacity-90 blur-2xl scale-110";
     case "plate":
-      return "pointer-events-none absolute inset-0 opacity-40 bg-gradient-to-t from-black/60 via-transparent to-white/5";
+      // white 기반 느낌 제거 + 강도 고정
+      return "pointer-events-none absolute inset-0 opacity-40 bg-gradient-to-t from-black/35 via-transparent to-transparent";
     case "rune":
-      return "pointer-events-none absolute inset-0 opacity-[0.12] bg-[linear-gradient(135deg,rgba(255,255,255,0.15)_0%,transparent_40%,transparent_60%,rgba(255,255,255,0.08)_100%)]";
+      // white 패턴 대신 중립적인 다크 패턴(강도 고정)
+      return "pointer-events-none absolute inset-0 opacity-[0.12] bg-[linear-gradient(135deg,rgba(0,0,0,0.18)_0%,transparent_40%,transparent_60%,rgba(0,0,0,0.10)_100%)]";
     default:
       return "";
   }

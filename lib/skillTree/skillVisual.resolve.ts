@@ -1,67 +1,85 @@
-import { pickBestRule, normalizeText } from "./skillVisual.matcher";
-import { ABILITY_SKILL_RULES, SET_SKILL_RULES } from "./skillVisual.rules";
-import type { SkillRule, SkillTheme, SkillVisual } from "./skillVisual.types";
-
-function ruleToVisual(rule: SkillRule): SkillVisual {
-  const { keywords: _k, priority: _p, ...visual } = rule;
-  return visual;
-}
+import type { SkillVisual } from "./skillVisual.types";
 
 /**
- * UI 요구사항: 스킬트리 색상은 3계열만 사용 (노랑/보라/파랑).
- * rules 쪽에서 다른 theme가 반환돼도 최종 출력은 3계열로 정규화한다.
+ * 키워드 룰을 제거하고, 모든 스킬트리 아이콘을 동일한 톤(“계약/이행/사후관리” 계열)로 통일한다.
+ * - theme: blue
+ * - bgStyle: plate
+ * - frame: epic
  */
-function toTriTheme(theme: SkillTheme): SkillTheme {
-  switch (theme) {
-    case "gold":
-    case "purple":
-    case "blue":
-      return theme;
-    case "orange":
-      return "gold";
-    case "green":
-    case "cyan":
-      return "blue";
-    case "red":
-    default:
-      return "purple";
-  }
-}
-
-function normalizeTriVisual(v: SkillVisual): SkillVisual {
-  return { ...v, theme: toTriTheme(v.theme) };
-}
-
-export const DEFAULT_SET_VISUAL: SkillVisual = {
-  icon: "mdi:star-four-points",
-  category: "strategy",
+const UNIFIED_SKILL_VISUAL: SkillVisual = {
+  icon: "mdi:briefcase-outline",
+  category: "execution",
   theme: "blue",
-  bgStyle: "orb",
-  glow: "soft",
-  frame: "rare",
+  bgStyle: "plate",
+  glow: "strong",
+  frame: "epic",
   filled: true,
 };
 
-export const DEFAULT_ABILITY_VISUAL: SkillVisual = {
-  icon: "mdi:circle-double",
-  category: "learning",
-  theme: "purple",
-  bgStyle: "plate",
-  glow: "soft",
-  frame: "common",
-  filled: true,
-};
+export const DEFAULT_SET_VISUAL: SkillVisual = UNIFIED_SKILL_VISUAL;
+export const DEFAULT_ABILITY_VISUAL: SkillVisual = UNIFIED_SKILL_VISUAL;
 
 export function getSkillVisual(title: string): SkillVisual {
-  const t = normalizeText(title);
-  if (!t) return normalizeTriVisual(DEFAULT_SET_VISUAL);
-  const rule = pickBestRule(t, SET_SKILL_RULES);
-  return normalizeTriVisual(rule ? ruleToVisual(rule) : DEFAULT_SET_VISUAL);
+  return { ...UNIFIED_SKILL_VISUAL, icon: pickIconFromPool(title) };
 }
 
 export function getAbilityVisual(abilityUnit: string): SkillVisual {
-  const t = normalizeText(abilityUnit);
-  if (!t || t === "-") return normalizeTriVisual(DEFAULT_ABILITY_VISUAL);
-  const rule = pickBestRule(t, ABILITY_SKILL_RULES);
-  return normalizeTriVisual(rule ? ruleToVisual(rule) : DEFAULT_ABILITY_VISUAL);
+  if (!abilityUnit || abilityUnit === "-") return UNIFIED_SKILL_VISUAL;
+  return { ...UNIFIED_SKILL_VISUAL, icon: pickIconFromPool(abilityUnit) };
+}
+
+// “업무 느낌 + (가볍게) 게임 감성”을 동시에 만족하는 아이콘 풀에서 결정적 랜덤 선택
+const ICON_POOL = [
+  // 업무/프로젝트/성과
+  "mdi:briefcase-outline",
+  "mdi:clipboard-check-outline",
+  "mdi:clipboard-text-outline",
+  "mdi:checkbox-marked-circle-outline",
+  "mdi:flag-checkered",
+  "mdi:target-variant",
+  "mdi:trophy-outline",
+  "mdi:medal-outline",
+  "mdi:star-circle-outline",
+  "mdi:badge-account-outline",
+
+  // 문서/계약/승인
+  "mdi:file-document-outline",
+  "mdi:file-check-outline",
+  "mdi:file-sign",
+  "mdi:pen-plus",
+  "mdi:stamp-outline",
+  "mdi:shield-check-outline",
+
+  // 분석/전략/탐색
+  "mdi:chart-line",
+  "mdi:chart-areaspline",
+  "mdi:chart-box-outline",
+  "mdi:map-outline",
+  "mdi:compass-outline",
+  "mdi:binoculars",
+  "mdi:lightbulb-outline",
+  "mdi:brain",
+
+  // 협업/커뮤니케이션/운영
+  "mdi:handshake-outline",
+  "mdi:account-group-outline",
+  "mdi:account-tie-outline",
+  "mdi:forum-outline",
+  "mdi:calendar-check-outline",
+  "mdi:timeline-outline",
+] as const;
+
+function hashString(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function pickIconFromPool(seed: string): string {
+  const t = (seed ?? "").toString().trim();
+  const idx = hashString(t || "default") % ICON_POOL.length;
+  return ICON_POOL[idx] ?? "mdi:briefcase-outline";
 }

@@ -22,5 +22,7 @@ export type SkillTreeSetRow = {
   industryClass: string;
   setName: string;
   questionSlots: SkillTreeQuestionSlotMeta[];
+  /** 있으면 카드덱 필터에 우선 사용 (없으면 jobFamilyCode로 패밀리 JSON에서 유추) */
+  major_category_label?: string;
 };
 

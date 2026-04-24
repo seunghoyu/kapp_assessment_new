@@ -10,7 +10,6 @@ import {
   FileText,
   GraduationCap,
   User,
-  Award,
   Table2,
   Activity,
 } from "lucide-react";
@@ -33,9 +32,8 @@ import dashboardData from "@/data/consumer/dashboard.json";
 import careerPathData from "@/data/consumer/careerPathByIndustry.json";
 import dailyTipsData from "@/data/consumer/dailyTips.json";
 import DailyTipWidget from "@/components/dashboard/DailyTipWidget";
-import CertificateModal from "./CertificateModal";
-import SkillTree from "@/components/dashboard/SkillTree/SkillTree";
-import { loadSkillTreeSets } from "@/lib/skillTree/loadJobSkillTree";
+import SkillTreeTabSplit from "@/components/dashboard/SkillTree/SkillTreeTabSplit";
+import { loadSkillTreeWithMeta } from "@/lib/skillTree/loadJobSkillTree";
 
 type DashboardTab = "my-competency" | "roadmap" | "skill-tree";
 type CompetencyViewTab = "bar" | "table" | "radar";
@@ -110,7 +108,6 @@ export default function ConsumerDashboardPage() {
   const router = useRouter();
   const [tab, setTab] = useState<DashboardTab>("my-competency");
   const [showCoursesModal, setShowCoursesModal] = useState(false);
-  const [certModalOpen, setCertModalOpen] = useState(false);
   const [skillTreeUnlockedCount] = useState(5);
   // 가상 프론트 기본 ON (명시적으로 false일 때만 OFF)
   const isMockFront = process.env.NEXT_PUBLIC_MOCK_FRONT !== "false";
@@ -122,7 +119,7 @@ export default function ConsumerDashboardPage() {
   const [competencyViewTab, setCompetencyViewTab] = useState<CompetencyViewTab>("radar");
   const [marketBenchmarkView, setMarketBenchmarkView] = useState<CompetencyViewTab>("radar");
 
-  const skillTreeSets = useMemo(() => loadSkillTreeSets("sal_b2b"), []);
+  const skillTreeBundle = useMemo(() => loadSkillTreeWithMeta("sal_b2b"), []);
   const [selectedMajorIndustryName, setSelectedMajorIndustryName] = useState<string>("");
 
   const ib = industryBenchmark ?? industryBenchmarkFallback;
@@ -240,7 +237,7 @@ export default function ConsumerDashboardPage() {
         </div>
       </div>
 
-      {/* 탭: 내 역량 | 성장 로드맵 / 우측 인증서 */}
+      {/* 탭: 내 역량 | 성장 로드맵 */}
       <div className="flex-shrink-0 flex border-b border-gray-200 bg-white px-4 items-center justify-between">
         <div className="flex">
           <button
@@ -277,17 +274,7 @@ export default function ConsumerDashboardPage() {
             나의 스킬트리
           </button>
         </div>
-        <button
-          type="button"
-          onClick={() => setCertModalOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-        >
-          <Award className="w-5 h-5 text-blue-600" />
-          인증서 다운로드
-        </button>
       </div>
-
-      <CertificateModal open={certModalOpen} onClose={() => setCertModalOpen(false)} />
 
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
         <div className="w-full max-w-full space-y-6">
@@ -703,9 +690,11 @@ export default function ConsumerDashboardPage() {
 
           {/* ─── 나의 스킬트리 탭 ─── */}
           {tab === "skill-tree" && (
-            <div className="space-y-6">
-              <SkillTree sets={skillTreeSets} unlockedCount={skillTreeUnlockedCount} />
-            </div>
+            <SkillTreeTabSplit
+              sets={skillTreeBundle.sets}
+              jobFamilyCode={skillTreeBundle.jobFamilyCode}
+              unlockedCount={skillTreeUnlockedCount}
+            />
           )}
         </div>
       </div>

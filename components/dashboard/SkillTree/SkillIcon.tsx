@@ -41,7 +41,7 @@ export default function SkillIcon({ visual, state, size = "md", className = "", 
   const bgExtra = bgStyleLayerClasses(visual.bgStyle);
 
   const scaleClass =
-    state === "active" ? "scale-[1.06] z-[1]" : state === "locked" ? "scale-100" : "scale-100";
+    state === "active" ? "scale-[1.03]" : state === "locked" ? "scale-100" : "scale-100";
 
   const stateOverlay =
     state === "locked"

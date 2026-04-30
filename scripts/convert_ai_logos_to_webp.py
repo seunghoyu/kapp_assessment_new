@@ -14,7 +14,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1] / "public" / "kapp" / "ai-tools-logos"
+ROOT = Path(__file__).resolve().parents[1] / "Web" / "public" / "kapp" / "ai-tools-logos"
 EXT_RASTER = {".png", ".jpg", ".jpeg"}
 EXT_SVG = {".svg"}
 WEBP_QUALITY = 90

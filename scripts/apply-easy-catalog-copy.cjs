@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const copy = require("./easy-copy-data.cjs");
 
-const catalogPath = path.join(__dirname, "../data/kappDiagnosis/aiToolsCatalog.json");
+const catalogPath = path.join(__dirname, "../Web/data/kappDiagnosis/aiToolsCatalog.json");
 const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
 let n = 0;
 for (const t of catalog.tools) {

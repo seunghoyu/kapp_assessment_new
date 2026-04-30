@@ -7,8 +7,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.join(__dirname, "..");
-const catalogPath = path.join(root, "data", "kappDiagnosis", "aiToolsCatalog.json");
+const repoRoot = path.join(__dirname, "..");
+const webRoot = path.join(repoRoot, "Web");
+const catalogPath = path.join(webRoot, "data", "kappDiagnosis", "aiToolsCatalog.json");
 
 const REMOVE_IDS = new Set(["naver_papago", "kakao_kanana"]);
 

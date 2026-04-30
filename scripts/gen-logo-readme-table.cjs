@@ -6,7 +6,7 @@
 const fs = require("fs");
 const path = require("path");
 const j = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "../data/kappDiagnosis/aiToolsCatalog.json"), "utf8")
+  fs.readFileSync(path.join(__dirname, "../Web/data/kappDiagnosis/aiToolsCatalog.json"), "utf8")
 );
 
 let table = "| 표시 이름 | toolId | 이 폴더에 넣을 파일명 |\n| --- | --- | --- |\n";
@@ -39,6 +39,6 @@ ${table}
 *도구가 추가·변경되면 \`node scripts/gen-logo-readme-table.cjs\`로 이 README를 다시 생성할 수 있습니다.*
 `;
 
-const out = path.join(__dirname, "../public/kapp/ai-tools-logos/README.md");
+const out = path.join(__dirname, "../Web/public/kapp/ai-tools-logos/README.md");
 fs.writeFileSync(out, readme, "utf8");
 console.log("Wrote", out, "(" + j.tools.length + " rows)");

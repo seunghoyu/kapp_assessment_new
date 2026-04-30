@@ -7,7 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const catalogPath = path.join(__dirname, "..", "data", "kappDiagnosis", "aiToolsCatalog.json");
+const catalogPath = path.join(__dirname, "..", "Web", "data", "kappDiagnosis", "aiToolsCatalog.json");
 
 const KEEP = new Set([
   "chatgpt_team",

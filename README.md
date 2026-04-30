@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# kapp_assessment_new
 
-## Getting Started
+Next.js 앱은 **`Web/`** 디렉터리에 있습니다. 저장소 루트의 `npm run dev`는 `Web`으로 위임됩니다.
 
-First, run the development server:
+이전에 루트에 두었던 `node_modules` 폴더가 남아 있으면 용량만 차지하므로 삭제해도 됩니다. 의존성은 `Web/node_modules`만 사용합니다.
+
+## 웹 앱 (Next.js)
 
 ```bash
+# 루트에서 (권장)
+npm install --prefix Web
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# 또는 Web 폴더에서
+cd Web
+npm install
+npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+브라우저에서 [http://localhost:3000](http://localhost:3000) 을 엽니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+편집은 주로 [`Web/app/page.tsx`](Web/app/page.tsx) 및 [`Web/app/`](Web/app/) 하위 라우트에서 합니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 기타 폴더
 
-## Learn More
+| 경로 | 설명 |
+|------|------|
+| [`Web/`](Web/) | Next 앱 (`app`, `components`, `data`, `public`, `lib`, 설정 파일) |
+| [`scripts/`](scripts/) | 데이터·메뉴 등 유틸 스크립트 (입력/출력 경로는 `Web/` 기준으로 맞춤) |
+| [`docs/`](docs/) | 설계·플로우 문서 |
+| [`digital_inbasket/`](digital_inbasket/) | 참조용 정적 자산 (Next 빌드와 분리) |
+| [`icon-generator/`](icon-generator/) | 아이콘 생성 도구 |
 
-To learn more about Next.js, take a look at the following resources:
+## 배포 (Vercel 등)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+프로젝트 **Root Directory**를 `Web`으로 지정하세요.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Next.js 자료
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js 문서](https://nextjs.org/docs)
+- [배포](https://nextjs.org/docs/app/building-your-application/deploying)

@@ -7,9 +7,10 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.join(__dirname, "..");
-const catalogPath = path.join(root, "data", "kappDiagnosis", "aiToolsCatalog.json");
-const patchPath = path.join(root, "data", "kappDiagnosis", "aiToolsCopyPatch.json");
+const repoRoot = path.join(__dirname, "..");
+const webRoot = path.join(repoRoot, "Web");
+const catalogPath = path.join(webRoot, "data", "kappDiagnosis", "aiToolsCatalog.json");
+const patchPath = path.join(webRoot, "data", "kappDiagnosis", "aiToolsCopyPatch.json");
 
 const raw = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
 const patch = JSON.parse(fs.readFileSync(patchPath, "utf8"));

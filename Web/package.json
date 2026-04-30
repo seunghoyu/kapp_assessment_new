@@ -1,0 +1,42 @@
+{
+  "name": "kapp_assessment_new",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node node_modules/next/dist/bin/next dev",
+    "build": "node node_modules/next/dist/bin/next build",
+    "start": "node node_modules/next/dist/bin/next start",
+    "lint": "eslint",
+    "docs": "node ../scripts/generate-docs-index.js && node ../scripts/build-docs-diagram.mjs",
+    "build:docs-diagram": "node ../scripts/build-docs-diagram.mjs"
+  },
+  "dependencies": {
+    "@iconify/react": "^6.0.2",
+    "chart.js": "^4.5.1",
+    "dagre": "^0.8.5",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.563.0",
+    "next": "16.1.6",
+    "puppeteer": "^24.39.1",
+    "react": "19.2.3",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "19.2.3",
+    "reactflow": "^11.11.4",
+    "recharts": "^3.7.0",
+    "twemoji": "^14.0.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@ljharb/tsconfig": "^0.3.2",
+    "@tailwindcss/postcss": "^4",
+    "@types/dagre": "^0.7.52",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "esbuild": "^0.24.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
